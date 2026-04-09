@@ -23,6 +23,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->name('kasir.')->group(function () {
     Route::get('/dashboard', [KasirDashboard::class, 'index'])->name('dashboard');
     Route::resource('transaksi', TransaksiController::class);
+    Route::get('/pengambilan', [PengambilanController::class, 'index'])->name('pengambilan.index');
+    Route::post('/pengambilan/cari', [PengambilanController::class, 'cari'])->name('pengambilan.cari');
+    Route::post('/pengambilan/konfirmasi/{transaksi}', [PengambilanController::class, 'konfirmasi'])->name('pengambilan.konfirmasi');
 });
 
 require __DIR__ . '/auth.php';

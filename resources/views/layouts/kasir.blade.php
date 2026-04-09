@@ -24,9 +24,9 @@
                 <a href="{{ route('kasir.transaksi.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-green-700 {{ request()->routeIs('kasir.transaksi.index') ? 'bg-green-700' : '' }}">
                     📋 Riwayat Transaksi
                 </a>
-                {{-- <a href="{{ route('kasir.pengambilan.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-green-700 {{ request()->routeIs('kasir.pengambilan.*') ? 'bg-green-700' : '' }}">
+                <a href="{{ route('kasir.pengambilan.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-green-700 {{ request()->routeIs('kasir.pengambilan.*') ? 'bg-green-700' : '' }}">
                     📦 Ambil Barang
-                </a> --}}
+                </a>
             </nav>
             <div class="p-4 border-t border-green-700">
                 <form action="{{ route('logout') }}" method="POST">
