@@ -83,10 +83,10 @@
             class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
             + Transaksi Baru
         </a>
-        <button onclick="window.print()"
+        <a href="{{ route('kasir.transaksi.nota', $transaksi) }}" target="_blank"
             class="px-6 py-2 rounded-lg border hover:bg-gray-50">
-            🖨️ Cetak Nota
-        </button>
+                🖨️ Cetak Nota
+        </a>
         <a href="{{ route('kasir.transaksi.index') }}"
             class="px-6 py-2 rounded-lg border hover:bg-gray-50">
             Riwayat

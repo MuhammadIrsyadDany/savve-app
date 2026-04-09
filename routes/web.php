@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Kasir\TransaksiController;
 use App\Http\Controllers\Kasir\PengambilanController;
 use App\Http\Controllers\Admin\TransaksiController as AdminTransaksiController;
+use App\Http\Controllers\Admin\LaporanController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -20,6 +21,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::resource('users', UserController::class);
     Route::get('/transaksis', [AdminTransaksiController::class, 'index'])->name('transaksis.index');
     Route::get('/transaksis/{transaksi}', [AdminTransaksiController::class, 'show'])->name('transaksis.show');
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
 });
 
 // Route Kasir
@@ -29,6 +32,7 @@ Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->name('kasir.')->grou
     Route::get('/pengambilan', [PengambilanController::class, 'index'])->name('pengambilan.index');
     Route::post('/pengambilan/cari', [PengambilanController::class, 'cari'])->name('pengambilan.cari');
     Route::post('/pengambilan/konfirmasi/{transaksi}', [PengambilanController::class, 'konfirmasi'])->name('pengambilan.konfirmasi');
+    Route::get('/transaksi/{transaksi}/nota', [TransaksiController::class, 'nota'])->name('transaksi.nota');
 });
 
 require __DIR__ . '/auth.php';

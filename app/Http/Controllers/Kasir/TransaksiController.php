@@ -78,4 +78,10 @@ class TransaksiController extends Controller
 
         return view('kasir.transaksi.show', compact('transaksi'));
     }
+
+    public function nota(Transaksi $transaksi)
+    {
+        $transaksi->load(['event', 'details.kategori', 'kasir']);
+        return view('kasir.transaksi.nota', compact('transaksi'));
+    }
 }

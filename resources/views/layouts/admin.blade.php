@@ -27,9 +27,9 @@
                 <a href="{{ route('admin.transaksis.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.transaksis.*') ? 'bg-blue-700' : '' }}">
                     📋 Data Transaksi
                 </a>
-                {{-- <a href="{{ route('admin.laporan.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.laporan.*') ? 'bg-blue-700' : '' }}">
+                <a href="{{ route('admin.laporan.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.laporan.*') ? 'bg-blue-700' : '' }}">
                     📈 Laporan
-                </a> --}}
+                </a>
             </nav>
             <div class="p-4 border-t border-blue-700">
                 <form action="{{ route('logout') }}" method="POST">
