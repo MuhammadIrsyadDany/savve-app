@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Kasir\DashboardController as KasirDashboard;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Kasir\TransaksiController;
+use App\Http\Controllers\Kasir\PengambilanController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -20,6 +22,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 // Route Kasir
 Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->name('kasir.')->group(function () {
     Route::get('/dashboard', [KasirDashboard::class, 'index'])->name('dashboard');
+    Route::resource('transaksi', TransaksiController::class);
 });
 
 require __DIR__ . '/auth.php';
