@@ -1,7 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Kasir\DashboardController as KasirDashboard;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
+
+// Route Admin
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+});
+
+// Route Kasir
+Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->name('kasir.')->group(function () {
+    Route::get('/dashboard', [KasirDashboard::class, 'index'])->name('dashboard');
+});
+
+require __DIR__ . '/auth.php';
