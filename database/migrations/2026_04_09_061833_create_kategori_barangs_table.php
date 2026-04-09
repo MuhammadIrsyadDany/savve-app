@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['admin', 'kasir'])->default('kasir')->after('email');
+        Schema::create('kategori_barangs', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_kategori');
+            $table->boolean('is_custom')->default(false); // true = kategori "Lainnya"
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-        });
+        Schema::dropIfExists('kategori_barangs');
     }
 };
