@@ -14,14 +14,14 @@
             <div class="p-6 text-2xl font-bold border-b border-blue-700">
                 🎒 Savve
             </div>
-            {{-- <nav class="flex-1 p-4 space-y-1">
+            <nav class="flex-1 p-4 space-y-1">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
                     📊 Dashboard
                 </a>
                 <a href="{{ route('admin.events.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.events.*') ? 'bg-blue-700' : '' }}">
                     🎪 Kelola Event
                 </a>
-                <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
+                {{-- <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
                     👤 Kelola Kasir
                 </a>
                 <a href="{{ route('admin.transaksis.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.transaksis.*') ? 'bg-blue-700' : '' }}">
@@ -29,8 +29,8 @@
                 </a>
                 <a href="{{ route('admin.laporan.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.laporan.*') ? 'bg-blue-700' : '' }}">
                     📈 Laporan
-                </a>
-            </nav> --}}
+                </a> --}}
+            </nav>
             <div class="p-4 border-t border-blue-700">
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
