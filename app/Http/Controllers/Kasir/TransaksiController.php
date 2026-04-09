@@ -46,6 +46,11 @@ class TransaksiController extends Controller
                 'waktu_penitipan'  => now(),
             ]);
 
+            $event = Event::findOrFail($request->event_id);
+            if ($event->status !== 'aktif') {
+                return back()->withInput()->with('error', 'Event ini sudah tidak aktif. Transaksi tidak dapat dilakukan.');
+            }
+
             foreach ($request->barang as $item) {
                 $tarif = Tarif::where('event_id', $request->event_id)
                     ->where('ukuran', $item['ukuran'])

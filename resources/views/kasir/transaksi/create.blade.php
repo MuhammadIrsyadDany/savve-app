@@ -14,7 +14,7 @@
                 <option value="">-- Pilih Event --</option>
                 @foreach($events as $event)
                 <option value="{{ $event->id }}" {{ old('event_id') == $event->id ? 'selected' : '' }}>
-                    {{ $event->nama_event }}
+                    {{ $event->nama_event }} ({{ $event->tanggal_mulai->format('d M') }} - {{ $event->tanggal_selesai->format('d M Y') }})
                 </option>
                 @endforeach
             </select>
