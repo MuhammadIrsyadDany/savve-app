@@ -21,10 +21,10 @@
                 <a href="{{ route('admin.events.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.events.*') ? 'bg-blue-700' : '' }}">
                     🎪 Kelola Event
                 </a>
-                {{-- <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
+                <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
                     👤 Kelola Kasir
                 </a>
-                <a href="{{ route('admin.transaksis.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.transaksis.*') ? 'bg-blue-700' : '' }}">
+                {{-- <a href="{{ route('admin.transaksis.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.transaksis.*') ? 'bg-blue-700' : '' }}">
                     📋 Data Transaksi
                 </a>
                 <a href="{{ route('admin.laporan.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-700 {{ request()->routeIs('admin.laporan.*') ? 'bg-blue-700' : '' }}">
