@@ -16,22 +16,19 @@ class PengambilanController extends Controller
     public function cari(Request $request)
     {
         $request->validate([
-            'nomor_transaksi' => 'required|string',
+            'nama_penitip' => 'required|string',
         ]);
 
-        $transaksi = Transaksi::with(['event', 'details.kategori', 'kasir'])
-            ->where('nomor_transaksi', $request->nomor_transaksi)
-            ->first();
+        $transaksis = Transaksi::with(['event', 'details.kategori', 'kasir'])
+            ->where('nama_penitip', 'like', '%' . $request->nama_penitip . '%')
+            ->where('status', 'dititip')
+            ->get();
 
-        if (!$transaksi) {
-            return back()->with('error', 'Nomor transaksi tidak ditemukan.');
+        if ($transaksis->isEmpty()) {
+            return back()->with('error', 'Data penitip tidak ditemukan atau barang sudah diambil.');
         }
 
-        if ($transaksi->status === 'sudah_diambil') {
-            return back()->with('error', 'Barang ini sudah diambil sebelumnya.');
-        }
-
-        return view('kasir.pengambilan.index', compact('transaksi'));
+        return view('kasir.pengambilan.index', compact('transaksis'));
     }
 
     public function konfirmasi(Request $request, Transaksi $transaksi)

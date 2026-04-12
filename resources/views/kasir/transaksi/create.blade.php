@@ -355,6 +355,115 @@
         }
     }
     generatePreviewNomor();
+    // Validasi form sebelum submit
+document.getElementById('form-transaksi').addEventListener('submit', function(e) {
+    let valid = true;
+    let pesanError = [];
+
+    // Reset semua error sebelumnya
+    document.querySelectorAll('.error-msg').forEach(el => el.remove());
+    document.querySelectorAll('.border-red-500').forEach(el => {
+        el.classList.remove('border-red-500');
+    });
+
+    // Validasi event
+    const eventId = document.getElementById('event_id');
+    if (!eventId.value) {
+        valid = false;
+        showError(eventId, 'Pilih event terlebih dahulu.');
+    }
+
+    // Validasi nama penitip
+    const namaPenitip = document.querySelector('[name=nama_penitip]');
+    if (!namaPenitip.value.trim()) {
+        valid = false;
+        showError(namaPenitip, 'Nama penitip wajib diisi.');
+    }
+
+    // Validasi no whatsapp
+    const noWa = document.querySelector('[name=no_whatsapp]');
+    if (!noWa.value.trim()) {
+        valid = false;
+        showError(noWa, 'Nomor WhatsApp wajib diisi.');
+    } else if (!/^[0-9]{9,15}$/.test(noWa.value.trim())) {
+        valid = false;
+        showError(noWa, 'Nomor WhatsApp tidak valid (9-15 digit angka).');
+    }
+
+    // Validasi setiap barang
+    document.querySelectorAll('.barang-item').forEach(function(item, i) {
+        const kategori = item.querySelector('select[name*="kategori_id"]');
+        const jumlah = item.querySelector('input[name*="jumlah"]');
+        const namaCustomWrapper = item.querySelector('.nama-custom-wrapper');
+        const namaCustomInput = item.querySelector('input[name*="nama_custom"]');
+        const ukuranChecked = item.querySelector('input[name*="ukuran"]:checked');
+
+        // Cek nama custom kalau kategori Lainnya
+        if (namaCustomWrapper && namaCustomWrapper.style.display !== 'none') {
+            if (!namaCustomInput.value.trim()) {
+                valid = false;
+                showError(namaCustomInput, 'Nama barang wajib diisi.');
+            }
+        }
+
+        // Cek jumlah
+        if (!jumlah.value || jumlah.value < 1) {
+            valid = false;
+            showError(jumlah, 'Jumlah minimal 1.');
+        }
+
+        // Cek ukuran
+        if (!ukuranChecked) {
+            valid = false;
+            const ukuranContainer = item.querySelector('.grid.grid-cols-4');
+            showErrorDiv(ukuranContainer, 'Pilih ukuran barang.');
+        }
+    });
+
+    if (!valid) {
+        e.preventDefault();
+
+        // Scroll ke error pertama
+        const firstError = document.querySelector('.error-msg');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+});
+
+function showError(input, message) {
+    input.classList.add('border-red-500', 'focus:ring-red-400');
+    input.classList.remove('border-gray-200');
+
+    const msg = document.createElement('p');
+    msg.className = 'error-msg text-red-500 text-xs mt-1 flex items-center gap-1';
+    msg.innerHTML = `⚠ ${message}`;
+    input.parentNode.insertBefore(msg, input.nextSibling);
+}
+
+function showErrorDiv(container, message) {
+    const msg = document.createElement('p');
+    msg.className = 'error-msg text-red-500 text-xs mt-1 flex items-center gap-1';
+    msg.innerHTML = `⚠ ${message}`;
+    container.parentNode.insertBefore(msg, container.nextSibling);
+}
+
+// Real-time validation — hilangkan error saat user mulai mengisi
+document.addEventListener('input', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        e.target.classList.remove('border-red-500');
+        const errorMsg = e.target.parentNode.querySelector('.error-msg');
+        if (errorMsg) errorMsg.remove();
+    }
+});
+
+document.addEventListener('change', function(e) {
+    if (e.target.tagName === 'SELECT') {
+        e.target.classList.remove('border-red-500');
+        const errorMsg = e.target.parentNode.querySelector('.error-msg');
+        if (errorMsg) errorMsg.remove();
+    }
+});
 </script>
 
 @endsection
