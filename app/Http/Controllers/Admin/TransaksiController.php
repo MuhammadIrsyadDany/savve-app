@@ -11,7 +11,14 @@ class TransaksiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Transaksi::with(['event', 'kasir', 'details']);
+        $query = Transaksi::with(['event', 'kasir', 'details.kategori']);
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_penitip', 'like', '%' . $request->search . '%')
+                    ->orWhere('nomor_transaksi', 'like', '%' . $request->search . '%');
+            });
+        }
 
         if ($request->filled('event_id')) {
             $query->where('event_id', $request->event_id);
