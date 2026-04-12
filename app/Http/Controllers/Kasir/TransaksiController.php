@@ -14,12 +14,27 @@ use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $transaksis = Transaksi::with(['event', 'details'])
-            ->where('kasir_id', auth()->id())
-            ->latest()
-            ->paginate(10);
+        $query = Transaksi::with(['event', 'details.kategori'])
+            ->where('kasir_id', auth()->id());
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_penitip', 'like', '%' . $request->search . '%')
+                    ->orWhere('nomor_transaksi', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('tanggal')) {
+            $query->whereDate('created_at', $request->tanggal);
+        }
+
+        $transaksis = $query->latest()->paginate(10)->withQueryString();
 
         return view('kasir.transaksi.index', compact('transaksis'));
     }
@@ -82,6 +97,12 @@ class TransaksiController extends Controller
             ->findOrFail($transaksi->id);
 
         return view('kasir.transaksi.show', compact('transaksi'));
+    }
+
+    public function countToday()
+    {
+        $count = Transaksi::whereDate('created_at', today())->count();
+        return response()->json(['count' => $count]);
     }
 
     public function nota(Transaksi $transaksi)

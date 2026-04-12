@@ -18,9 +18,13 @@ class DashboardController extends Controller
             ->where('status', 'dititip')
             ->count();
 
+        $sudahDiambil = Transaksi::where('kasir_id', auth()->id())
+            ->where('status', 'sudah_diambil')
+            ->count();
+
         $eventAktif = Event::where('status', 'aktif')->get();
 
-        $transaksiTerbaru = Transaksi::with(['event', 'details'])
+        $transaksiTerbaru = Transaksi::with(['event', 'details.kategori'])
             ->where('kasir_id', auth()->id())
             ->latest()
             ->take(5)
@@ -29,6 +33,7 @@ class DashboardController extends Controller
         return view('kasir.dashboard', compact(
             'transaksiHariIni',
             'belumDiambil',
+            'sudahDiambil',
             'eventAktif',
             'transaksiTerbaru'
         ));

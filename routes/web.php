@@ -28,6 +28,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 // Route Kasir
 Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->name('kasir.')->group(function () {
     Route::get('/dashboard', [KasirDashboard::class, 'index'])->name('dashboard');
+    Route::get('/transaksi/count-today', [TransaksiController::class, 'countToday'])->name('transaksi.count-today');
     Route::resource('transaksi', TransaksiController::class);
     Route::get('/pengambilan', [PengambilanController::class, 'index'])->name('pengambilan.index');
     Route::post('/pengambilan/cari', [PengambilanController::class, 'cari'])->name('pengambilan.cari');
