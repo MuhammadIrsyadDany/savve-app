@@ -7,23 +7,28 @@ use App\Models\Event;
 use App\Models\Transaksi;
 use App\Exports\TransaksiExport;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanController extends Controller
 {
     public function index(Request $request)
     {
-        $events = Event::all();
-        $transaksis = collect();
+        $events          = Event::all();
+        $transaksis      = collect();
         $totalPendapatan = 0;
-        $totalDititip = 0;
-        $totalDiambil = 0;
+        $totalDititip    = 0;
+        $totalDiambil    = 0;
+        $selectedEvent   = null;
+        $hasFilter = $request->filled('event_id')
+            || $request->filled('tanggal')
+            || $request->filled('status')
+            || $request->filled('show');
 
-        if ($request->filled('event_id') || $request->filled('tanggal')) {
-            $query = Transaksi::with(['event', 'kasir', 'details']);
+        if ($hasFilter) {
+            $query = Transaksi::with(['event', 'kasir', 'details.kategori']);
 
             if ($request->filled('event_id')) {
                 $query->where('event_id', $request->event_id);
+                $selectedEvent = Event::find($request->event_id);
             }
 
             if ($request->filled('tanggal')) {
@@ -34,8 +39,7 @@ class LaporanController extends Controller
                 $query->where('status', $request->status);
             }
 
-            $transaksis = $query->latest()->get();
-
+            $transaksis      = $query->latest()->get();
             $totalPendapatan = $transaksis->sum(fn($t) => $t->total_harga);
             $totalDititip    = $transaksis->where('status', 'dititip')->count();
             $totalDiambil    = $transaksis->where('status', 'sudah_diambil')->count();
@@ -46,13 +50,14 @@ class LaporanController extends Controller
             'transaksis',
             'totalPendapatan',
             'totalDititip',
-            'totalDiambil'
+            'totalDiambil',
+            'selectedEvent'
         ));
     }
 
     public function export(Request $request)
     {
-        $namaFile = 'laporan-transaksi-' . now()->format('Ymd-His') . '.xlsx';
+        $namaFile = 'laporan-savve-' . now()->format('Ymd-His') . '.xlsx';
 
         $export = new TransaksiExport(
             $request->event_id,

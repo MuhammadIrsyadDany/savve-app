@@ -4,217 +4,273 @@
 @section('content')
 
 {{-- Header --}}
-<div class="flex justify-between items-start mb-6">
+<div class="anim-fade-up delay-1 flex justify-between items-start mb-6">
     <div>
-        <h1 class="text-2xl font-black text-gray-800">Laporan Harian</h1>
+        <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #1a3a6b">Laporan</p>
+        <h1 class="text-2xl font-black text-gray-900">Laporan Harian</h1>
         <p class="text-gray-400 text-sm mt-1">Pantau aktivitas penitipan barang masuk dan keluar secara real-time.</p>
     </div>
-    <div class="flex items-center gap-3">
-        <a href="{{ route('admin.laporan.export', request()->query()) }}"
-            class="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 shadow-sm">
-            📄 Export Excel
-        </a>
-        <button onclick="window.print()"
-            class="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 rounded-xl text-sm font-semibold text-white hover:bg-indigo-700 shadow-sm">
-            🖨️ Print Harian
-        </button>
-    </div>
+    <a href="{{ route('admin.laporan.export', request()->query()) }}"
+        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90 flex-shrink-0"
+        style="background: linear-gradient(135deg, #0f2044, #1e4d8c); box-shadow: 0 4px 12px rgba(15,32,68,0.2)">
+        ⬇ Export Excel
+    </a>
 </div>
 
 {{-- Filter --}}
-<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-5">
+<div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-5 mb-5"
+    style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
     <form method="GET" action="{{ route('admin.laporan.index') }}">
-        <div class="flex items-end gap-4">
+        <input type="hidden" name="show" value="1">
+        <div class="flex flex-wrap gap-4 items-end">
 
-            {{-- Tanggal --}}
-            <div class="flex-1">
-                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Periode Tanggal</label>
-                <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">📅</span>
-                    <input type="date" name="tanggal" value="{{ request('tanggal') }}"
-                        class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                </div>
-            </div>
-
-            {{-- Event --}}
-            <div class="flex-1">
-                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Pilih Event</label>
-                <select name="event_id"
-                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+            <div class="flex-1 min-w-[160px]">
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pilih Event</label>
+                <select name="event_id" id="event_id"
+                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition">
                     <option value="">Semua Event</option>
                     @foreach($events as $event)
-                    <option value="{{ $event->id }}" {{ request('event_id') == $event->id ? 'selected' : '' }}>
+                    <option value="{{ $event->id }}"
+                        data-mulai="{{ $event->tanggal_mulai->format('Y-m-d') }}"
+                        data-selesai="{{ $event->tanggal_selesai->format('Y-m-d') }}"
+                        {{ request('event_id') == $event->id ? 'selected' : '' }}>
                         {{ $event->nama_event }}
                     </option>
                     @endforeach
                 </select>
             </div>
 
-            {{-- Status --}}
-            <div class="flex-1">
-                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Status</label>
-                <div class="flex gap-2">
-                    <a href="{{ request()->fullUrlWithQuery(['status' => '']) }}"
-                        class="px-4 py-2.5 rounded-xl text-sm font-semibold transition
-                        {{ !request('status') ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
-                        Semua
-                    </a>
-                    <a href="{{ request()->fullUrlWithQuery(['status' => 'dititip']) }}"
-                        class="px-4 py-2.5 rounded-xl text-sm font-semibold transition
-                        {{ request('status') === 'dititip' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
-                        Dititipkan
-                    </a>
-                    <a href="{{ request()->fullUrlWithQuery(['status' => 'sudah_diambil']) }}"
-                        class="px-4 py-2.5 rounded-xl text-sm font-semibold transition
-                        {{ request('status') === 'sudah_diambil' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
-                        Diambil
-                    </a>
-                </div>
+            <div class="flex-1 min-w-[140px]">
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Tanggal</label>
+                <input type="date" name="tanggal" id="tanggal" value="{{ request('tanggal') }}"
+                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition">
             </div>
 
-            {{-- Submit & Reset --}}
-            <div class="flex gap-2">
+            <div class="flex-1 min-w-[140px]">
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Status</label>
+                <select name="status"
+                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition">
+                    <option value="">Semua Status</option>
+                    <option value="dititip" {{ request('status') === 'dititip' ? 'selected' : '' }}>Dititipkan</option>
+                    <option value="sudah_diambil" {{ request('status') === 'sudah_diambil' ? 'selected' : '' }}>Sudah Diambil</option>
+                </select>
+            </div>
+
+            <div class="flex gap-2 flex-shrink-0">
                 <button type="submit"
-                    class="px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700">
+                    class="px-5 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
+                    style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">
                     Tampilkan
                 </button>
                 <a href="{{ route('admin.laporan.index') }}"
-                    class="px-3 py-2.5 bg-gray-100 text-gray-500 rounded-xl text-sm font-semibold hover:bg-gray-200">
+                    class="px-3.5 py-2.5 bg-gray-100 text-gray-500 rounded-xl text-sm font-semibold hover:bg-gray-200 transition">
                     🔄
                 </a>
             </div>
+
         </div>
     </form>
 </div>
 
-{{-- Tabel --}}
-<div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-5">
-    <table class="w-full text-sm">
-        <thead>
-            <tr class="border-b border-gray-100">
-                <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">No. Transaksi</th>
-                <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Nama Penitip</th>
-                <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Barang & Ukuran</th>
-                <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Jumlah</th>
-                <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Harga</th>
-                <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Tanggal</th>
-                <th class="px-5 py-4"></th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50">
-            @forelse($transaksis as $t)
-            <tr class="hover:bg-gray-50 transition">
-                <td class="px-5 py-4">
-                    <a href="{{ route('admin.transaksis.show', $t) }}"
-                        class="font-bold text-indigo-600 hover:underline">
-                        #{{ substr($t->nomor_transaksi, -5) }}
-                    </a>
-                </td>
-                <td class="px-5 py-4">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                            {{ strtoupper(substr($t->nama_penitip, 0, 2)) }}
-                        </div>
-                        <span class="font-semibold text-gray-700">{{ $t->nama_penitip }}</span>
-                    </div>
-                </td>
-                <td class="px-5 py-4">
-                    @foreach($t->details->take(1) as $d)
-                    <p class="font-medium text-gray-700">{{ $d->nama_barang_custom ?? $d->kategori->nama_kategori }}</p>
-                    <p class="text-xs text-gray-400 uppercase tracking-wider">Ukuran {{ $d->ukuran }}</p>
-                    @endforeach
-                    @if($t->details->count() > 1)
-                    <p class="text-xs text-indigo-400">+{{ $t->details->count() - 1 }} barang lain</p>
-                    @endif
-                </td>
-                <td class="px-5 py-4 font-semibold text-gray-700">
-                    {{ $t->details->sum('jumlah') }}
-                </td>
-                <td class="px-5 py-4">
-                    <span class="font-bold text-gray-800">Rp {{ number_format($t->total_harga, 0, ',', '.') }}</span>
-                </td>
-                <td class="px-5 py-4">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold
-                        {{ $t->status === 'dititip' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600' }}">
-                        {{ $t->status === 'dititip' ? 'DITITIPKAN' : 'DIAMBIL' }}
-                    </span>
-                </td>
-                <td class="px-5 py-4 text-gray-400 text-xs">
-                    {{ $t->waktu_penitipan->format('d M Y') }},<br>
-                    {{ $t->waktu_penitipan->format('H:i') }}
-                </td>
-                <td class="px-5 py-4">
-                    <a href="{{ route('admin.transaksis.show', $t) }}"
-                        class="text-gray-300 hover:text-gray-500 text-lg">⋯</a>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="8" class="px-5 py-12 text-center text-gray-300">
-                    <p class="text-4xl mb-2">📋</p>
-                    <p>Pilih filter di atas untuk menampilkan laporan.</p>
-                </td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    {{-- Footer Tabel --}}
-    @if($transaksis->count() > 0)
-    <div class="px-5 py-4 border-t border-gray-100 flex justify-between items-center">
-        <div class="flex gap-6">
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Total Transaksi</p>
-                <p class="text-xl font-black text-gray-800">{{ $transaksis->count() }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Estimasi Pendapatan</p>
-                <p class="text-xl font-black text-indigo-600">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
-            </div>
-        </div>
-        {{-- Pagination placeholder --}}
-        <div class="flex items-center gap-1">
-            <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-400 hover:bg-gray-200">‹</button>
-            <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-sm">1</button>
-            <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 text-sm">2</button>
-            <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 text-sm">3</button>
-            <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-400 hover:bg-gray-200">›</button>
-        </div>
-    </div>
-    @endif
-</div>
-
-{{-- Bottom Stats --}}
+{{-- Summary Cards --}}
 @if($transaksis->count() > 0)
-<div class="grid grid-cols-3 gap-4">
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-        <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-xl">🗃️</div>
-        <div>
-            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Kapasitas Gudang</p>
-            <p class="text-xl font-black text-gray-800">{{ $transaksis->where('status','dititip')->sum(fn($t) => $t->details->sum('jumlah')) }} Unit</p>
+<div class="anim-fade-up delay-3 grid grid-cols-3 gap-4 mb-5">
+    <div class="bg-white rounded-2xl p-5 border border-gray-100"
+        style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background: linear-gradient(135deg, #eff6ff, #dbeafe)">
+                <span class="text-base">📋</span>
+            </div>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Transaksi</p>
         </div>
+        <p class="text-3xl font-black text-gray-900">{{ $transaksis->count() }}</p>
     </div>
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-        <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-xl">⏳</div>
-        <div>
-            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Belum Diambil</p>
-            <p class="text-xl font-black text-gray-800">{{ $totalDititip }} Transaksi</p>
+
+    <div class="bg-white rounded-2xl p-5 border border-gray-100"
+        style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)">
+                <span class="text-base">💰</span>
+            </div>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Pendapatan</p>
         </div>
+        <p class="text-2xl font-black" style="color: #0f2044">
+            Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
+        </p>
     </div>
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-        <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-xl">✅</div>
-        <div>
-            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Selesai Hari Ini</p>
-            <p class="text-xl font-black text-gray-800">{{ $totalDiambil }} Transaksi</p>
+
+    <div class="bg-white rounded-2xl p-5 border border-gray-100"
+        style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background: linear-gradient(135deg, #fff7ed, #fed7aa)">
+                <span class="text-base">📦</span>
+            </div>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Dititip / Diambil</p>
         </div>
+        <p class="text-2xl font-black text-gray-900">
+            <span style="color: #ea580c">{{ $totalDititip }}</span>
+            <span class="text-gray-300 mx-1">/</span>
+            <span style="color: #15803d">{{ $totalDiambil }}</span>
+        </p>
     </div>
 </div>
 @endif
 
+{{-- Tabel --}}
+<div class="anim-fade-up delay-4 bg-white rounded-2xl border border-gray-100 overflow-hidden"
+    style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr style="background: #f8faff; border-bottom: 2px solid #e2e8f0">
+                    <th class="px-5 py-4 text-left whitespace-nowrap"
+                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        No. Transaksi
+                    </th>
+                    <th class="px-5 py-4 text-left whitespace-nowrap"
+                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        Penitip
+                    </th>
+                    <th class="px-5 py-4 text-left whitespace-nowrap"
+                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        Barang & Ukuran
+                    </th>
+                    <th class="px-5 py-4 text-left whitespace-nowrap"
+                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        Kasir
+                    </th>
+                    <th class="px-5 py-4 text-right whitespace-nowrap"
+                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        Total
+                    </th>
+                    <th class="px-5 py-4 text-left whitespace-nowrap"
+                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        Status
+                    </th>
+                    <th class="px-5 py-4 text-left whitespace-nowrap"
+                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        Waktu
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($transaksis as $t)
+                <tr class="table-row border-t border-gray-50">
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <a href="{{ route('admin.transaksis.show', $t) }}"
+                            class="font-bold hover:underline transition"
+                            style="color: #1a3a6b; font-family: monospace; font-size: 12px">
+                            {{ $t->nomor_transaksi }}
+                        </a>
+                    </td>
+                    <td class="px-5 py-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
+                                style="background: linear-gradient(135deg, #0f2044, #4a9eff); font-size: 11px">
+                                {{ strtoupper(substr($t->nama_penitip, 0, 2)) }}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800 text-sm whitespace-nowrap">{{ $t->nama_penitip }}</p>
+                                <p class="text-gray-400" style="font-size: 11px">{{ $t->no_whatsapp }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-5 py-4">
+                        @foreach($t->details->take(1) as $d)
+                        <p class="font-medium text-gray-700 text-sm">
+                            {{ $d->nama_barang_custom ?? $d->kategori->nama_kategori }}
+                        </p>
+                        <span class="inline-block px-2 py-0.5 rounded-md text-xs font-bold mt-0.5"
+                            style="background: #eff6ff; color: #1d4ed8">
+                            Ukuran {{ $d->ukuran }}
+                        </span>
+                        @endforeach
+                        @if($t->details->count() > 1)
+                        <p class="text-xs mt-0.5" style="color: #1a3a6b">
+                            +{{ $t->details->count() - 1 }} barang lain
+                        </p>
+                        @endif
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
+                                style="background: #1a3a6b; font-size: 9px">
+                                {{ strtoupper(substr($t->kasir->name, 0, 1)) }}
+                            </div>
+                            <span class="text-gray-500 text-xs">{{ $t->kasir->name }}</span>
+                        </div>
+                    </td>
+                    <td class="px-5 py-4 text-right whitespace-nowrap">
+                        <span class="font-black text-gray-900 text-sm">
+                            Rp {{ number_format($t->total_harga, 0, ',', '.') }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold"
+                            style="background: {{ $t->status === 'dititip' ? '#eff6ff' : '#f0fdf4' }};
+                                   color: {{ $t->status === 'dititip' ? '#1d4ed8' : '#15803d' }}">
+                            {{ $t->status === 'dititip' ? 'DITITIPKAN' : 'DIAMBIL' }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap text-gray-400 text-xs">
+                        {{ $t->waktu_penitipan->format('d M Y') }}<br>
+                        {{ $t->waktu_penitipan->format('H:i') }} WIB
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="px-5 py-16 text-center">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
+                                style="background: #f8faff">📋</div>
+                            <p class="font-semibold text-gray-400">
+                                @if(request()->has('show'))
+                                    Tidak ada data yang sesuai filter.
+                                @else
+                                    Pilih filter di atas untuk menampilkan laporan.
+                                @endif
+                            </p>
+                            <p class="text-xs text-gray-300">Pilih event atau tanggal untuk memulai</p>
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
 {{-- Footer --}}
-<p class="text-center text-xs text-gray-300 mt-8 uppercase tracking-widest">
-    © {{ date('Y') }} Savve Logistics Architecture • Premium Management System
+<p class="text-center text-xs text-gray-300 mt-8">
+    © {{ date('Y') }} Vendor Savve — Storage Management System
 </p>
 
 @endsection
+
+<script>
+document.getElementById('event_id').addEventListener('change', function() {
+    const selected = this.options[this.selectedIndex];
+    const tanggalInput = document.getElementById('tanggal');
+    if (selected.value && selected.dataset.mulai) {
+        tanggalInput.min = selected.dataset.mulai;
+        tanggalInput.max = selected.dataset.selesai;
+    } else {
+        tanggalInput.min = '';
+        tanggalInput.max = '';
+        tanggalInput.value = '';
+    }
+});
+
+window.addEventListener('load', function() {
+    const select = document.getElementById('event_id');
+    const selected = select.options[select.selectedIndex];
+    const tanggalInput = document.getElementById('tanggal');
+    if (selected.value && selected.dataset.mulai) {
+        tanggalInput.min = selected.dataset.mulai;
+        tanggalInput.max = selected.dataset.selesai;
+    }
+});
+</script>

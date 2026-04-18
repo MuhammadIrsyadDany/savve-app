@@ -33,7 +33,7 @@ class TransaksiController extends Controller
         }
 
         $transaksis = $query->latest()->paginate(15)->withQueryString();
-        $events = Event::all();
+        $events = \App\Models\Event::all();
 
         return view('admin.transaksis.index', compact('transaksis', 'events'));
     }
