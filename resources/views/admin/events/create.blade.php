@@ -3,67 +3,91 @@
 
 @section('content')
 
-<div class="flex justify-between items-start mb-6">
+<div class="anim-fade-up delay-1 flex justify-between items-start mb-6">
     <div>
-        <h1 class="text-2xl font-black text-gray-800">Tambah Event</h1>
+        <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #1a3a6b">Management</p>
+        <h1 class="text-2xl font-black text-gray-900">Tambah Event</h1>
         <p class="text-gray-400 text-sm mt-1">Buat event baru dan setting tarif penitipan.</p>
     </div>
     <a href="{{ route('admin.events.index') }}"
-        class="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 shadow-sm">
+        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition flex-shrink-0"
+        style="background: white; border: 1.5px solid #e2e8f0; color: #374151"
+        onmouseover="this.style.background='#f8faff'" onmouseout="this.style.background='white'">
         ← Kembali
     </a>
 </div>
 
 <div class="flex gap-6">
-
-    {{-- Form --}}
     <div class="flex-1">
         <form action="{{ route('admin.events.store') }}" method="POST">
             @csrf
 
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
-                <h3 class="font-black text-gray-700 mb-4">Informasi Event</h3>
+            <div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-6 mb-4"
+                style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                <h3 class="font-black text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs"
+                        style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">1</span>
+                    Informasi Event
+                </h3>
 
                 <div class="mb-4">
-                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Nama Event</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Nama Event</label>
                     <input type="text" name="nama_event" value="{{ old('nama_event') }}"
-                        class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                        placeholder="Contoh: Konser Dewa 19">
+                        class="w-full rounded-xl px-4 py-3 text-sm transition"
+                        style="background: #f8faff; border: 1.5px solid #e2e8f0; color: #1e293b"
+                        placeholder="Contoh: Konser Dewa 19"
+                        onfocus="this.style.borderColor='#4a9eff'; this.style.boxShadow='0 0 0 3px rgba(74,158,255,0.1)'"
+                        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
                     @error('nama_event') <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p> @enderror
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Tanggal Mulai</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Tanggal Mulai</label>
                         <input type="date" name="tanggal_mulai" value="{{ old('tanggal_mulai') }}"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            class="w-full rounded-xl px-4 py-3 text-sm transition"
+                            style="background: #f8faff; border: 1.5px solid #e2e8f0; color: #1e293b"
+                            onfocus="this.style.borderColor='#4a9eff'; this.style.boxShadow='0 0 0 3px rgba(74,158,255,0.1)'"
+                            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
                         @error('tanggal_mulai') <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Tanggal Selesai</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Tanggal Selesai</label>
                         <input type="date" name="tanggal_selesai" value="{{ old('tanggal_selesai') }}"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            class="w-full rounded-xl px-4 py-3 text-sm transition"
+                            style="background: #f8faff; border: 1.5px solid #e2e8f0; color: #1e293b"
+                            onfocus="this.style.borderColor='#4a9eff'; this.style.boxShadow='0 0 0 3px rgba(74,158,255,0.1)'"
+                            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
                         @error('tanggal_selesai') <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p> @enderror
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
-                <h3 class="font-black text-gray-700 mb-1">Tarif per Ukuran</h3>
-                <p class="text-xs text-gray-400 mb-4">Setting harga penitipan berdasarkan ukuran barang.</p>
+            <div class="anim-fade-up delay-3 bg-white rounded-2xl border border-gray-100 p-6 mb-4"
+                style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                <h3 class="font-black text-gray-800 mb-1 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs"
+                        style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">2</span>
+                    Tarif per Ukuran
+                </h3>
+                <p class="text-xs text-gray-400 mb-4 ml-8">Setting harga penitipan berdasarkan ukuran barang.</p>
 
                 <div class="grid grid-cols-2 gap-4">
-                    @foreach(['S' => 'Small', 'M' => 'Medium', 'L' => 'Large', 'XL' => 'Extra Large'] as $kode => $label)
-                    <div class="bg-gray-50 rounded-xl p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-black">{{ $kode }}</span>
-                            <span class="text-xs text-gray-400">{{ $label }}</span>
+                    @foreach(['S' => 'Small','M' => 'Medium','L' => 'Large','XL' => 'Extra Large'] as $kode => $label)
+                    <div class="rounded-xl p-4" style="background: #f8faff; border: 1.5px solid #e2e8f0">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-3 py-1 rounded-lg text-xs font-black text-white"
+                                style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">{{ $kode }}</span>
+                            <span class="text-xs font-medium" style="color: #64748b">{{ $label }}</span>
                         </div>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-semibold">Rp</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold" style="color: #94a3b8">Rp</span>
                             <input type="number" name="tarif[{{ $kode }}]" value="{{ old('tarif.'.$kode) }}"
-                                class="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                placeholder="0" min="0">
+                                class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm font-semibold transition"
+                                style="background: white; border: 1.5px solid #e2e8f0; color: #1e293b"
+                                placeholder="0" min="0"
+                                onfocus="this.style.borderColor='#4a9eff'; this.style.boxShadow='0 0 0 3px rgba(74,158,255,0.1)'"
+                                onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
                         </div>
                         @error('tarif.'.$kode) <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p> @enderror
                     </div>
@@ -71,35 +95,44 @@
                 </div>
             </div>
 
-            <div class="flex gap-3">
+            <div class="anim-fade-up delay-4 flex gap-3">
                 <button type="submit"
                     class="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
-                    style="background: linear-gradient(135deg, #3730a3, #4f46e5)">
+                    style="background: linear-gradient(135deg, #0f2044, #1e4d8c); box-shadow: 0 4px 12px rgba(15,32,68,0.2)">
                     💾 Simpan Event
                 </button>
                 <a href="{{ route('admin.events.index') }}"
-                    class="px-6 py-3.5 rounded-xl bg-gray-100 text-gray-600 font-bold text-sm hover:bg-gray-200 transition">
+                    class="px-6 py-3.5 rounded-xl font-bold text-sm transition"
+                    style="background: #f1f5f9; color: #64748b"
+                    onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
                     Batal
                 </a>
             </div>
         </form>
     </div>
 
-    {{-- Info Panel --}}
-    <div class="w-72 space-y-4">
-        <div class="rounded-2xl p-6 text-white"
-            style="background: linear-gradient(135deg, #3730a3, #6366f1)">
-            <div class="text-3xl mb-3">🎪</div>
-            <p class="font-black text-lg mb-2">Tips Setting Event</p>
-            <ul class="text-indigo-200 text-xs space-y-2 leading-relaxed">
-                <li>• Pastikan tanggal mulai dan selesai sudah benar.</li>
-                <li>• Tarif akan otomatis digunakan saat kasir input transaksi.</li>
-                <li>• Event nonaktif tidak bisa digunakan kasir.</li>
-                <li>• Tarif bisa diubah kapan saja melalui menu Edit.</li>
+    {{-- Tips Panel --}}
+    <div class="w-64 flex-shrink-0">
+        <div class="anim-fade-up delay-3 rounded-2xl p-5 text-white sticky top-0"
+            style="background: linear-gradient(150deg, #091629, #0f2044, #1a3a6b)">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-3"
+                style="background: rgba(74,158,255,0.2)">🎪</div>
+            <p class="font-black text-base mb-3">Tips Setting Event</p>
+            <ul class="space-y-2.5">
+                @foreach([
+                    'Pastikan tanggal mulai dan selesai sudah benar.',
+                    'Tarif otomatis dipakai saat kasir input transaksi.',
+                    'Event nonaktif tidak bisa digunakan kasir.',
+                    'Tarif bisa diubah kapan saja via menu Edit.',
+                ] as $tip)
+                <li class="flex items-start gap-2 text-xs leading-relaxed" style="color: #93c5fd">
+                    <span class="text-blue-400 mt-0.5 flex-shrink-0">•</span>
+                    {{ $tip }}
+                </li>
+                @endforeach
             </ul>
         </div>
     </div>
-
 </div>
 
 @endsection
