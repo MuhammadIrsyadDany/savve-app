@@ -3,93 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendor Savve - @yield('title')</title>
+    <title>Savve Admin — @yield('title')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-50" style="font-family: 'Inter', sans-serif;">
 
 <div class="flex h-screen overflow-hidden">
 
-    {{-- Sidebar --}}
-    <aside class="w-56 bg-white border-r border-gray-100 flex flex-col flex-shrink-0">
+    {{-- ═══ SIDEBAR ═══ --}}
+    <aside class="w-[220px] flex-shrink-0 flex flex-col"
+        style="background: linear-gradient(180deg, #0c1e3d 0%, #0f2044 50%, #122654 100%);">
 
         {{-- Logo --}}
-        <div class="px-6 py-5 border-b border-gray-100">
-            <p class="text-lg font-black text-indigo-700 leading-none">Vendor Savve</p>
-            <p class="text-xs text-gray-400 font-semibold tracking-widest uppercase mt-0.5">Storage Management</p>
+        <div class="px-5 py-5 border-b" style="border-color: rgba(255,255,255,0.07)">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
+                    style="background: rgba(74,158,255,0.2); border: 1px solid rgba(74,158,255,0.3)">
+                    🗃️
+                </div>
+                <div>
+                    <p class="text-white font-black text-base leading-none">Savve</p>
+                    <p class="text-xs font-medium mt-0.5" style="color: #4a9eff; letter-spacing: 0.05em">Admin Panel</p>
+                </div>
+            </div>
         </div>
 
         {{-- Nav --}}
-        <nav class="flex-1 px-3 py-4 space-y-0.5">
+        <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+            <p class="text-xs font-semibold px-3 mb-2" style="color: rgba(255,255,255,0.25); letter-spacing: 0.08em; text-transform: uppercase;">
+                Main Menu
+            </p>
             <a href="{{ route('admin.dashboard') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-                {{ request()->routeIs('admin.dashboard') ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }}">
-                <span>⊞</span> Dashboard
+                class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <span class="text-base w-5 text-center">⊞</span>
+                Dashboard
             </a>
             <a href="{{ route('admin.events.index') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-                {{ request()->routeIs('admin.events.*') ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }}">
-                <span>📅</span> Kelola Event
+                class="sidebar-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
+                <span class="text-base w-5 text-center">📅</span>
+                Kelola Event
             </a>
             <a href="{{ route('admin.users.index') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-                {{ request()->routeIs('admin.users.*') ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }}">
-                <span>👤</span> Kelola Kasir
+                class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                <span class="text-base w-5 text-center">👤</span>
+                Kelola Kasir
             </a>
+
+            <p class="text-xs font-semibold px-3 mb-2 mt-4" style="color: rgba(255,255,255,0.25); letter-spacing: 0.08em; text-transform: uppercase;">
+                Laporan
+            </p>
             <a href="{{ route('admin.transaksis.index') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-                {{ request()->routeIs('admin.transaksis.*') ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }}">
-                <span>📋</span> Data Transaksi
+                class="sidebar-link {{ request()->routeIs('admin.transaksis.*') ? 'active' : '' }}">
+                <span class="text-base w-5 text-center">📋</span>
+                Data Transaksi
             </a>
             <a href="{{ route('admin.laporan.index') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-                {{ request()->routeIs('admin.laporan.*') ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }}">
-                <span>📈</span> Laporan Harian
+                class="sidebar-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
+                <span class="text-base w-5 text-center">📈</span>
+                Laporan Harian
             </a>
         </nav>
 
-        {{-- User Info + Logout --}}
-        <div class="px-4 py-4 border-t border-gray-100">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm">
+        {{-- User --}}
+        <div class="px-3 py-4" style="border-top: 1px solid rgba(255,255,255,0.07)">
+            <div class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl mb-2"
+                style="background: rgba(255,255,255,0.05)">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 text-white"
+                    style="background: linear-gradient(135deg, #1e4d8c, #4a9eff)">
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                 </div>
-                <div>
-                    <p class="text-sm font-semibold text-gray-700 leading-none">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-gray-400 mt-0.5">Warehouse Head</p>
+                <div class="flex-1 min-w-0">
+                    <p class="text-white text-xs font-semibold truncate">{{ auth()->user()->name }}</p>
+                    <p class="text-xs" style="color: #4a9eff">Administrator</p>
                 </div>
             </div>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit"
-                    class="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 font-medium transition">
-                    🚪 Logout
+                    class="sidebar-link w-full text-left hover:text-red-400"
+                    style="color: #ef4444; background: rgba(239,68,68,0.05)">
+                    <span class="text-base w-5 text-center">🚪</span>
+                    Logout
                 </button>
             </form>
         </div>
     </aside>
 
-    {{-- Main --}}
+    {{-- ═══ MAIN ═══ --}}
     <div class="flex-1 flex flex-col overflow-hidden">
 
         {{-- Topbar --}}
-        <header class="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between flex-shrink-0">
-            <div class="flex-1 max-w-md">
+        <header class="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between flex-shrink-0"
+            style="box-shadow: 0 1px 8px rgba(0,0,0,0.04)">
+            <div class="flex-1 max-w-sm">
                 <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
-                    <input type="text" placeholder="Cari transaksi atau barang..."
-                        class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">🔍</span>
+                    <input type="text" placeholder="Cari transaksi, penitip..."
+                        class="w-full bg-gray-50 border border-gray-100 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50 transition"
+                        style="font-size: 13px">
                 </div>
             </div>
-            <div class="flex items-center gap-4">
-                <button class="text-gray-400 hover:text-gray-600 text-lg">🔔</button>
-                <button class="text-gray-400 hover:text-gray-600 text-lg">⚙️</button>
-                <div class="flex items-center gap-2 pl-4 border-l border-gray-100">
+            <div class="flex items-center gap-3">
+                <button class="relative w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 hover:bg-gray-100 transition text-gray-500 text-sm">
+                    🔔
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 hover:bg-gray-100 transition text-gray-500 text-sm">
+                    ⚙️
+                </button>
+                <div class="flex items-center gap-2.5 pl-3 border-l border-gray-100">
                     <div class="text-right">
-                        <p class="text-sm font-semibold text-gray-700 leading-none">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-gray-400">Admin Utama</p>
+                        <p class="text-xs font-bold text-gray-800 leading-none">{{ auth()->user()->name }}</p>
+                        <p class="text-xs mt-0.5" style="color: #1a3a6b">Administrator</p>
                     </div>
-                    <div class="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white"
+                        style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
                 </div>
@@ -97,18 +125,19 @@
         </header>
 
         {{-- Content --}}
-        <main class="flex-1 overflow-y-auto p-6">
+        <main class="flex-1 overflow-y-auto p-6 anim-fade-in">
             @if(session('success'))
-            <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
-                {{ session('success') }}
+            <div class="anim-slide-down mb-5 flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium"
+                style="background: #f0fdf4; border-color: #bbf7d0; color: #15803d">
+                <span>✓</span> {{ session('success') }}
             </div>
             @endif
             @if(session('error'))
-            <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-                {{ session('error') }}
+            <div class="anim-slide-down mb-5 flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium"
+                style="background: #fff5f5; border-color: #fecaca; color: #dc2626">
+                <span>⚠</span> {{ session('error') }}
             </div>
             @endif
-
             @yield('content')
         </main>
     </div>
