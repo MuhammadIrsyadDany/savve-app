@@ -73,7 +73,7 @@
 </div>
 
 {{-- Summary Cards --}}
-@if($transaksis->count() > 0)
+@if(($transaksis instanceof \Illuminate\Pagination\LengthAwarePaginator ? $transaksis->total() : $transaksis->count()) > 0)
 <div class="anim-fade-up delay-3 grid grid-cols-3 gap-4 mb-5">
     <div class="bg-white rounded-2xl p-5 border border-gray-100"
         style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
@@ -84,7 +84,7 @@
             </div>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Transaksi</p>
         </div>
-        <p class="text-3xl font-black text-gray-900">{{ $transaksis->count() }}</p>
+        <p class="text-3xl font-black text-gray-900">{{ $transaksis instanceof \Illuminate\Pagination\LengthAwarePaginator ? $transaksis->total() : $transaksis->count() }} transaksi</p>
     </div>
 
     <div class="bg-white rounded-2xl p-5 border border-gray-100"
@@ -238,10 +238,67 @@
                     </td>
                 </tr>
                 @endforelse
-            </tbody>
-        </table>
+        </tbody>
+    </table>
+
+    {{-- Pagination --}}
+    @if($transaksis instanceof \Illuminate\Pagination\LengthAwarePaginator && $transaksis->hasPages())
+    <div class="px-5 py-4 flex items-center justify-between"
+        style="border-top: 1px solid #f1f5f9">
+        <p class="text-xs text-gray-400">
+            Menampilkan {{ $transaksis->firstItem() }}–{{ $transaksis->lastItem() }}
+            dari {{ $transaksis->total() }} transaksi
+        </p>
+        <div class="flex items-center gap-1">
+            {{-- Prev --}}
+            @if($transaksis->onFirstPage())
+            <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm cursor-not-allowed"
+                style="background: #f8faff; border: 1.5px solid #e2e8f0">‹</span>
+            @else
+            <a href="{{ $transaksis->previousPageUrl() }}"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition hover:text-white"
+                style="background: #f8faff; border: 1.5px solid #e2e8f0"
+                onmouseover="this.style.background='#1a3a6b'; this.style.borderColor='#1a3a6b'"
+                onmouseout="this.style.background='#f8faff'; this.style.borderColor='#e2e8f0'">‹</a>
+            @endif
+
+            {{-- Page Numbers --}}
+            @foreach($transaksis->getUrlRange(1, $transaksis->lastPage()) as $page => $url)
+                @if($page == $transaksis->currentPage())
+                <span class="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold"
+                    style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">{{ $page }}</span>
+                @elseif(abs($page - $transaksis->currentPage()) <= 2)
+                <a href="{{ $url }}"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
+                    style="background: #f8faff; border: 1.5px solid #e2e8f0"
+                    onmouseover="this.style.background='#eff6ff'; this.style.color='#1a3a6b'"
+                    onmouseout="this.style.background='#f8faff'; this.style.color='#6b7280'">{{ $page }}</a>
+                @elseif($page == 1 || $page == $transaksis->lastPage())
+                <a href="{{ $url }}"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
+                    style="background: #f8faff; border: 1.5px solid #e2e8f0">{{ $page }}</a>
+                @elseif(abs($page - $transaksis->currentPage()) == 3)
+                <span class="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">…</span>
+                @endif
+            @endforeach
+
+            {{-- Next --}}
+            @if($transaksis->hasMorePages())
+            <a href="{{ $transaksis->nextPageUrl() }}"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
+                style="background: #f8faff; border: 1.5px solid #e2e8f0"
+                onmouseover="this.style.background='#1a3a6b'; this.style.color='white'; this.style.borderColor='#1a3a6b'"
+                onmouseout="this.style.background='#f8faff'; this.style.color='#6b7280'; this.style.borderColor='#e2e8f0'">›</a>
+            @else
+            <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm cursor-not-allowed"
+                style="background: #f8faff; border: 1.5px solid #e2e8f0">›</span>
+            @endif
+        </div>
     </div>
+    @endif
+
 </div>
+    </div>
 
 {{-- Footer --}}
 <p class="text-center text-xs text-gray-300 mt-8">

@@ -18,7 +18,7 @@ class LaporanController extends Controller
         $totalDititip    = 0;
         $totalDiambil    = 0;
         $selectedEvent   = null;
-        $hasFilter = $request->filled('event_id')
+        $hasFilter       = $request->filled('event_id')
             || $request->filled('tanggal')
             || $request->filled('status')
             || $request->filled('show');
@@ -39,10 +39,14 @@ class LaporanController extends Controller
                 $query->where('status', $request->status);
             }
 
-            $transaksis      = $query->latest()->get();
-            $totalPendapatan = $transaksis->sum(fn($t) => $t->total_harga);
-            $totalDititip    = $transaksis->where('status', 'dititip')->count();
-            $totalDiambil    = $transaksis->where('status', 'sudah_diambil')->count();
+            // Untuk summary cards — ambil semua dulu tanpa pagination
+            $allTransaksis   = $query->get();
+            $totalPendapatan = $allTransaksis->sum(fn($t) => $t->total_harga);
+            $totalDititip    = $allTransaksis->where('status', 'dititip')->count();
+            $totalDiambil    = $allTransaksis->where('status', 'sudah_diambil')->count();
+
+            // Untuk tabel — pakai pagination
+            $transaksis = $query->latest()->paginate(15)->withQueryString();
         }
 
         return view('admin.laporan.index', compact(
