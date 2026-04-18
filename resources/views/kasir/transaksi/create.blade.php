@@ -106,21 +106,21 @@
                         </div>
 
                         {{-- Ukuran --}}
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Ukuran Barang</label>
-                            <div class="grid grid-cols-4 gap-3">
-                                @foreach(['S','M','L','XL'] as $u)
-                                <label class="ukuran-label cursor-pointer">
-                                    <input type="radio" name="barang[0][ukuran]" value="{{ $u }}"
-                                        class="hidden ukuran-radio" {{ $u === 'S' ? 'checked' : '' }}>
-                                    <div class="ukuran-box border-2 border-gray-200 rounded-xl py-3 text-center font-bold text-sm text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition
-                                        {{ $u === 'S' ? 'border-indigo-500 text-indigo-600 bg-indigo-50' : '' }}">
-                                        {{ $u }}
-                                    </div>
-                                </label>
-                                @endforeach
-                            </div>
-                        </div>
+<div>
+    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Ukuran Barang</label>
+    <div class="grid grid-cols-4 gap-3">
+        @foreach(['S','M','L','XL'] as $u)
+        <label class="ukuran-label cursor-pointer">
+            <input type="radio" name="barang[0][ukuran]" value="{{ $u }}"
+                class="hidden ukuran-radio" {{ $u === 'S' ? 'checked' : '' }}>
+            <div class="ukuran-box border-2 rounded-xl py-3 text-center font-bold text-sm transition"
+                style="{{ $u === 'S' ? 'border-color: #7c3aed; color: #7c3aed; background: #faf5ff;' : 'border-color: #e5e7eb; color: #6b7280;' }}">
+                {{ $u }}
+            </div>
+        </label>
+        @endforeach
+    </div>
+</div>
                     </div>
                 </div>
 
@@ -134,7 +134,7 @@
                 <div class="flex gap-3">
                     <button type="submit"
                         class="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
-                        style="background: linear-gradient(135deg, #3730a3, #4f46e5)">
+                        style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
                         💾 Simpan Transaksi
                     </button>
                     <button type="button"
@@ -160,7 +160,7 @@
 
         {{-- Transaction Number Preview --}}
         <div class="rounded-2xl p-6 text-white relative overflow-hidden"
-            style="background: linear-gradient(135deg, #3730a3, #6366f1)">
+            style="background: linear-gradient(135deg, #1e1035, #4c1d95)">
             <p class="text-xs font-semibold text-indigo-300 uppercase tracking-widest mb-2">Transaction Number Preview</p>
             <p id="nomor-preview" class="text-4xl font-black tracking-tight leading-tight mb-4">
                 SVV-{{ now()->format('ymd') }}-????
@@ -233,18 +233,33 @@
     const kategoris = @json($kategoris);
     let index = 1;
 
-    // Ukuran radio styling
-    document.querySelectorAll('.ukuran-radio').forEach(radio => {
+    // Ukuran radio styling — fix scope per barang-item
+function bindUkuranChange(container) {
+    const radios = container.querySelectorAll('.ukuran-radio');
+    radios.forEach(radio => {
         radio.addEventListener('change', function() {
-            const container = this.closest('.barang-item');
-            container.querySelectorAll('.ukuran-box').forEach(box => {
-                box.classList.remove('border-indigo-500', 'text-indigo-600', 'bg-indigo-50');
+            // Reset semua ukuran di dalam barang-item ini saja
+            const parentItem = this.closest('.barang-item');
+            parentItem.querySelectorAll('.ukuran-box').forEach(box => {
+                box.classList.remove('border-purple-500', 'text-purple-600', 'bg-purple-50');
                 box.classList.add('border-gray-200', 'text-gray-500');
+                box.style.borderColor = '#e5e7eb';
+                box.style.color = '#6b7280';
+                box.style.background = '';
             });
-            this.nextElementSibling.classList.add('border-indigo-500', 'text-indigo-600', 'bg-indigo-50');
-            this.nextElementSibling.classList.remove('border-gray-200', 'text-gray-500');
+            // Aktifkan hanya yang dipilih
+            const selectedBox = this.nextElementSibling;
+            selectedBox.style.borderColor = '#7c3aed';
+            selectedBox.style.color = '#7c3aed';
+            selectedBox.style.background = '#faf5ff';
         });
     });
+}
+
+// Bind ke semua barang-item yang sudah ada
+document.querySelectorAll('.barang-item').forEach(item => {
+    bindUkuranChange(item);
+});
 
     // Quantity +/-
     function changeQty(btn, delta) {
@@ -308,21 +323,25 @@
                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Ukuran Barang</label>
                 <div class="grid grid-cols-4 gap-3">
                     ${['S','M','L','XL'].map((u, i) => `
-                    <label class="ukuran-label cursor-pointer">
-                        <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
-                        <div class="ukuran-box border-2 ${i===0?'border-indigo-500 text-indigo-600 bg-indigo-50':'border-gray-200 text-gray-500'} rounded-xl py-3 text-center font-bold text-sm hover:border-indigo-400 hover:text-indigo-600 transition">${u}</div>
-                    </label>`).join('')}
+<label class="ukuran-label cursor-pointer">
+    <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
+    <div class="ukuran-box border-2 rounded-xl py-3 text-center font-bold text-sm transition"
+        style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: #faf5ff;' : 'border-color: #e5e7eb; color: #6b7280;'}">
+        ${u}
+    </div>
+</label>`).join('')}
                 </div>
             </div>
         `;
         container.appendChild(div);
+        bindUkuranChange(div);
         bindKategoriChange(div.querySelector('.kategori-select'));
         div.querySelectorAll('.ukuran-radio').forEach(radio => {
             radio.addEventListener('change', function() {
                 const c = this.closest('.barang-item');
                 c.querySelectorAll('.ukuran-box').forEach(box => {
-                    box.classList.remove('border-indigo-500', 'text-indigo-600', 'bg-indigo-50');
-                    box.classList.add('border-gray-200', 'text-gray-500');
+                    box.classList.remove('border-purple-500', 'text-purple-600', 'bg-purple-50');
+                    box.classList.add('border-purple-500', 'text-purple-600', 'bg-purple-50');
                 });
                 this.nextElementSibling.classList.add('border-indigo-500', 'text-indigo-600', 'bg-indigo-50');
                 this.nextElementSibling.classList.remove('border-gray-200', 'text-gray-500');

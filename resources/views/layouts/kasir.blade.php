@@ -3,88 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendor Savve - @yield('title')</title>
+    <title>Savve Kasir — @yield('title')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-50 font-sans">
+<body style="font-family: 'Inter', sans-serif; background: #f5f3ff;">
 
 <div class="flex h-screen overflow-hidden">
 
-    {{-- Sidebar --}}
-    <aside class="w-56 bg-white border-r border-gray-100 flex flex-col flex-shrink-0">
+    {{-- ═══ SIDEBAR ═══ --}}
+    <aside class="w-[220px] flex-shrink-0 flex flex-col"
+        style="background: linear-gradient(180deg, #1e1035 0%, #2d1b69 40%, #3b2180 100%);">
 
         {{-- Logo --}}
-        <div class="px-6 py-5 border-b border-gray-100">
-            <p class="text-lg font-black text-indigo-700 leading-none">Vendor Savve</p>
-            <p class="text-xs text-gray-400 font-semibold tracking-widest uppercase mt-0.5">Storage Management</p>
+        <div class="px-5 py-5" style="border-bottom: 1px solid rgba(255,255,255,0.06)">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style="background: rgba(167,139,250,0.2); border: 1px solid rgba(167,139,250,0.3)">
+                    <span class="text-base">🗃️</span>
+                </div>
+                <div>
+                    <p class="font-black text-white text-base leading-none">SAVVE</p>
+                    <p class="text-xs font-medium mt-0.5" style="color: #a78bfa; letter-spacing: 0.05em">Kasir Panel</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Role Badge --}}
+        <div class="mx-3 mt-3 px-3 py-2 rounded-xl flex items-center gap-2"
+            style="background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2)">
+            <span class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse" style="background: #00ff4c"></span>
+            <p class="text-xs font-bold" style="color: #a78bfa">CASHIER MODE AKTIF</p>
         </div>
 
         {{-- Nav --}}
-        <nav class="flex-1 px-3 py-4 space-y-0.5">
-    <a href="{{ route('kasir.dashboard') }}"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-        {{ request()->routeIs('kasir.dashboard') ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }}">
-        <span>⊞</span> Dashboard
-    </a>
-    <a href="{{ route('kasir.transaksi.create') }}"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-        {{ request()->routeIs('kasir.transaksi.create') ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }}">
-        <span>📅</span> Titip Barang
-    </a>
-    <a href="{{ route('kasir.pengambilan.index') }}"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-        {{ request()->routeIs('kasir.pengambilan.*') ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }}">
-        <span>📦</span> Ambil Barang
-    </a>
-    <a href="{{ route('kasir.transaksi.index') }}"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-        {{ request()->routeIs('kasir.transaksi.index') ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }}">
-        <span>📋</span> Riwayat Transaksi
-    </a>
-</nav>
+        <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+            <p class="text-xs font-bold px-3 mb-2 mt-1"
+                style="color: rgba(255,255,255,0.2); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px">
+                Menu Utama
+            </p>
 
-        {{-- User Info + Logout --}}
-        <div class="px-4 py-4 border-t border-gray-100">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm">
+            <a href="{{ route('kasir.dashboard') }}"
+                class="kasir-link {{ request()->routeIs('kasir.dashboard') ? 'active' : '' }}">
+                <span class="w-5 text-center text-sm">⊞</span> Dashboard
+            </a>
+            <a href="{{ route('kasir.transaksi.create') }}"
+                class="kasir-link {{ request()->routeIs('kasir.transaksi.create') ? 'active' : '' }}">
+                <span class="w-5 text-center text-sm">➕</span> Titip Barang
+            </a>
+            <a href="{{ route('kasir.pengambilan.index') }}"
+                class="kasir-link {{ request()->routeIs('kasir.pengambilan.*') ? 'active' : '' }}">
+                <span class="w-5 text-center text-sm">📦</span> Ambil Barang
+            </a>
+            <a href="{{ route('kasir.transaksi.index') }}"
+                class="kasir-link {{ request()->routeIs('kasir.transaksi.index') ? 'active' : '' }}">
+                <span class="w-5 text-center text-sm">📋</span> Riwayat Transaksi
+            </a>
+        </nav>
+
+        {{-- User --}}
+        <div class="px-3 py-4" style="border-top: 1px solid rgba(255,255,255,0.06)">
+            <div class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl mb-2"
+                style="background: rgba(255,255,255,0.04)">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm text-white flex-shrink-0"
+                    style="background: linear-gradient(135deg, #5b21b6, #a78bfa)">
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                 </div>
-                <div>
-                    <p class="text-sm font-semibold text-gray-700 leading-none">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-gray-400 mt-0.5">Warehouse Head</p>
+                <div class="min-w-0 flex-1">
+                    <p class="text-white text-xs font-semibold truncate leading-none">{{ auth()->user()->name }}</p>
+                    <p class="text-xs mt-0.5" style="color: #a78bfa">Kasir</p>
                 </div>
             </div>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit"
-                    class="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 font-medium transition">
-                    🚪 Logout
+                <button type="submit" class="kasir-link w-full text-left"
+                    style="color: #f87171 !important">
+                    <span class="w-5 text-center text-sm">🚪</span> Logout
                 </button>
             </form>
         </div>
     </aside>
 
-    {{-- Main --}}
+    {{-- ═══ MAIN ═══ --}}
     <div class="flex-1 flex flex-col overflow-hidden">
 
         {{-- Topbar --}}
-        <header class="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between flex-shrink-0">
-            <div class="flex-1 max-w-md">
+        <header class="bg-white flex-shrink-0 flex items-center justify-between px-6 py-3.5"
+            style="border-bottom: 1px solid #ede9fe; box-shadow: 0 1px 8px rgba(0,0,0,0.04)">
+
+            <div class="flex-1 max-w-sm">
                 <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" style="font-size: 12px">🔍</span>
                     <input type="text" placeholder="Cari transaksi atau nama barang..."
-                        class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm transition"
+                        style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px; color: #374151"
+                        onfocus="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
+                        onblur="this.style.borderColor='#ede9fe'; this.style.boxShadow='none'">
                 </div>
             </div>
-            <div class="flex items-center gap-4">
-                <button class="text-gray-400 hover:text-gray-600 text-lg">🔔</button>
-                <button class="text-gray-400 hover:text-gray-600 text-lg">⚙️</button>
-                <div class="flex items-center gap-2 pl-4 border-l border-gray-100">
+
+            <div class="flex items-center gap-2.5">
+                {{-- Cashier Active Badge --}}
+                <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
+                    style="background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe">
+                    <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: #00ff4c"></span>
+                    Cashier Active
+                </div>
+
+                <button class="relative w-9 h-9 flex items-center justify-center rounded-xl transition text-gray-500"
+                    style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px"
+                    onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#faf5ff'">
+                    🔔
+                </button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl transition text-gray-500"
+                    style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px"
+                    onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#faf5ff'">
+                    ⚙️
+                </button>
+
+                <div class="flex items-center gap-2.5 pl-3" style="border-left: 1.5px solid #ede9fe">
                     <div class="text-right">
-                        <p class="text-xs font-semibold text-green-500 uppercase tracking-wider">Cashier Active</p>
-                        <p class="text-sm font-semibold text-gray-700 leading-none">{{ auth()->user()->name }}</p>
+                        <p class="text-xs font-bold leading-none" style="color: #1e1035">{{ auth()->user()->name }}</p>
+                        <p class="text-xs mt-0.5" style="color: #a78bfa">Kasir Mode</p>
                     </div>
-                    <div class="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm text-white"
+                        style="background: linear-gradient(135deg, #5b21b6, #a78bfa)">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
                 </div>
@@ -93,14 +136,18 @@
 
         {{-- Content --}}
         <main class="flex-1 overflow-y-auto p-6">
+
             @if(session('success'))
-            <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
-                {{ session('success') }}
+            <div class="anim-slide-down mb-5 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold"
+                style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed">
+                <span>✓</span> {{ session('success') }}
             </div>
             @endif
+
             @if(session('error'))
-            <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-                {{ session('error') }}
+            <div class="anim-slide-down mb-5 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold"
+                style="background: #fff5f5; border: 1.5px solid #fecaca; color: #dc2626">
+                <span>⚠</span> {{ session('error') }}
             </div>
             @endif
 
@@ -108,6 +155,41 @@
         </main>
     </div>
 </div>
+
+<style>
+.kasir-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #94a3b8;
+    transition: all 0.2s ease;
+    position: relative;
+    text-decoration: none;
+}
+.kasir-link:hover {
+    background: rgba(255,255,255,0.06);
+    color: #e2e8f0;
+}
+.kasir-link.active {
+    background: rgba(167,139,250,0.15);
+    color: #fff;
+    font-weight: 600;
+}
+.kasir-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    background: #a78bfa;
+    border-radius: 0 4px 4px 0;
+}
+</style>
 
 </body>
 </html>

@@ -3,19 +3,23 @@
 
 @section('content')
 
-{{-- Header --}}
-<div class="flex justify-between items-start mb-6">
+<div class="anim-fade-up delay-1 flex justify-between items-start mb-6">
     <div>
-        <h1 class="text-2xl font-black text-gray-800">Detail Transaksi</h1>
+        <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #7c3aed">Transaksi</p>
+        <h1 class="text-2xl font-black text-gray-900">Detail Transaksi</h1>
         <p class="text-gray-400 text-sm mt-1">Informasi lengkap transaksi penitipan barang.</p>
     </div>
     <div class="flex gap-3">
         <a href="{{ route('kasir.transaksi.nota', $transaksi) }}" target="_blank"
-            class="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 shadow-sm">
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition flex-shrink-0"
+            style="background: white; border: 1.5px solid #ede9fe; color: #7c3aed"
+            onmouseover="this.style.background='#faf5ff'" onmouseout="this.style.background='white'">
             🖨️ Cetak Nota
         </a>
         <a href="{{ route('kasir.transaksi.index') }}"
-            class="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 shadow-sm">
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition flex-shrink-0"
+            style="background: white; border: 1.5px solid #e2e8f0; color: #374151"
+            onmouseover="this.style.background='#f8faff'" onmouseout="this.style.background='white'">
             ← Kembali
         </a>
     </div>
@@ -27,42 +31,45 @@
     <div class="flex-1 space-y-4">
 
         {{-- Info Utama --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 overflow-hidden"
+            style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
             <div class="flex justify-between items-center px-6 py-4"
-                style="background: #1e293b">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Detail Transaksi</p>
-                <span class="text-xs font-bold text-white bg-white/10 px-3 py-1 rounded-full font-mono">
+                style="background: linear-gradient(135deg, #1e1035, #2d1b69)">
+                <p class="text-xs font-bold uppercase tracking-widest" style="color: rgba(255,255,255,0.5)">Detail Transaksi</p>
+                <span class="text-xs font-bold px-3 py-1 rounded-full font-mono"
+                    style="background: rgba(167,139,250,0.2); color: #c4b5fd">
                     {{ $transaksi->nomor_transaksi }}
                 </span>
             </div>
             <div class="px-6 py-6">
                 <div class="grid grid-cols-3 gap-6 mb-6">
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Nama Penitip</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Nama Penitip</p>
                         <p class="text-lg font-black text-gray-800">{{ $transaksi->nama_penitip }}</p>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">No. WhatsApp</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">No. WhatsApp</p>
                         <p class="text-lg font-black text-gray-800">{{ $transaksi->no_whatsapp }}</p>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Event</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Event</p>
                         <p class="text-lg font-black text-gray-800">{{ $transaksi->event->nama_event }}</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-3 gap-6">
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Kasir</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Kasir</p>
                         <p class="font-bold text-gray-700">{{ $transaksi->kasir->name }}</p>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Waktu Penitipan</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Waktu Penitipan</p>
                         <p class="font-bold text-gray-700">{{ $transaksi->waktu_penitipan->format('d M Y, H:i') }} WIB</p>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Status</p>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold
-                            {{ $transaksi->status === 'dititip' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600' }}">
+                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Status</p>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold"
+                            style="background: {{ $transaksi->status === 'dititip' ? '#faf5ff' : '#f0fdf4' }};
+                                   color: {{ $transaksi->status === 'dititip' ? '#7c3aed' : '#15803d' }}">
                             {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : 'SUDAH DIAMBIL' }}
                         </span>
                     </div>
@@ -71,28 +78,30 @@
         </div>
 
         {{-- Tabel Barang --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100">
+        <div class="anim-fade-up delay-3 bg-white rounded-2xl border border-gray-100 overflow-hidden"
+            style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+            <div class="px-6 py-4" style="border-bottom: 1px solid #f5f3ff">
                 <p class="font-black text-gray-800">Daftar Barang</p>
             </div>
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="bg-gray-50 border-b border-gray-100">
-                        <th class="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Barang</th>
-                        <th class="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Ukuran</th>
-                        <th class="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Qty</th>
-                        <th class="px-5 py-3 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Harga</th>
-                        <th class="px-5 py-3 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Subtotal</th>
+                    <tr style="background: #fdfbff; border-bottom: 1px solid #ede9fe">
+                        <th class="px-5 py-3 text-left" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Barang</th>
+                        <th class="px-5 py-3 text-left" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Ukuran</th>
+                        <th class="px-5 py-3 text-left" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Qty</th>
+                        <th class="px-5 py-3 text-right" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Harga</th>
+                        <th class="px-5 py-3 text-right" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Subtotal</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-50">
+                <tbody>
                     @foreach($transaksi->details as $detail)
-                    <tr class="hover:bg-gray-50">
+                    <tr class="table-row" style="border-top: 1px solid #f5f3ff">
                         <td class="px-5 py-4 font-medium text-gray-700">
                             {{ $detail->nama_barang_custom ?? $detail->kategori->nama_kategori }}
                         </td>
                         <td class="px-5 py-4">
-                            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold">
+                            <span class="px-3 py-1 rounded-lg text-xs font-bold"
+                                style="background: #faf5ff; color: #7c3aed">
                                 {{ $detail->ukuran }}
                             </span>
                         </td>
@@ -103,68 +112,69 @@
                     @endforeach
                 </tbody>
                 <tfoot>
-                    <tr class="border-t-2 border-gray-200">
+                    <tr style="border-top: 2px solid #ede9fe">
                         <td colspan="4" class="px-5 py-4 text-right font-black text-gray-700">Total</td>
-                        <td class="px-5 py-4 text-right font-black text-xl text-indigo-600">
+                        <td class="px-5 py-4 text-right font-black text-xl" style="color: #7c3aed">
                             Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}
                         </td>
                     </tr>
                 </tfoot>
             </table>
         </div>
-
     </div>
 
     {{-- Kanan --}}
     <div class="w-72 space-y-4">
 
         {{-- Nomor Transaksi --}}
-        <div class="rounded-2xl p-6 text-white relative overflow-hidden"
-            style="background: linear-gradient(135deg, #3730a3, #6366f1)">
-            <p class="text-xs font-semibold text-indigo-300 uppercase tracking-widest mb-2">Nomor Transaksi</p>
-            <p class="text-3xl font-black tracking-tight leading-tight mb-4 font-mono">
+        <div class="anim-fade-up delay-2 rounded-2xl p-6 text-white relative overflow-hidden"
+            style="background: linear-gradient(135deg, #1e1035, #2d1b69, #4c1d95); box-shadow: 0 8px 24px rgba(91,33,182,0.25)">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color: #c4b5fd">Nomor Transaksi</p>
+            <p class="text-2xl font-black tracking-tight leading-tight mb-4 font-mono">
                 {{ $transaksi->nomor_transaksi }}
             </p>
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs text-indigo-300 uppercase tracking-wider">Status</p>
-                    <p class="font-bold text-white">
-                        {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : 'SUDAH DIAMBIL' }}
-                    </p>
-                </div>
+            <div>
+                <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
+                <p class="font-bold text-white">
+                    {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : 'SUDAH DIAMBIL' }}
+                </p>
             </div>
-            <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full"></div>
+            <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full" style="background: rgba(255,255,255,0.05)"></div>
         </div>
 
         {{-- Aksi --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Aksi Cepat</p>
+        <div class="anim-fade-up delay-3 bg-white rounded-2xl border border-gray-100 p-5 space-y-3"
+            style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+            <p class="text-xs font-bold uppercase tracking-wider" style="color: #94a3b8">Aksi Cepat</p>
 
             <a href="{{ route('kasir.transaksi.nota', $transaksi) }}" target="_blank"
                 class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
-                style="background: linear-gradient(135deg, #3730a3, #4f46e5)">
+                style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
                 🖨️ Cetak Nota
             </a>
 
             @if($transaksi->status === 'dititip')
-            <a href="{{ route('kasir.pengambilan.index') }}?nomor={{ $transaksi->nomor_transaksi }}"
-                class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition">
+            <a href="{{ route('kasir.pengambilan.index') }}"
+                class="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition hover:opacity-90"
+                style="background: #f0fdf4; color: #15803d; border: 1.5px solid #bbf7d0">
                 📦 Proses Pengambilan
             </a>
             @endif
 
             <a href="{{ route('kasir.transaksi.create') }}"
-                class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gray-100 text-gray-600 font-bold text-sm hover:bg-gray-200 transition">
+                class="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition"
+                style="background: #faf5ff; color: #7c3aed; border: 1.5px solid #ede9fe">
                 ➕ Transaksi Baru
             </a>
         </div>
 
-        {{-- Waktu --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Timeline</p>
+        {{-- Timeline --}}
+        <div class="anim-fade-up delay-4 bg-white rounded-2xl border border-gray-100 p-5"
+            style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+            <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: #94a3b8">Timeline</p>
             <div class="space-y-3">
                 <div class="flex items-start gap-3">
-                    <div class="w-2 h-2 bg-indigo-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                    <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background: #a78bfa"></div>
                     <div>
                         <p class="text-xs font-semibold text-gray-600">Barang Dititipkan</p>
                         <p class="text-xs text-gray-400">{{ $transaksi->waktu_penitipan->format('d M Y, H:i') }} WIB</p>
@@ -172,7 +182,7 @@
                 </div>
                 @if($transaksi->waktu_pengambilan)
                 <div class="flex items-start gap-3">
-                    <div class="w-2 h-2 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                    <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background: #22c55e"></div>
                     <div>
                         <p class="text-xs font-semibold text-gray-600">Barang Diambil</p>
                         <p class="text-xs text-gray-400">{{ $transaksi->waktu_pengambilan->format('d M Y, H:i') }} WIB</p>
@@ -180,7 +190,7 @@
                 </div>
                 @else
                 <div class="flex items-start gap-3">
-                    <div class="w-2 h-2 bg-gray-200 rounded-full mt-1.5 flex-shrink-0 animate-pulse"></div>
+                    <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 animate-pulse" style="background: #e2e8f0"></div>
                     <div>
                         <p class="text-xs font-semibold text-gray-400">Menunggu Pengambilan...</p>
                         <p class="text-xs text-gray-300">Belum diambil</p>
