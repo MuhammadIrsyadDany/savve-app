@@ -11,7 +11,7 @@
     </div>
     <a href="{{ route('admin.transaksis.index') }}"
         class="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 shadow-sm">
-        ← Kembali
+        ← Kembali 
     </a>
 </div>
 
@@ -125,6 +125,18 @@
             </div>
             <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full"></div>
         </div>
+
+        @if($transaksi->status === 'dititip')
+<form action="{{ route('admin.transaksis.destroy', $transaksi) }}" method="POST"
+    onsubmit="return confirm('Hapus transaksi ini? Semua data barang akan ikut terhapus.')">
+    @csrf @method('DELETE')
+    <button type="submit"
+        class="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition"
+        style="background: #fff5f5; color: #dc2626; border: 1.5px solid #fecaca">
+        🗑️ Hapus Transaksi
+    </button>
+</form>
+@endif
 
         {{-- Timeline --}}
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">

@@ -43,4 +43,13 @@ class TransaksiController extends Controller
         $transaksi->load(['event', 'details.kategori', 'kasir']);
         return view('admin.transaksis.show', compact('transaksi'));
     }
+
+    public function destroy(Transaksi $transaksi)
+    {
+        $transaksi->details()->delete();
+        $transaksi->delete();
+
+        return redirect()->route('admin.transaksis.index')
+            ->with('success', 'Transaksi berhasil dihapus.');
+    }
 }

@@ -99,6 +99,68 @@ class TransaksiController extends Controller
         return view('kasir.transaksi.show', compact('transaksi'));
     }
 
+    public function tambahBarang(Transaksi $transaksi)
+    {
+        // Pastikan hanya transaksi milik kasir ini & masih dititip
+        if ($transaksi->kasir_id !== auth()->id()) {
+            abort(403, 'Akses tidak diizinkan.');
+        }
+
+        if ($transaksi->status !== 'dititip') {
+            return redirect()->route('kasir.transaksi.show', $transaksi)
+                ->with('error', 'Transaksi ini sudah selesai, tidak bisa ditambah barang.');
+        }
+
+        $transaksi->load(['event', 'details.kategori']);
+        $kategoris = KategoriBarang::all();
+
+        return view('kasir.transaksi.tambah-barang', compact('transaksi', 'kategoris'));
+    }
+
+    public function simpanBarang(Request $request, Transaksi $transaksi)
+    {
+        if ($transaksi->kasir_id !== auth()->id()) {
+            abort(403, 'Akses tidak diizinkan.');
+        }
+
+        if ($transaksi->status !== 'dititip') {
+            return redirect()->route('kasir.transaksi.show', $transaksi)
+                ->with('error', 'Transaksi ini sudah selesai, tidak bisa ditambah barang.');
+        }
+
+        $request->validate([
+            'barang'               => 'required|array|min:1',
+            'barang.*.kategori_id' => 'required|exists:kategori_barangs,id',
+            'barang.*.nama_custom' => 'nullable|string|max:255',
+            'barang.*.ukuran'      => 'required|in:S,M,L,XL',
+            'barang.*.jumlah'      => 'required|integer|min:1',
+        ]);
+
+        DB::transaction(function () use ($request, $transaksi) {
+            foreach ($request->barang as $item) {
+                $tarif = Tarif::where('event_id', $transaksi->event_id)
+                    ->where('ukuran', $item['ukuran'])
+                    ->first();
+
+                $harga_satuan = $tarif ? $tarif->harga : 0;
+                $subtotal     = $harga_satuan * $item['jumlah'];
+
+                DetailTransaksi::create([
+                    'transaksi_id'       => $transaksi->id,
+                    'kategori_id'        => $item['kategori_id'],
+                    'nama_barang_custom' => $item['nama_custom'] ?? null,
+                    'ukuran'             => $item['ukuran'],
+                    'jumlah'             => $item['jumlah'],
+                    'harga_satuan'       => $harga_satuan,
+                    'subtotal'           => $subtotal,
+                ]);
+            }
+        });
+
+        return redirect()->route('kasir.transaksi.show', $transaksi)
+            ->with('success', 'Barang berhasil ditambahkan ke transaksi.');
+    }
+
     public function countToday()
     {
         $count = Transaksi::whereDate('created_at', today())->count();

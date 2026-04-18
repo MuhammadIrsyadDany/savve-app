@@ -23,6 +23,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/transaksis/{transaksi}', [AdminTransaksiController::class, 'show'])->name('transaksis.show');
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
+    Route::delete('/transaksis/{transaksi}/destroy', [AdminTransaksiController::class, 'destroy'])->name('transaksis.destroy');
 });
 
 // Route Kasir
@@ -34,6 +35,8 @@ Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->name('kasir.')->grou
     Route::post('/pengambilan/cari', [PengambilanController::class, 'cari'])->name('pengambilan.cari');
     Route::post('/pengambilan/konfirmasi/{transaksi}', [PengambilanController::class, 'konfirmasi'])->name('pengambilan.konfirmasi');
     Route::get('/transaksi/{transaksi}/nota', [TransaksiController::class, 'nota'])->name('transaksi.nota');
+    Route::get('/transaksi/{transaksi}/tambah-barang', [TransaksiController::class, 'tambahBarang'])->name('transaksi.tambah-barang');
+    Route::post('/transaksi/{transaksi}/tambah-barang', [TransaksiController::class, 'simpanBarang'])->name('transaksi.simpan-barang');
 });
 
 require __DIR__ . '/auth.php';
