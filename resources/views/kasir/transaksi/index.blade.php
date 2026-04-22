@@ -156,10 +156,61 @@
         </table>
     </div>
     @if($transaksis->hasPages())
-    <div class="px-5 py-4" style="border-top: 1px solid #f5f3ff">
-        {{ $transaksis->links() }}
+<div class="px-5 py-4 flex items-center justify-between"
+    style="border-top: 1px solid #f5f3ff">
+    <p class="text-xs text-gray-400">
+        Menampilkan {{ $transaksis->firstItem() }}–{{ $transaksis->lastItem() }}
+        dari {{ $transaksis->total() }} transaksi
+    </p>
+    <div class="flex items-center gap-1">
+
+        {{-- Prev --}}
+        @if($transaksis->onFirstPage())
+        <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm cursor-not-allowed"
+            style="background: #faf5ff; border: 1.5px solid #ede9fe">‹</span>
+        @else
+        <a href="{{ $transaksis->previousPageUrl() }}"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
+            style="background: #faf5ff; border: 1.5px solid #ede9fe"
+            onmouseover="this.style.background='#5b21b6'; this.style.color='white'; this.style.borderColor='#5b21b6'"
+            onmouseout="this.style.background='#faf5ff'; this.style.color='#6b7280'; this.style.borderColor='#ede9fe'">‹</a>
+        @endif
+
+        {{-- Page Numbers --}}
+        @foreach($transaksis->getUrlRange(1, $transaksis->lastPage()) as $page => $url)
+            @if($page == $transaksis->currentPage())
+            <span class="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold"
+                style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">{{ $page }}</span>
+            @elseif(abs($page - $transaksis->currentPage()) <= 2)
+            <a href="{{ $url }}"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
+                style="background: #faf5ff; border: 1.5px solid #ede9fe"
+                onmouseover="this.style.background='#f3e8ff'; this.style.color='#7c3aed'"
+                onmouseout="this.style.background='#faf5ff'; this.style.color='#6b7280'">{{ $page }}</a>
+            @elseif($page == 1 || $page == $transaksis->lastPage())
+            <a href="{{ $url }}"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
+                style="background: #faf5ff; border: 1.5px solid #ede9fe">{{ $page }}</a>
+            @elseif(abs($page - $transaksis->currentPage()) == 3)
+            <span class="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">…</span>
+            @endif
+        @endforeach
+
+        {{-- Next --}}
+        @if($transaksis->hasMorePages())
+        <a href="{{ $transaksis->nextPageUrl() }}"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
+            style="background: #faf5ff; border: 1.5px solid #ede9fe"
+            onmouseover="this.style.background='#5b21b6'; this.style.color='white'; this.style.borderColor='#5b21b6'"
+            onmouseout="this.style.background='#faf5ff'; this.style.color='#6b7280'; this.style.borderColor='#ede9fe'">›</a>
+        @else
+        <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm cursor-not-allowed"
+            style="background: #faf5ff; border: 1.5px solid #ede9fe">›</span>
+        @endif
+
     </div>
-    @endif
+</div>
+@endiffitur paginate di aktor Kasir halaman Riwayat Transaksi
 </div>
 
 @endsection
