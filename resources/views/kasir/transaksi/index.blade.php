@@ -210,7 +210,7 @@
 
     </div>
 </div>
-@endiffitur paginate di aktor Kasir halaman Riwayat Transaksi
+@endif
 </div>
 
 @endsection
