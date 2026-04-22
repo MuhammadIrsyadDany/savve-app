@@ -86,13 +86,16 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Quantity</label>
-                                <div class="flex items-center gap-3">
-                                    <button type="button" onclick="changeQty(this, -1)"
-                                        class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 hover:bg-gray-200 font-bold text-lg flex-shrink-0">−</button>
-                                    <input type="number" name="barang[0][jumlah]" value="1" min="1"
-                                        class="flex-1 text-center bg-gray-50 border border-gray-200 rounded-xl py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                                    <button type="button" onclick="changeQty(this, 1)"
-                                        class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 hover:bg-gray-200 font-bold text-lg flex-shrink-0">+</button>
+                                <div class="flex items-center gap-2 w-full">
+                                <button type="button" onclick="changeQty(this, -1)"
+                                    class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg transition"
+                                    style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed; min-width: 36px">−</button>
+                                <input type="number" name="barang[0][jumlah]" value="1" min="1"
+                                    class="min-w-0 w-full text-center rounded-xl py-2.5 text-sm font-bold transition"
+                                    style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
+                                <button type="button" onclick="changeQty(this, 1)"
+                                    class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg transition"
+                                    style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed; min-width: 36px">+</button>
                                 </div>
                             </div>
                         </div>
@@ -302,14 +305,17 @@ document.querySelectorAll('.barang-item').forEach(item => {
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Quantity</label>
-                    <div class="flex items-center gap-3">
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Quantity</label>
+                    <div class="flex items-center gap-2 w-full">
                         <button type="button" onclick="changeQty(this, -1)"
-                            class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 hover:bg-gray-200 font-bold text-lg flex-shrink-0">−</button>
+                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg transition"
+                            style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed; min-width: 36px">−</button>
                         <input type="number" name="barang[${index}][jumlah]" value="1" min="1"
-                            class="flex-1 text-center bg-gray-50 border border-gray-200 rounded-xl py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            class="min-w-0 w-full text-center rounded-xl py-2 text-sm font-bold"
+                            style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
                         <button type="button" onclick="changeQty(this, 1)"
-                            class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 hover:bg-gray-200 font-bold text-lg flex-shrink-0">+</button>
+                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg transition"
+                            style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed; min-width: 36px">+</button>
                     </div>
                 </div>
             </div>
@@ -323,13 +329,13 @@ document.querySelectorAll('.barang-item').forEach(item => {
                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Ukuran Barang</label>
                 <div class="grid grid-cols-4 gap-3">
                     ${['S','M','L','XL'].map((u, i) => `
-<label class="ukuran-label cursor-pointer">
-    <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
-    <div class="ukuran-box border-2 rounded-xl py-3 text-center font-bold text-sm transition"
-        style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: #faf5ff;' : 'border-color: #e5e7eb; color: #6b7280;'}">
-        ${u}
-    </div>
-</label>`).join('')}
+                <label class="ukuran-label cursor-pointer">
+                    <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
+                    <div class="ukuran-box border-2 rounded-xl py-3 text-center font-bold text-sm transition"
+                        style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: #faf5ff;' : 'border-color: #e5e7eb; color: #6b7280;'}">
+                ${u}
+            </div>
+        </label>`).join('')}
                 </div>
             </div>
         `;

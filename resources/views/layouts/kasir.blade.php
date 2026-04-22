@@ -6,33 +6,134 @@
     <title>Savve Kasir — @yield('title')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+
+        #sidebar-kasir {
+            transition: transform 0.3s ease;
+        }
+        #sidebar-overlay-kasir {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 40;
+            backdrop-filter: blur(2px);
+        }
+        #sidebar-overlay-kasir.active { display: block; }
+
+        @media (max-width: 1023px) {
+            #sidebar-kasir {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 50;
+                transform: translateX(-100%);
+            }
+            #sidebar-kasir.open {
+                transform: translateX(0);
+            }
+        }
+
+        .kasir-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+            position: relative;
+            text-decoration: none;
+        }
+        .kasir-link:hover {
+            background: rgba(255,255,255,0.06);
+            color: #e2e8f0;
+        }
+        .kasir-link.active {
+            background: rgba(167,139,250,0.15);
+            color: #fff;
+            font-weight: 600;
+        }
+        .kasir-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 3px;
+            background: #a78bfa;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .stat-card { transition: all 0.3s ease; cursor: default; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+        .table-row { transition: background 0.15s ease; }
+        .table-row:hover { background: #fdfbff; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .anim-fade-up    { animation: fadeUp    0.5s ease forwards; }
+        .anim-slide-down { animation: slideDown 0.4s ease forwards; }
+        .anim-fade-in    { animation: fadeUp    0.5s ease forwards; }
+        .anim-scale-in   { animation: fadeUp    0.4s ease forwards; }
+        .delay-1 { animation-delay: 0.05s; opacity: 0; }
+        .delay-2 { animation-delay: 0.10s; opacity: 0; }
+        .delay-3 { animation-delay: 0.15s; opacity: 0; }
+        .delay-4 { animation-delay: 0.20s; opacity: 0; }
+        .delay-5 { animation-delay: 0.25s; opacity: 0; }
+        .delay-6 { animation-delay: 0.30s; opacity: 0; }
+        .delay-7 { animation-delay: 0.35s; opacity: 0; }
+        .delay-8 { animation-delay: 0.40s; opacity: 0; }
+    </style>
 </head>
-<body style="font-family: 'Inter', sans-serif; background: #f5f3ff;">
+<body style="background: #f5f3ff;">
+
+{{-- Overlay --}}
+<div id="sidebar-overlay-kasir" onclick="closeSidebarKasir()"></div>
 
 <div class="flex h-screen overflow-hidden">
 
     {{-- ═══ SIDEBAR ═══ --}}
-    <aside class="w-[220px] flex-shrink-0 flex flex-col"
+    <aside id="sidebar-kasir" class="w-[220px] flex-shrink-0 flex flex-col lg:relative lg:translate-x-0"
         style="background: linear-gradient(180deg, #1e1035 0%, #2d1b69 40%, #3b2180 100%);">
 
         {{-- Logo --}}
-        <div class="px-5 py-5" style="border-bottom: 1px solid rgba(255,255,255,0.06)">
+        <div class="px-5 py-5 flex items-center justify-between"
+            style="border-bottom: 1px solid rgba(255,255,255,0.06)">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                     style="background: rgba(167,139,250,0.2); border: 1px solid rgba(167,139,250,0.3)">
                     <span class="text-base">🗃️</span>
                 </div>
                 <div>
-                    <p class="font-black text-white text-base leading-none">SAVVE</p>
+                    <p class="font-black text-white text-base leading-none">Savve</p>
                     <p class="text-xs font-medium mt-0.5" style="color: #a78bfa; letter-spacing: 0.05em">Kasir Panel</p>
                 </div>
             </div>
+            <button onclick="closeSidebarKasir()"
+                class="lg:hidden w-7 h-7 flex items-center justify-center rounded-lg text-white"
+                style="background: rgba(255,255,255,0.1)">
+                ✕
+            </button>
         </div>
 
         {{-- Role Badge --}}
         <div class="mx-3 mt-3 px-3 py-2 rounded-xl flex items-center gap-2"
             style="background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2)">
-            <span class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse" style="background: #00ff4c"></span>
+            <span class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse" style="background: #a78bfa"></span>
             <p class="text-xs font-bold" style="color: #a78bfa">CASHIER MODE AKTIF</p>
         </div>
 
@@ -42,7 +143,6 @@
                 style="color: rgba(255,255,255,0.2); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px">
                 Menu Utama
             </p>
-
             <a href="{{ route('kasir.dashboard') }}"
                 class="kasir-link {{ request()->routeIs('kasir.dashboard') ? 'active' : '' }}">
                 <span class="w-5 text-center text-sm">⊞</span> Dashboard
@@ -85,48 +185,54 @@
     </aside>
 
     {{-- ═══ MAIN ═══ --}}
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {{-- Topbar --}}
-        <header class="bg-white flex-shrink-0 flex items-center justify-between px-6 py-3.5"
+        <header class="bg-white flex-shrink-0 flex items-center justify-between px-4 lg:px-6 py-3.5"
             style="border-bottom: 1px solid #ede9fe; box-shadow: 0 1px 8px rgba(0,0,0,0.04)">
 
-            <div class="flex-1 max-w-sm">
-                <div class="relative">
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" style="font-size: 12px">🔍</span>
-                    <input type="text" placeholder="Cari transaksi atau nama barang..."
-                        class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm transition"
-                        style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px; color: #374151"
-                        onfocus="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
-                        onblur="this.style.borderColor='#ede9fe'; this.style.boxShadow='none'">
+            <div class="flex items-center gap-3 flex-1">
+                {{-- Hamburger --}}
+                <button onclick="openSidebarKasir()"
+                    class="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl flex-shrink-0"
+                    style="background: #faf5ff; border: 1.5px solid #ede9fe">
+                    <span class="text-gray-600">☰</span>
+                </button>
+
+                {{-- Search --}}
+                <div class="flex-1 max-w-xs hidden sm:block">
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" style="font-size: 12px">🔍</span>
+                        <input type="text" placeholder="Cari transaksi atau nama barang..."
+                            class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm transition"
+                            style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px; color: #374151"
+                            onfocus="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
+                            onblur="this.style.borderColor='#ede9fe'; this.style.boxShadow='none'">
+                    </div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2.5">
-                {{-- Cashier Active Badge --}}
+            <div class="flex items-center gap-2">
+                {{-- Cashier Badge --}}
                 <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
                     style="background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe">
-                    <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: #00ff4c"></span>
+                    <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: #a78bfa"></span>
                     Cashier Active
                 </div>
-
-                <button class="relative w-9 h-9 flex items-center justify-center rounded-xl transition text-gray-500"
-                    style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px"
-                    onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#faf5ff'">
+                <button class="relative w-9 h-9 flex items-center justify-center rounded-xl transition text-gray-500 flex-shrink-0"
+                    style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px">
                     🔔
                 </button>
-                <button class="w-9 h-9 flex items-center justify-center rounded-xl transition text-gray-500"
-                    style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px"
-                    onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#faf5ff'">
+                <button class="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl transition text-gray-500 flex-shrink-0"
+                    style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px">
                     ⚙️
                 </button>
-
-                <div class="flex items-center gap-2.5 pl-3" style="border-left: 1.5px solid #ede9fe">
-                    <div class="text-right">
+                <div class="flex items-center gap-2 pl-2 lg:pl-3" style="border-left: 1.5px solid #ede9fe">
+                    <div class="text-right hidden md:block">
                         <p class="text-xs font-bold leading-none" style="color: #1e1035">{{ auth()->user()->name }}</p>
                         <p class="text-xs mt-0.5" style="color: #a78bfa">Kasir Mode</p>
                     </div>
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm text-white"
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm text-white flex-shrink-0"
                         style="background: linear-gradient(135deg, #5b21b6, #a78bfa)">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
@@ -135,61 +241,51 @@
         </header>
 
         {{-- Content --}}
-        <main class="flex-1 overflow-y-auto p-6">
-
+        <main class="flex-1 overflow-y-auto p-4 lg:p-6">
             @if(session('success'))
             <div class="anim-slide-down mb-5 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold"
                 style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed">
                 <span>✓</span> {{ session('success') }}
             </div>
             @endif
-
             @if(session('error'))
             <div class="anim-slide-down mb-5 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold"
                 style="background: #fff5f5; border: 1.5px solid #fecaca; color: #dc2626">
                 <span>⚠</span> {{ session('error') }}
             </div>
             @endif
-
             @yield('content')
         </main>
     </div>
 </div>
 
-<style>
-.kasir-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: #94a3b8;
-    transition: all 0.2s ease;
-    position: relative;
-    text-decoration: none;
-}
-.kasir-link:hover {
-    background: rgba(255,255,255,0.06);
-    color: #e2e8f0;
-}
-.kasir-link.active {
-    background: rgba(167,139,250,0.15);
-    color: #fff;
-    font-weight: 600;
-}
-.kasir-link.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 20%;
-    height: 60%;
-    width: 3px;
-    background: #a78bfa;
-    border-radius: 0 4px 4px 0;
-}
-</style>
+<script>
+    function openSidebarKasir() {
+        document.getElementById('sidebar-kasir').classList.add('open');
+        document.getElementById('sidebar-overlay-kasir').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebarKasir() {
+        document.getElementById('sidebar-kasir').classList.remove('open');
+        document.getElementById('sidebar-overlay-kasir').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.kasir-link').forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth < 1024) {
+                closeSidebarKasir();
+            }
+        });
+    });
+
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 1024) {
+            closeSidebarKasir();
+        }
+    });
+</script>
 
 </body>
 </html>
