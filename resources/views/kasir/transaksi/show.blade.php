@@ -25,7 +25,7 @@
     </div>
 </div>
 
-<div class="flex gap-5">
+<div class="flex flex-col lg:flex-row gap-5">
 
     {{-- Kiri --}}
     <div class="flex-1 space-y-4">
@@ -124,7 +124,7 @@
     </div>
 
     {{-- Kanan --}}
-    <div class="w-72 space-y-4">
+    <div class="w-full lg:w-72 flex-shrink-0 space-y-4">
 
         {{-- Nomor Transaksi --}}
         <div class="anim-fade-up delay-2 rounded-2xl p-6 text-white relative overflow-hidden"

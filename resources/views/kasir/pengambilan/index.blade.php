@@ -10,7 +10,7 @@
 </div>
 
 {{-- Pencarian --}}
-<div class="flex gap-4 mb-5">
+<div class="flex flex-col sm:flex-row gap-4 mb-5">
 
     <div class="flex-1 anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-6"
         style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
@@ -43,7 +43,7 @@
     </div>
 
     {{-- Status Panel --}}
-    <div class="anim-fade-up delay-3 w-64 rounded-2xl flex flex-col items-center justify-center p-6 text-white flex-shrink-0"
+    <div class="anim-fade-up delay-3 w-full sm:w-64 rounded-2xl flex flex-col items-center justify-center p-6 text-white flex-shrink-0"
         style="background: linear-gradient(135deg, #1e1035, #2d1b69, #4c1d95); box-shadow: 0 8px 24px rgba(91,33,182,0.2)">
         @if(isset($transaksis) && $transaksis->count() > 0)
             <div class="w-14 h-14 rounded-full flex items-center justify-center text-3xl mb-3"

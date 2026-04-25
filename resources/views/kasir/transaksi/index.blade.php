@@ -19,46 +19,53 @@
 {{-- Filter --}}
 <div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-4 mb-5"
     style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
-    <form method="GET" action="{{ route('kasir.transaksi.index') }}" class="flex flex-wrap gap-3 items-end">
-        <div class="flex-1 min-w-[180px]">
-            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Cari Penitip / No. Transaksi</label>
-            <div class="relative">
-                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" style="font-size: 12px">🔍</span>
-                <input type="text" name="search" value="{{ request('search') }}"
-                    class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm transition"
-                    style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151"
-                    placeholder="Nama atau nomor transaksi..."
-                    onfocus="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
-                    onblur="this.style.borderColor='#ede9fe'; this.style.boxShadow='none'">
+    <form method="GET" action="{{ route('kasir.transaksi.index') }}">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+
+            <div class="sm:col-span-2 lg:col-span-1">
+                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Cari Penitip / No. Transaksi</label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" style="font-size: 12px">🔍</span>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm transition"
+                        style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151"
+                        placeholder="Nama atau nomor transaksi..."
+                        onfocus="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
+                        onblur="this.style.borderColor='#ede9fe'; this.style.boxShadow='none'">
+                </div>
             </div>
-        </div>
-        <div>
-            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Status</label>
-            <select name="status"
-                class="rounded-xl px-4 py-2.5 text-sm transition"
-                style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151">
-                <option value="">Semua Status</option>
-                <option value="dititip" {{ request('status') === 'dititip' ? 'selected' : '' }}>Dititipkan</option>
-                <option value="sudah_diambil" {{ request('status') === 'sudah_diambil' ? 'selected' : '' }}>Sudah Diambil</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Tanggal</label>
-            <input type="date" name="tanggal" value="{{ request('tanggal') }}"
-                class="rounded-xl px-4 py-2.5 text-sm transition"
-                style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151">
-        </div>
-        <div class="flex gap-2">
-            <button type="submit"
-                class="px-5 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
-                style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
-                Filter
-            </button>
-            <a href="{{ route('kasir.transaksi.index') }}"
-                class="px-3.5 py-2.5 rounded-xl font-semibold text-sm transition"
-                style="background: #faf5ff; color: #7c3aed; border: 1.5px solid #ede9fe">
-                🔄
-            </a>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Status</label>
+                <select name="status"
+                    class="w-full rounded-xl px-3 py-2.5 text-sm transition"
+                    style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151">
+                    <option value="">Semua Status</option>
+                    <option value="dititip" {{ request('status') === 'dititip' ? 'selected' : '' }}>Dititipkan</option>
+                    <option value="sudah_diambil" {{ request('status') === 'sudah_diambil' ? 'selected' : '' }}>Sudah Diambil</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Tanggal</label>
+                <input type="date" name="tanggal" value="{{ request('tanggal') }}"
+                    class="w-full rounded-xl px-3 py-2.5 text-sm transition"
+                    style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151">
+            </div>
+
+            <div class="flex gap-2">
+                <button type="submit"
+                    class="flex-1 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
+                    style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
+                    Filter
+                </button>
+                <a href="{{ route('kasir.transaksi.index') }}"
+                    class="px-3.5 py-2.5 rounded-xl font-semibold text-sm transition flex-shrink-0"
+                    style="background: #faf5ff; color: #7c3aed; border: 1.5px solid #ede9fe">
+                    🔄
+                </a>
+            </div>
+
         </div>
     </form>
 </div>
