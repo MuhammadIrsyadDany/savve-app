@@ -4,14 +4,14 @@
 @section('content')
 
 {{-- Header --}}
-<div class="anim-fade-up delay-1 flex justify-between items-start mb-6">
+<div class="anim-fade-up delay-1 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
     <div>
         <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #1a3a6b">Laporan</p>
         <h1 class="text-2xl font-black text-gray-900">Laporan Harian</h1>
         <p class="text-gray-400 text-sm mt-1">Pantau aktivitas penitipan barang masuk dan keluar secara real-time.</p>
     </div>
     <a href="{{ route('admin.laporan.export', request()->query()) }}"
-        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90 flex-shrink-0"
+        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90 self-start flex-shrink-0"
         style="background: linear-gradient(135deg, #0f2044, #1e4d8c); box-shadow: 0 4px 12px rgba(15,32,68,0.2)">
         ⬇ Export Excel
     </a>
@@ -22,7 +22,7 @@
     style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
     <form method="GET" action="{{ route('admin.laporan.index') }}">
         <input type="hidden" name="show" value="1">
-        <div class="flex flex-wrap gap-4 items-end">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
 
             <div class="flex-1 min-w-[160px]">
                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pilih Event</label>

@@ -3,26 +3,25 @@
 
 @section('content')
 
-<div class="anim-fade-up delay-1 flex justify-between items-start mb-6">
+<div class="anim-fade-up delay-1 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
     <div>
         <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #1a3a6b">Management</p>
-        <h1 class="text-2xl font-black text-gray-900">Edit Kasir</h1>
+        <h1 class="text-xl lg:text-2xl font-black text-gray-900">Edit Kasir</h1>
         <p class="text-gray-400 text-sm mt-1">Ubah informasi akun kasir.</p>
     </div>
     <a href="{{ route('admin.users.index') }}"
-        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition flex-shrink-0"
-        style="background: white; border: 1.5px solid #e2e8f0; color: #374151"
-        onmouseover="this.style.background='#f8faff'" onmouseout="this.style.background='white'">
+        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition self-start flex-shrink-0"
+        style="background: white; border: 1.5px solid #e2e8f0; color: #374151">
         ← Kembali
     </a>
 </div>
 
-<div class="flex gap-6">
+<div class="flex flex-col lg:flex-row gap-6">
     <div class="flex-1">
         <form action="{{ route('admin.users.update', $user) }}" method="POST">
             @csrf @method('PUT')
 
-            <div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-6 mb-4"
+            <div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-5 lg:p-6 mb-4"
                 style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
                 <h3 class="font-black text-gray-800 mb-4">Informasi Akun</h3>
 
@@ -78,7 +77,7 @@
                     💾 Update Kasir
                 </button>
                 <a href="{{ route('admin.users.index') }}"
-                    class="px-6 py-3.5 rounded-xl font-bold text-sm"
+                    class="px-4 lg:px-6 py-3.5 rounded-xl font-bold text-sm flex-shrink-0"
                     style="background: #f1f5f9; color: #64748b">
                     Batal
                 </a>
@@ -86,7 +85,7 @@
         </form>
     </div>
 
-    <div class="w-64 flex-shrink-0 space-y-4">
+    <div class="w-full lg:w-64 flex-shrink-0 space-y-4">
         <div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-5"
             style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
             <p class="text-xs font-bold uppercase tracking-wider mb-4" style="color: #94a3b8">Statistik Kasir</p>
@@ -103,8 +102,8 @@
             <div class="space-y-2.5">
                 @foreach([
                     ['Total Transaksi', $user->transaksis->count(), '#0f2044'],
-                    ['Masih Dititip', $user->transaksis->where('status','dititip')->count(), '#ea580c'],
-                    ['Sudah Diambil', $user->transaksis->where('status','sudah_diambil')->count(), '#15803d'],
+                    ['Masih Dititip',   $user->transaksis->where('status','dititip')->count(), '#ea580c'],
+                    ['Sudah Diambil',   $user->transaksis->where('status','sudah_diambil')->count(), '#15803d'],
                 ] as $s)
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-gray-500">{{ $s[0] }}</span>

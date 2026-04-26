@@ -42,7 +42,7 @@
                 </span>
             </div>
             <div class="px-6 py-6">
-                <div class="grid grid-cols-3 gap-6 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 mb-5 lg:mb-6">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Nama Penitip</p>
                         <p class="text-lg font-black text-gray-800">{{ $transaksi->nama_penitip }}</p>

@@ -17,7 +17,7 @@
     </a>
 </div>
 
-<div class="flex gap-6">
+<div class="flex flex-col lg:flex-row gap-6">
 
     {{-- Form --}}
     <div class="flex-1">
@@ -27,7 +27,7 @@
             {{-- Info Transaksi --}}
             <div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-5 mb-4"
                 style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-wrap items-start gap-4">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center"
                             style="background: linear-gradient(135deg, #1e1035, #4c1d95)">
@@ -170,7 +170,7 @@
     </div>
 
     {{-- Panel Kanan --}}
-    <div class="w-64 flex-shrink-0 space-y-4">
+    <div class="w-full lg:w-64 flex-shrink-0">
         <div class="anim-fade-up delay-2 rounded-2xl p-5 text-white"
             style="background: linear-gradient(135deg, #1e1035, #2d1b69, #4c1d95)">
             <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color: #c4b5fd">Total Saat Ini</p>
