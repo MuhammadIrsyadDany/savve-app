@@ -41,13 +41,30 @@ class TransaksiController extends Controller
 
     public function create()
     {
-        $events = Event::where('status', 'aktif')->get();
+        // Auto nonaktifkan event yang sudah expired
+        \App\Models\Event::where('status', 'aktif')
+            ->where('tanggal_selesai', '<', today())
+            ->update(['status' => 'nonaktif']);
+
+        $events = \App\Models\Event::where('status', 'aktif')->get();
         $kategoris = KategoriBarang::all();
+
         return view('kasir.transaksi.create', compact('events', 'kategoris'));
     }
 
     public function store(Request $request)
     {
+        // Auto nonaktifkan event yang sudah expired
+        \App\Models\Event::where('status', 'aktif')
+            ->where('tanggal_selesai', '<', today())
+            ->update(['status' => 'nonaktif']);
+
+        // Validasi event
+        $event = \App\Models\Event::findOrFail($request->event_id);
+        if ($event->status !== 'aktif') {
+            return back()->withInput()
+                ->with('error', 'Event ini sudah tidak aktif. Transaksi tidak dapat dilakukan.');
+        }
         $transaksi = DB::transaction(function () use ($request) {
             $nomor = NomorTransaksi::generate();
 
