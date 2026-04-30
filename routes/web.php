@@ -24,6 +24,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
     Route::delete('/transaksis/{transaksi}/destroy', [AdminTransaksiController::class, 'destroy'])->name('transaksis.destroy');
+    Route::get('/rekap-event', [App\Http\Controllers\Admin\RekapEventController::class, 'index'])->name('rekap.index');
+    Route::get('/rekap-event/{event}', [App\Http\Controllers\Admin\RekapEventController::class, 'show'])->name('rekap.show');
 });
 
 // Route Kasir

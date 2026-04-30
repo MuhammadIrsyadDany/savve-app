@@ -158,6 +158,10 @@
                 class="sidebar-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
                 <span class="w-5 text-center text-sm">📈</span> Laporan Harian
             </a>
+            <a href="{{ route('admin.rekap.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.rekap.*') ? 'active' : '' }}">
+                <span class="w-5 text-center text-sm">📊</span> Rekap Event
+            </a>
         </nav>
 
         {{-- User --}}
