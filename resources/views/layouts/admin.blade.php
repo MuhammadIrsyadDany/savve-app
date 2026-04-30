@@ -115,21 +115,14 @@
         style="background: linear-gradient(180deg, #091629 0%, #0c1e3d 40%, #0f2044 100%);">
 
         {{-- Logo + Close Button (mobile) --}}
-        <div class="px-5 py-5 flex items-center justify-between"
+        <div class="px-5 py-4 flex items-center justify-between"
             style="border-bottom: 1px solid rgba(255,255,255,0.06)">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style="background: rgba(74,158,255,0.15); border: 1px solid rgba(74,158,255,0.25)">
-                    <span class="text-base">🗃️</span>
-                </div>
-                <div>
-                    <p class="font-black text-white text-base leading-none">Savve</p>
-                    <p class="text-xs font-medium mt-0.5" style="color: #4a9eff; letter-spacing: 0.05em">Admin Panel</p>
-                </div>
+            <div class="flex-1 flex items-center justify-center">
+                <img src="{{ asset('images/logo.png') }}" alt="Savve Logo"
+                    class="h-12 w-auto object-contain">
             </div>
-            {{-- Close button only on mobile --}}
             <button onclick="closeSidebar()"
-                class="lg:hidden w-7 h-7 flex items-center justify-center rounded-lg text-white"
+                class="lg:hidden w-7 h-7 flex items-center justify-center rounded-lg text-white flex-shrink-0 ml-2"
                 style="background: rgba(255,255,255,0.1)">
                 ✕
             </button>
@@ -138,7 +131,7 @@
         {{-- Nav --}}
         <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
             <p class="text-xs font-bold px-3 mb-2 mt-1"
-                style="color: rgba(255,255,255,0.2); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px">
+                style="color: rgb(255, 255, 255); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px">
                 Main Menu
             </p>
             <a href="{{ route('admin.dashboard') }}"
@@ -154,7 +147,7 @@
                 <span class="w-5 text-center text-sm">👤</span> Kelola Kasir
             </a>
             <p class="text-xs font-bold px-3 mb-2 mt-4"
-                style="color: rgba(255,255,255,0.2); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px">
+                style="color: rgb(255, 255, 255); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px">
                 Laporan
             </p>
             <a href="{{ route('admin.transaksis.index') }}"

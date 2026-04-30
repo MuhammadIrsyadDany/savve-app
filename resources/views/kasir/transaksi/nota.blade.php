@@ -10,189 +10,216 @@
         body {
             font-family: 'Courier New', monospace;
             font-size: 11px;
-            background: #f5f5f5;
+            background: #f0f0f0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            min-height: 100vh;
             padding: 20px;
         }
 
         .nota-wrapper {
             width: 80mm;
             background: white;
-            padding: 6mm;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            padding: 5mm 6mm;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
             border-radius: 4px;
         }
 
-        /* Header */
-        .header {
+        /* ── Logo ── */
+        .logo-area {
             text-align: center;
             padding-bottom: 8px;
-            margin-bottom: 8px;
             border-bottom: 2px solid #000;
+            margin-bottom: 10px;
         }
-        .header .logo {
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 4px;
-            color: #000;
+        .logo-area img {
+            height: 48px;
+            width: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 3px;
         }
-        .header .tagline {
-            font-size: 9px;
-            color: #000;
-            margin-top: 2px;
-            letter-spacing: 1px;
+        .logo-area .tagline {
+            font-size: 8px;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            color: #555;
         }
 
-        /* Nomor Transaksi */
-        .nomor-box {
-            border: 2px solid #000;
+        /* ── Nama Penitip BESAR ── */
+        .penitip-box {
             text-align: center;
+            border: 2.5px solid #000;
+            border-radius: 4px;
             padding: 8px 6px;
-            margin: 8px 0;
+            margin-bottom: 8px;
+        }
+        .penitip-box .label {
+            font-size: 8px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #555;
+            margin-bottom: 3px;
+        }
+        .penitip-box .nama {
+            font-size: 22px;
+            font-weight: 900;
+            color: #000;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            line-height: 1.1;
+            word-break: break-word;
+        }
+
+        /* ── Nomor Transaksi BESAR ── */
+        .nomor-box {
+            text-align: center;
+            background: #000;
+            border-radius: 4px;
+            padding: 8px 6px;
+            margin-bottom: 8px;
         }
         .nomor-box .label {
             font-size: 8px;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: #000;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 3px;
         }
         .nomor-box .nomor {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 900;
+            color: #fff;
             letter-spacing: 1px;
-            margin-top: 3px;
-            color: #000;
         }
 
-        /* Info rows */
-        .info-section { margin: 8px 0; }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 2px 0;
-            font-size: 10px;
+        /* ── Status Badge ── */
+        .status-badge {
+            text-align: center;
+            margin-bottom: 8px;
         }
-        .info-row .label {
-            color: #000;
-            flex-shrink: 0;
-            width: 38%;
-        }
-        .info-row .value {
+        .status-badge span {
+            display: inline-block;
+            border: 1.5px solid #000;
+            font-size: 8px;
             font-weight: 700;
-            color: #000;
-            text-align: right;
-            flex: 1;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
         }
 
-        /* Divider */
+        /* ── Divider ── */
         .divider {
             border: none;
-            border-top: 1px dashed #000;
-            margin: 8px 0;
+            border-top: 1px dashed #aaa;
+            margin: 7px 0;
         }
         .divider-solid {
             border: none;
             border-top: 2px solid #000;
-            margin: 8px 0;
+            margin: 7px 0;
         }
 
-        /* Barang */
+        /* ── Info rows ── */
+        .info-section { margin-bottom: 6px; }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.5px 0;
+            font-size: 10px;
+        }
+        .info-row .lbl { color: #555; flex-shrink: 0; width: 42%; }
+        .info-row .val { font-weight: 700; color: #000; text-align: right; }
+
+        /* ── Daftar Barang ── */
         .barang-title {
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 700;
-            color: #000;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            text-align: center;
+            color: #000;
             margin-bottom: 6px;
         }
         .barang-item {
-            margin-bottom: 6px;
-            padding-bottom: 6px;
-            border-bottom: 1px dotted #000;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px dotted #ccc;
         }
         .barang-item:last-child { border-bottom: none; }
         .barang-name {
             font-weight: 700;
+            font-size: 12px;
             color: #000;
-            font-size: 11px;
         }
         .barang-detail {
             display: flex;
             justify-content: space-between;
-            margin-top: 2px;
             font-size: 10px;
-            color: #000;
+            color: #444;
+            margin-top: 1px;
         }
-        .barang-subtotal { font-weight: 700; }
+        .barang-subtotal { font-weight: 700; color: #000; }
 
-        /* Total */
+        /* ── Total ── */
         .total-box {
             border: 2px solid #000;
-            padding: 8px;
-            margin: 8px 0;
+            border-radius: 3px;
+            padding: 7px 8px;
+            margin: 7px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .total-label {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #000;
-        }
-        .total-value {
-            font-size: 14px;
-            font-weight: 900;
-            color: #000;
-        }
-
-        /* Status */
-        .status-badge {
-            text-align: center;
-            margin: 6px 0;
             font-size: 9px;
             font-weight: 700;
-            letter-spacing: 1px;
             text-transform: uppercase;
-            color: #000;
+            letter-spacing: 1px;
+        }
+        .total-value {
+            font-size: 15px;
+            font-weight: 900;
         }
 
-        /* Footer */
+        /* ── Footer ── */
         .footer {
             text-align: center;
-            margin-top: 10px;
-            padding-top: 8px;
+            margin-top: 8px;
+            padding-top: 7px;
             border-top: 2px solid #000;
         }
         .footer .warning {
             font-size: 9px;
             font-weight: 700;
-            color: #000;
-            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
         .footer .note {
             font-size: 8px;
-            color: #000;
+            color: #555;
             line-height: 1.5;
         }
         .footer .thanks {
             font-size: 13px;
             font-weight: 900;
-            color: #000;
-            margin-top: 6px;
             letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 6px;
         }
         .footer .copy {
-            font-size: 8px;
-            color: #000;
+            font-size: 7px;
+            color: #888;
             margin-top: 3px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        /* Print actions */
+        /* ── Action Buttons ── */
         .print-actions {
             margin-top: 16px;
             display: flex;
@@ -201,33 +228,40 @@
         }
         .btn-print {
             flex: 1;
-            padding: 10px;
+            padding: 11px;
             background: #000;
             color: #fff;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             font-family: sans-serif;
+            letter-spacing: 0.5px;
+            transition: opacity 0.2s;
         }
+        .btn-print:hover { opacity: 0.85; }
         .btn-close {
             flex: 1;
-            padding: 10px;
+            padding: 11px;
             background: #fff;
             color: #000;
             border: 2px solid #000;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             font-family: sans-serif;
+            transition: background 0.2s;
         }
+        .btn-close:hover { background: #f5f5f5; }
 
         @media print {
             body {
                 background: white;
                 padding: 0;
+                min-height: unset;
+                justify-content: flex-start;
             }
             .nota-wrapper {
                 box-shadow: none;
@@ -247,58 +281,62 @@
 
 <div class="nota-wrapper">
 
-    {{-- Header --}}
-    <div class="header">
-        <div class="logo">SAVVE</div>
+    {{-- Logo --}}
+    <div class="logo-area">
+        <img src="{{ asset('images/logo.png') }}" alt="Savve">
         <div class="tagline">Layanan Penitipan Barang</div>
     </div>
 
-    {{-- Nomor Transaksi --}}
+    {{-- Nama Penitip BESAR --}}
+    <div class="penitip-box">
+        <div class="label">Nama Penitip</div>
+        <div class="nama">{{ $transaksi->nama_penitip }}</div>
+    </div>
+
+    {{-- Nomor Transaksi BESAR --}}
     <div class="nomor-box">
-        <div class="label">-- Transaction ID --</div>
+        <div class="label">— Kode Penitipan —</div>
         <div class="nomor">{{ $transaksi->nomor_transaksi }}</div>
     </div>
 
     {{-- Status --}}
-    <div class="status-badge">[ BARANG DITITIPKAN ]</div>
+    <div class="status-badge">
+        <span>● Barang Dititipkan</span>
+    </div>
 
     <hr class="divider">
 
     {{-- Info Transaksi --}}
     <div class="info-section">
         <div class="info-row">
-            <span class="label">Event</span>
-            <span class="value">{{ $transaksi->event->nama_event }}</span>
+            <span class="lbl">Event</span>
+            <span class="val">{{ $transaksi->event->nama_event }}</span>
         </div>
         <div class="info-row">
-            <span class="label">Penitip</span>
-            <span class="value">{{ $transaksi->nama_penitip }}</span>
+            <span class="lbl">No. WhatsApp</span>
+            <span class="val">{{ $transaksi->no_whatsapp }}</span>
         </div>
         <div class="info-row">
-            <span class="label">WhatsApp</span>
-            <span class="value">{{ $transaksi->no_whatsapp }}</span>
+            <span class="lbl">Kasir</span>
+            <span class="val">{{ $transaksi->kasir->name }}</span>
         </div>
         <div class="info-row">
-            <span class="label">Kasir</span>
-            <span class="value">{{ $transaksi->kasir->name }}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Waktu</span>
-            <span class="value">{{ $transaksi->waktu_penitipan->format('d/m/Y H:i') }}</span>
+            <span class="lbl">Waktu</span>
+            <span class="val">{{ $transaksi->waktu_penitipan->format('d/m/Y H:i') }}</span>
         </div>
     </div>
 
     <hr class="divider">
 
     {{-- Daftar Barang --}}
-    <div class="barang-title">--- Daftar Barang ---</div>
+    <div class="barang-title">─── Daftar Barang ───</div>
     @foreach($transaksi->details as $i => $detail)
     <div class="barang-item">
         <div class="barang-name">
             {{ $i + 1 }}. {{ $detail->nama_barang_custom ?? $detail->kategori->nama_kategori }}
         </div>
         <div class="barang-detail">
-            <span>Ukuran {{ $detail->ukuran }} · Qty {{ $detail->jumlah }}</span>
+            <span>Ukuran {{ $detail->ukuran }} &nbsp;·&nbsp; Qty {{ $detail->jumlah }}</span>
             <span class="barang-subtotal">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</span>
         </div>
     </div>
@@ -316,12 +354,12 @@
 
     {{-- Footer --}}
     <div class="footer">
-        <div class="warning">! Simpan nota ini baik-baik !</div>
+        <div class="warning">⚠ Simpan nota ini baik-baik</div>
         <div class="note">
             Tunjukkan nota ini saat pengambilan barang.<br>
             Barang tanpa nota tidak akan diserahkan.
         </div>
-        <div class="thanks">TERIMA KASIH</div>
+        <div class="thanks">Terima Kasih</div>
         <div class="copy">© {{ date('Y') }} Vendor Savve</div>
     </div>
 

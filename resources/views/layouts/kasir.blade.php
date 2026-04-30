@@ -111,20 +111,14 @@
         style="background: linear-gradient(180deg, #1e1035 0%, #2d1b69 40%, #3b2180 100%);">
 
         {{-- Logo --}}
-        <div class="px-5 py-5 flex items-center justify-between"
+        <div class="px-5 py-4 flex items-center justify-between"
             style="border-bottom: 1px solid rgba(255,255,255,0.06)">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style="background: rgba(167,139,250,0.2); border: 1px solid rgba(167,139,250,0.3)">
-                    <span class="text-base">🗃️</span>
-                </div>
-                <div>
-                    <p class="font-black text-white text-base leading-none">Savve</p>
-                    <p class="text-xs font-medium mt-0.5" style="color: #a78bfa; letter-spacing: 0.05em">Kasir Panel</p>
-                </div>
+            <div class="flex-1 flex items-center justify-center">
+                <img src="{{ asset('images/logo.png') }}" alt="Savve Logo"
+                    class="h-12 w-auto object-contain">
             </div>
             <button onclick="closeSidebarKasir()"
-                class="lg:hidden w-7 h-7 flex items-center justify-center rounded-lg text-white"
+                class="lg:hidden w-7 h-7 flex items-center justify-center rounded-lg text-white flex-shrink-0 ml-2"
                 style="background: rgba(255,255,255,0.1)">
                 ✕
             </button>
@@ -133,14 +127,14 @@
         {{-- Role Badge --}}
         <div class="mx-3 mt-3 px-3 py-2 rounded-xl flex items-center gap-2"
             style="background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2)">
-            <span class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse" style="background: #a78bfa"></span>
+            <span class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse" style="background: #00820f"></span>
             <p class="text-xs font-bold" style="color: #a78bfa">CASHIER MODE AKTIF</p>
         </div>
 
         {{-- Nav --}}
         <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
             <p class="text-xs font-bold px-3 mb-2 mt-1"
-                style="color: rgba(255,255,255,0.2); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px">
+                style="color: rgb(255, 255, 255); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px">
                 Menu Utama
             </p>
             <a href="{{ route('kasir.dashboard') }}"
