@@ -170,16 +170,22 @@
                     <button type="button"
                         class="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm transition"
                         style="background: #faf5ff; color: #7c3aed; border: 1.5px solid #ede9fe">
-                        🖨️ Cetak Nota
+                    🖨️ Cetak Nota
                     </button>
                 </div>
 
-                <div class="text-center mt-3">
+                <div class="flex items-center justify-between mt-3">
                     <button type="reset" onclick="resetForm()"
-                        class="text-sm flex items-center gap-1 mx-auto transition"
+                        class="text-sm flex items-center gap-1 transition"
                         style="color: #94a3b8">
                         🔄 Reset
                     </button>
+                <a href="{{ route('kasir.dashboard') }}"
+                    id="btn-batal"
+                    class="text-sm flex items-center gap-1 font-semibold transition"
+                    style="color: #ef4444">
+                    ✕ Batal & Kembali
+                </a>
                 </div>
 
             </div>
@@ -259,6 +265,52 @@
 </div>
 
 <script>
+    // ── Konfirmasi sebelum keluar form ──
+let formDirty = false;
+function konfirmasiKeluar(e, url) {
+    if (formDirty) {
+        e.preventDefault();
+        if (confirm('Data yang sudah kamu isi akan hilang. Yakin ingin keluar?')) {
+            formDirty = false;
+            window.location.href = url;
+        }
+        return false;
+    }
+    return true;
+}
+
+// Bind ke tombol Batal
+document.getElementById('btn-batal').addEventListener('click', function(e) {
+    konfirmasiKeluar(e, this.href);
+});
+
+// Tandai form sudah diisi jika ada perubahan
+document.getElementById('form-transaksi').addEventListener('change', function() {
+    formDirty = true;
+});
+document.getElementById('form-transaksi').addEventListener('input', function() {
+    formDirty = true;
+});
+
+// Tampilkan konfirmasi saat refresh/close tab
+window.addEventListener('beforeunload', function(e) {
+    if (formDirty) {
+        e.preventDefault();
+        e.returnValue = 'Data yang sudah kamu isi akan hilang. Yakin ingin keluar?';
+        return e.returnValue;
+    }
+});
+
+// Reset flag saat form di-submit (supaya tidak muncul saat simpan)
+document.getElementById('form-transaksi').addEventListener('submit', function() {
+    formDirty = false;
+});
+
+// Reset flag saat klik tombol Reset
+document.querySelector('button[type="reset"]').addEventListener('click', function() {
+    formDirty = false;
+});
+    
     const kategoris = @json($kategoris);
     let index = 1;
 
