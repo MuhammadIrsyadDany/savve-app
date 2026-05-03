@@ -198,11 +198,17 @@
                 <div class="flex-1 max-w-xs hidden sm:block">
                     <div class="relative">
                         <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" style="font-size: 12px">🔍</span>
-                        <input type="text" placeholder="Cari transaksi atau nama barang..."
-                            class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm transition"
-                            style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px; color: #374151"
-                            onfocus="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
-                            onblur="this.style.borderColor='#ede9fe'; this.style.boxShadow='none'">
+                        <form method="GET" action="{{ route('kasir.search') }}" class="w-full">
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" style="font-size: 12px">🔍</span>
+                            <input type="text" name="q" value="{{ request('q') }}"
+                                placeholder="Cari transaksi atau nama barang..."
+                                class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm transition"
+                                style="background: #faf5ff; border: 1.5px solid #ede9fe; font-size: 13px; color: #374151"
+                                onfocus="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
+                                onblur="this.style.borderColor='#ede9fe'; this.style.boxShadow='none'">
+                        </div>
+                    </form>
                     </div>
                 </div>
             </div>

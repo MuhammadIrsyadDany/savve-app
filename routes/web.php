@@ -26,6 +26,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::delete('/transaksis/{transaksi}/destroy', [AdminTransaksiController::class, 'destroy'])->name('transaksis.destroy');
     Route::get('/rekap-event', [App\Http\Controllers\Admin\RekapEventController::class, 'index'])->name('rekap.index');
     Route::get('/rekap-event/{event}', [App\Http\Controllers\Admin\RekapEventController::class, 'show'])->name('rekap.show');
+    Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
 });
 
 // Route Kasir
@@ -39,6 +40,7 @@ Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->name('kasir.')->grou
     Route::get('/transaksi/{transaksi}/nota', [TransaksiController::class, 'nota'])->name('transaksi.nota');
     Route::get('/transaksi/{transaksi}/tambah-barang', [TransaksiController::class, 'tambahBarang'])->name('transaksi.tambah-barang');
     Route::post('/transaksi/{transaksi}/tambah-barang', [TransaksiController::class, 'simpanBarang'])->name('transaksi.simpan-barang');
+    Route::get('/search', [App\Http\Controllers\Kasir\SearchController::class, 'index'])->name('search');
 });
 
 require __DIR__ . '/auth.php';
