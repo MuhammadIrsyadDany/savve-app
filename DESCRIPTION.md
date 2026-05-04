@@ -20,4 +20,4 @@ This system is developed to improve the efficiency, accuracy, and accessibility 
 
 ## Purpose
 This repository is created as part of a thesis project titled:  
-**“Analisis dan Perancangan Sistem Informasi Penitipan Barang Berbasis Web untuk Meningkatkan Kemudahan Pelaporan Transaksi Harian Pada Vendor SAVVE.”**
+**“PERANCANGAN DAN IMPLEMENTASI SISTEM INFORMASI PENITIPAN BARANG BERBASIS WEB (Studi Kasus: Vendor Savve)”**
