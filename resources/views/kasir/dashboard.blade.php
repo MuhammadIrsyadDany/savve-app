@@ -12,10 +12,10 @@
             <h1 class="text-xl lg:text-2xl font-black text-gray-900">Selamat Datang, {{ auth()->user()->name }}! 👋</h1>
             <p class="text-gray-400 text-sm mt-1">Siap melayani penitipan barang hari ini.</p>
         </div>
-        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold self-start flex-shrink-0"
-            style="background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe">
-            <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: #00d100"></span>
-            Shift Aktif
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold self-start flex-shrink-0"
+            style="background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block"></span>
+            Sistem Online
         </div>
     </div>
 

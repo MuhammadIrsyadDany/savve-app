@@ -220,6 +220,13 @@
                 </button>
             </div>
 
+            {{-- Role Badge --}}
+            <div class="mx-3 mt-3 px-3 py-2 rounded-xl flex items-center gap-2"
+                style="background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2)">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background: #34d399"></span>
+                <p class="text-xs font-bold" style="color: #34d399">CASHIER MODE AKTIF</p>
+            </div>
+
             {{-- Nav --}}
             <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
                 <p class="text-xs font-bold px-3 mb-2 mt-1"
@@ -304,12 +311,6 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    {{-- Cashier Badge --}}
-                    <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
-                        style="background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe">
-                        <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: #00FF00"></span>
-                        Cashier Active
-                    </div>
                     <a href="{{ route('kasir.profile') }}"
                         class="flex items-center gap-2.5 pl-2 lg:pl-3 hover:opacity-80 transition"
                         style="border-left: 1.5px solid #ede9fe">
