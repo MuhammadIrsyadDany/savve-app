@@ -5,13 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Savve — Login</title>
+
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
+
     <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
         * {
             font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
         }
 
         @keyframes fadeUp {
@@ -77,18 +87,6 @@
 
             100% {
                 background-position: 200% center;
-            }
-        }
-
-        @keyframes pulse-ring {
-            0% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-
-            100% {
-                transform: scale(1.8);
-                opacity: 0;
             }
         }
 
@@ -201,42 +199,46 @@
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col lg:flex-row overflow-x-hidden" style="background: #f0f4f8;">
+<body class="h-screen overflow-hidden flex flex-col lg:flex-row" style="background: #f0f4f8;">
 
     {{-- ═══ LEFT PANEL ═══ --}}
-    <div class="hidden lg:flex w-[48%] flex-col justify-between py-12 px-14 relative overflow-hidden flex-shrink-0"
-        style="background: linear-gradient(150deg, #07111f 0%, #0c1e3d 35%, #0f2654 65%, #1a3a6b 100%); min-height: 100vh;">
+    <div class="hidden lg:flex w-[48%] flex-col justify-between py-10 px-14 relative overflow-hidden flex-shrink-0"
+        style="background: linear-gradient(150deg, #07111f 0%, #0c1e3d 35%, #0f2654 65%, #1a3a6b 100%);
+               height: 100vh;">
 
         {{-- Decorative background --}}
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            {{-- Blobs --}}
+
             <div class="animate-blob absolute opacity-20"
                 style="width: 480px; height: 480px; top: -100px; right: -100px;
                        background: radial-gradient(circle, #1e4d8c 0%, #4a9eff 50%, transparent 80%)">
             </div>
+
             <div class="animate-blob absolute opacity-15"
                 style="width: 380px; height: 380px; bottom: -80px; left: -80px;
                        background: radial-gradient(circle, #4a9eff 0%, #1a3a6b 60%, transparent 80%);
                        animation-delay: 3s">
             </div>
+
             <div class="animate-blob absolute opacity-10"
                 style="width: 300px; height: 300px; top: 45%; left: 20%;
                        background: radial-gradient(circle, #93c5fd, transparent);
                        animation-delay: 1.5s">
             </div>
 
-            {{-- Rotating rings --}}
             <div class="animate-spin-slow absolute rounded-full"
                 style="width: 560px; height: 560px; top: 50%; left: 50%;
                        transform: translate(-50%, -50%);
                        border: 1px solid rgba(255,255,255,0.04)">
             </div>
+
             <div class="animate-spin-slow absolute rounded-full"
                 style="width: 420px; height: 420px; top: 50%; left: 50%;
                        transform: translate(-50%, -50%);
                        border: 1px solid rgba(74,158,255,0.06);
                        animation-direction: reverse; animation-duration: 18s">
             </div>
+
             <div class="animate-spin-slow absolute rounded-full"
                 style="width: 280px; height: 280px; top: 50%; left: 50%;
                        transform: translate(-50%, -50%);
@@ -260,18 +262,18 @@
         </div>
 
         {{-- Main Content --}}
-        <div class="relative z-10 flex-1 flex flex-col justify-center py-8">
+        <div class="relative z-10 flex-1 flex flex-col justify-center py-4">
 
             {{-- Live badge --}}
             <div
-                class="animate-fade-up delay-100 inline-flex items-center gap-2.5 glass px-4 py-2.5 rounded-full mb-8 self-start">
+                class="animate-fade-up delay-100 inline-flex items-center gap-2.5 glass px-4 py-2.5 rounded-full mb-6 self-start">
                 <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse flex-shrink-0"></span>
                 <span class="text-xs font-semibold" style="color: #93c5fd">Sistem aktif & berjalan optimal</span>
             </div>
 
             {{-- Headline --}}
-            <h1 class="animate-fade-up delay-200 font-black text-white leading-[1.05] mb-6"
-                style="font-size: clamp(2.2rem, 4vw, 3.2rem)">
+            <h1 class="animate-fade-up delay-200 font-black text-white leading-[1.05] mb-5"
+                style="font-size: clamp(2.1rem, 4vw, 3rem)">
                 Kelola<br>
                 <span
                     style="background: linear-gradient(90deg, #4a9eff 0%, #93c5fd 100%);
@@ -281,20 +283,28 @@
                 Lebih Cerdas
             </h1>
 
-            <p class="animate-fade-up delay-300 text-sm leading-relaxed mb-8 max-w-xs" style="color: #93c5fd">
-                Platform manajemen penitipan barang berbasis web untuk operasional event yang efisien, akurat, dan
-                terstruktur.
+            <p class="animate-fade-up delay-300 text-sm leading-relaxed mb-6 max-w-xs" style="color: #93c5fd">
+                Platform manajemen penitipan barang berbasis web untuk operasional event yang efisien,
+                akurat, dan terstruktur.
             </p>
 
             {{-- Feature Cards --}}
             <div class="animate-fade-up delay-400 space-y-3">
                 @foreach ([['icon' => '🔄', 'title' => 'Transaksi real-time & otomatis', 'sub' => 'Eliminasi pencatatan manual'], ['icon' => '🔒', 'title' => 'Nomor transaksi unik & tervalidasi', 'sub' => 'Anti duplikasi & konflik'], ['icon' => '📊', 'title' => 'Laporan & export Excel instan', 'sub' => 'Data akurat setiap saat']] as $f)
-                    <div class="feature-card glass rounded-2xl px-4 py-3.5 flex items-center gap-4 cursor-default">
+                    <div class="feature-card glass rounded-2xl px-4 py-3 flex items-center gap-4 cursor-default">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
-                            style="background: rgba(74,158,255,0.18)">{{ $f['icon'] }}</div>
+                            style="background: rgba(74,158,255,0.18)">
+                            {{ $f['icon'] }}
+                        </div>
+
                         <div>
-                            <p class="text-white text-sm font-semibold leading-tight">{{ $f['title'] }}</p>
-                            <p class="text-xs mt-0.5" style="color: #60a5fa">{{ $f['sub'] }}</p>
+                            <p class="text-white text-sm font-semibold leading-tight">
+                                {{ $f['title'] }}
+                            </p>
+
+                            <p class="text-xs mt-0.5" style="color: #60a5fa">
+                                {{ $f['sub'] }}
+                            </p>
                         </div>
                     </div>
                 @endforeach
@@ -303,20 +313,23 @@
 
         {{-- Footer --}}
         <div class="relative z-10 animate-fade-up delay-500">
-            <p class="text-xs" style="color: #3b5a8a">© {{ date('Y') }} Vendor Savve. All rights reserved.</p>
+            <p class="text-xs" style="color: #3b5a8a">
+                © {{ date('Y') }} Vendor Savve. All rights reserved.
+            </p>
         </div>
     </div>
 
     {{-- ═══ RIGHT PANEL ═══ --}}
-    <div class="flex-1 flex items-center justify-center px-6 py-10 lg:px-12 lg:py-0 relative overflow-hidden"
-        style="min-height: 100vh;">
+    <div class="flex-1 flex items-center justify-center px-6 py-4 lg:px-12 relative overflow-hidden"
+        style="height: 100vh;">
 
-        {{-- Subtle background shapes --}}
+        {{-- Background --}}
         <div class="absolute top-0 right-0 pointer-events-none"
             style="width: 350px; height: 350px;
                    background: radial-gradient(circle, rgba(219,234,254,0.6), transparent);
                    transform: translate(30%, -30%)">
         </div>
+
         <div class="absolute bottom-0 left-0 pointer-events-none"
             style="width: 280px; height: 280px;
                    background: radial-gradient(circle, rgba(219,234,254,0.4), transparent);
@@ -326,22 +339,26 @@
         <div class="w-full max-w-[400px] relative z-10">
 
             {{-- Mobile Logo --}}
-            <div class="lg:hidden flex justify-center mb-8 animate-fade-up">
+            <div class="lg:hidden flex justify-center mb-6 animate-fade-up">
                 <img src="{{ asset('images/logo.png') }}" alt="Savve Logo" class="h-14 w-auto object-contain">
             </div>
 
             {{-- Greeting --}}
-            <div class="animate-fade-up delay-100 mb-7">
+            <div class="animate-fade-up delay-100 mb-6">
                 <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color: #1a3a6b">
                     Selamat Datang Kembali 👋
                 </p>
-                <h2 class="font-black text-gray-900 leading-tight" style="font-size: 1.85rem">
+
+                <h2 class="font-black text-gray-900 leading-tight" style="font-size: 1.8rem">
                     Masuk ke<br>Akun Anda
                 </h2>
-                <p class="text-gray-400 text-sm mt-2">Kelola operasional penitipan barang hari ini.</p>
+
+                <p class="text-gray-400 text-sm mt-2">
+                    Kelola operasional penitipan barang hari ini.
+                </p>
             </div>
 
-            {{-- Error Alert --}}
+            {{-- Error --}}
             @if ($errors->any())
                 <div class="animate-fade-up mb-5 flex items-start gap-3 px-4 py-3.5 rounded-2xl"
                     style="background: #fff5f5; border: 1.5px solid #fecaca;">
@@ -349,9 +366,15 @@
                         style="background: #fee2e2">
                         <span class="text-red-500 text-xs font-bold">!</span>
                     </div>
+
                     <div>
-                        <p class="text-red-700 font-semibold text-sm">Email atau password salah</p>
-                        <p class="text-red-400 text-xs mt-0.5">Periksa kembali dan coba lagi.</p>
+                        <p class="text-red-700 font-semibold text-sm">
+                            Email atau password salah
+                        </p>
+
+                        <p class="text-red-400 text-xs mt-0.5">
+                            Periksa kembali dan coba lagi.
+                        </p>
                     </div>
                 </div>
             @endif
@@ -365,8 +388,12 @@
                     <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #475569">
                         Email
                     </label>
+
                     <div class="relative">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">✉</span>
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                            ✉
+                        </span>
+
                         <input type="email" name="email" value="{{ old('email') }}" required autofocus
                             class="input-field w-full rounded-xl pl-11 pr-4 py-3.5 text-sm text-gray-800 placeholder-gray-400"
                             placeholder="email@example.com">
@@ -378,13 +405,19 @@
                     <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #475569">
                         Password
                     </label>
+
                     <div class="relative">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔒</span>
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                            🔒
+                        </span>
+
                         <input type="password" name="password" id="password" required
                             class="input-field w-full rounded-xl pl-11 pr-12 py-3.5 text-sm text-gray-800 placeholder-gray-400"
                             placeholder="Masukkan password">
+
                         <button type="button" onclick="togglePassword()"
                             class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
+
                             <span id="eye-icon" class="text-sm">👁</span>
                         </button>
                     </div>
@@ -394,6 +427,7 @@
                 <div class="animate-fade-up delay-400 flex items-center gap-2.5">
                     <input type="checkbox" name="remember" id="remember" class="w-4 h-4 rounded cursor-pointer"
                         style="accent-color: #1a3a6b">
+
                     <label for="remember" class="text-sm text-gray-500 cursor-pointer select-none">
                         Ingat saya
                     </label>
@@ -403,6 +437,7 @@
                 <div class="animate-fade-up delay-500 pt-1">
                     <button type="submit"
                         class="btn-shimmer w-full py-4 rounded-xl text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2">
+
                         Masuk ke Dashboard
                         <span class="text-base">→</span>
                     </button>
@@ -410,32 +445,54 @@
             </form>
 
             {{-- Divider --}}
-            <div class="animate-fade-up delay-600 flex items-center gap-3 my-6">
+            <div class="animate-fade-up delay-600 flex items-center gap-3 my-5">
                 <div class="flex-1 h-px" style="background: #e2e8f0"></div>
-                <p class="text-xs font-semibold whitespace-nowrap" style="color: #94a3b8">Hak Akses Sistem</p>
+
+                <p class="text-xs font-semibold whitespace-nowrap" style="color: #94a3b8">
+                    Hak Akses Sistem
+                </p>
+
                 <div class="flex-1 h-px" style="background: #e2e8f0"></div>
             </div>
 
             {{-- Role Cards --}}
             <div class="animate-fade-up delay-700 grid grid-cols-2 gap-3">
+
                 <div class="p-4 rounded-2xl bg-white cursor-default transition hover:shadow-md"
                     style="border: 1.5px solid #e2e8f0">
+
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3"
-                        style="background: #eff6ff">⚙️</div>
+                        style="background: #eff6ff">
+                        ⚙️
+                    </div>
+
                     <p class="text-sm font-bold text-gray-800">Admin</p>
-                    <p class="text-xs text-gray-400 mt-0.5">Full system access</p>
+
+                    <p class="text-xs text-gray-400 mt-0.5">
+                        Full system access
+                    </p>
+
                     <div class="mt-3 flex gap-1">
                         <div class="h-1 w-7 rounded-full" style="background: #1a3a6b"></div>
                         <div class="h-1 w-4 rounded-full" style="background: #dbeafe"></div>
                         <div class="h-1 w-2 rounded-full" style="background: #dbeafe"></div>
                     </div>
                 </div>
+
                 <div class="p-4 rounded-2xl bg-white cursor-default transition hover:shadow-md"
                     style="border: 1.5px solid #e2e8f0">
+
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3"
-                        style="background: #f5f3ff">🧾</div>
+                        style="background: #f5f3ff">
+                        🧾
+                    </div>
+
                     <p class="text-sm font-bold text-gray-800">Kasir</p>
-                    <p class="text-xs text-gray-400 mt-0.5">Storage flow access</p>
+
+                    <p class="text-xs text-gray-400 mt-0.5">
+                        Storage flow access
+                    </p>
+
                     <div class="mt-3 flex gap-1">
                         <div class="h-1 w-5 rounded-full" style="background: #7c3aed"></div>
                         <div class="h-1 w-4 rounded-full" style="background: #ede9fe"></div>
@@ -445,7 +502,7 @@
             </div>
 
             {{-- Footer --}}
-            <p class="animate-fade-up delay-700 text-center text-xs mt-8" style="color: #cbd5e1">
+            <p class="animate-fade-up delay-700 text-center text-xs mt-6" style="color: #cbd5e1">
                 © {{ date('Y') }} Vendor Savve Information Systems
             </p>
 
@@ -458,6 +515,7 @@
     function togglePassword() {
         const input = document.getElementById('password');
         const icon = document.getElementById('eye-icon');
+
         if (input.type === 'password') {
             input.type = 'text';
             icon.textContent = '🙈';
