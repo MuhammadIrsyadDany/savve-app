@@ -1,101 +1,201 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Savve — Login</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
+        * {
+            font-family: 'Inter', sans-serif;
+        }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
+
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50%       { transform: translateY(-14px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-14px);
+            }
         }
+
         @keyframes spin-slow {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
+
         @keyframes blob {
-            0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-            50%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+
+            0%,
+            100% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            }
+
+            50% {
+                border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+            }
         }
+
         @keyframes shimmer {
-            0%   { background-position: -200% center; }
-            100% { background-position:  200% center; }
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
         }
+
         @keyframes pulse-ring {
-            0%   { transform: scale(1);   opacity: 0.5; }
-            100% { transform: scale(1.8); opacity: 0; }
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
         }
 
-        .animate-fade-up     { animation: fadeUp  0.7s ease forwards; }
-        .animate-fade-in     { animation: fadeIn  0.8s ease forwards; }
-        .animate-float       { animation: float   4s ease-in-out infinite; }
-        .animate-blob        { animation: blob    8s ease-in-out infinite; }
-        .animate-spin-slow   { animation: spin-slow 25s linear infinite; }
+        .animate-fade-up {
+            animation: fadeUp 0.7s ease forwards;
+        }
 
-        .delay-100 { animation-delay: 0.1s; opacity: 0; }
-        .delay-200 { animation-delay: 0.2s; opacity: 0; }
-        .delay-300 { animation-delay: 0.3s; opacity: 0; }
-        .delay-400 { animation-delay: 0.4s; opacity: 0; }
-        .delay-500 { animation-delay: 0.5s; opacity: 0; }
-        .delay-600 { animation-delay: 0.6s; opacity: 0; }
-        .delay-700 { animation-delay: 0.7s; opacity: 0; }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .animate-blob {
+            animation: blob 8s ease-in-out infinite;
+        }
+
+        .animate-spin-slow {
+            animation: spin-slow 25s linear infinite;
+        }
+
+        .delay-100 {
+            animation-delay: 0.1s;
+            opacity: 0;
+        }
+
+        .delay-200 {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .delay-300 {
+            animation-delay: 0.3s;
+            opacity: 0;
+        }
+
+        .delay-400 {
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        .delay-500 {
+            animation-delay: 0.5s;
+            opacity: 0;
+        }
+
+        .delay-600 {
+            animation-delay: 0.6s;
+            opacity: 0;
+        }
+
+        .delay-700 {
+            animation-delay: 0.7s;
+            opacity: 0;
+        }
 
         .btn-shimmer {
             background: linear-gradient(135deg, #0a1628, #1a3a6b, #1e4d8c, #1a3a6b, #0a1628);
             background-size: 200% auto;
             animation: shimmer 3s linear infinite;
-            box-shadow: 0 8px 32px rgba(15,32,68,0.4);
+            box-shadow: 0 8px 32px rgba(15, 32, 68, 0.4);
             transition: all 0.3s ease;
         }
+
         .btn-shimmer:hover {
-            box-shadow: 0 14px 40px rgba(15,32,68,0.55);
+            box-shadow: 0 14px 40px rgba(15, 32, 68, 0.55);
             transform: translateY(-2px);
         }
-        .btn-shimmer:active { transform: translateY(0) scale(0.99); }
+
+        .btn-shimmer:active {
+            transform: translateY(0) scale(0.99);
+        }
 
         .input-field {
             transition: all 0.25s ease;
             border: 1.5px solid #e2e8f0;
             background: #f8faff;
         }
+
         .input-field:focus {
             border-color: #1a3a6b;
-            box-shadow: 0 0 0 4px rgba(26,58,107,0.1);
+            box-shadow: 0 0 0 4px rgba(26, 58, 107, 0.1);
             outline: none;
             background: #fff;
         }
 
         .glass {
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(14px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .particle {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255,255,255,0.12);
+            background: rgba(255, 255, 255, 0.12);
             animation: float 5s ease-in-out infinite;
         }
 
         .feature-card {
             transition: all 0.3s ease;
         }
+
         .feature-card:hover {
-            background: rgba(255,255,255,0.12);
+            background: rgba(255, 255, 255, 0.12);
             transform: translateX(4px);
         }
     </style>
@@ -112,31 +212,37 @@
             {{-- Blobs --}}
             <div class="animate-blob absolute opacity-20"
                 style="width: 480px; height: 480px; top: -100px; right: -100px;
-                       background: radial-gradient(circle, #1e4d8c 0%, #4a9eff 50%, transparent 80%)"></div>
+                       background: radial-gradient(circle, #1e4d8c 0%, #4a9eff 50%, transparent 80%)">
+            </div>
             <div class="animate-blob absolute opacity-15"
                 style="width: 380px; height: 380px; bottom: -80px; left: -80px;
                        background: radial-gradient(circle, #4a9eff 0%, #1a3a6b 60%, transparent 80%);
-                       animation-delay: 3s"></div>
+                       animation-delay: 3s">
+            </div>
             <div class="animate-blob absolute opacity-10"
                 style="width: 300px; height: 300px; top: 45%; left: 20%;
                        background: radial-gradient(circle, #93c5fd, transparent);
-                       animation-delay: 1.5s"></div>
+                       animation-delay: 1.5s">
+            </div>
 
             {{-- Rotating rings --}}
             <div class="animate-spin-slow absolute rounded-full"
                 style="width: 560px; height: 560px; top: 50%; left: 50%;
                        transform: translate(-50%, -50%);
-                       border: 1px solid rgba(255,255,255,0.04)"></div>
+                       border: 1px solid rgba(255,255,255,0.04)">
+            </div>
             <div class="animate-spin-slow absolute rounded-full"
                 style="width: 420px; height: 420px; top: 50%; left: 50%;
                        transform: translate(-50%, -50%);
                        border: 1px solid rgba(74,158,255,0.06);
-                       animation-direction: reverse; animation-duration: 18s"></div>
+                       animation-direction: reverse; animation-duration: 18s">
+            </div>
             <div class="animate-spin-slow absolute rounded-full"
                 style="width: 280px; height: 280px; top: 50%; left: 50%;
                        transform: translate(-50%, -50%);
                        border: 1px solid rgba(255,255,255,0.03);
-                       animation-duration: 12s"></div>
+                       animation-duration: 12s">
+            </div>
 
             {{-- Floating particles --}}
             <div class="particle" style="width:8px;height:8px;top:18%;left:12%;animation-delay:0s"></div>
@@ -157,7 +263,8 @@
         <div class="relative z-10 flex-1 flex flex-col justify-center py-8">
 
             {{-- Live badge --}}
-            <div class="animate-fade-up delay-100 inline-flex items-center gap-2.5 glass px-4 py-2.5 rounded-full mb-8 self-start">
+            <div
+                class="animate-fade-up delay-100 inline-flex items-center gap-2.5 glass px-4 py-2.5 rounded-full mb-8 self-start">
                 <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse flex-shrink-0"></span>
                 <span class="text-xs font-semibold" style="color: #93c5fd">Sistem aktif & berjalan optimal</span>
             </div>
@@ -166,33 +273,30 @@
             <h1 class="animate-fade-up delay-200 font-black text-white leading-[1.05] mb-6"
                 style="font-size: clamp(2.2rem, 4vw, 3.2rem)">
                 Kelola<br>
-                <span style="background: linear-gradient(90deg, #4a9eff 0%, #93c5fd 100%);
+                <span
+                    style="background: linear-gradient(90deg, #4a9eff 0%, #93c5fd 100%);
                              -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                     Penitipan
                 </span><br>
                 Lebih Cerdas
             </h1>
 
-            <p class="animate-fade-up delay-300 text-sm leading-relaxed mb-8 max-w-xs"
-                style="color: #93c5fd">
-                Platform manajemen penitipan barang berbasis web untuk operasional event yang efisien, akurat, dan terstruktur.
+            <p class="animate-fade-up delay-300 text-sm leading-relaxed mb-8 max-w-xs" style="color: #93c5fd">
+                Platform manajemen penitipan barang berbasis web untuk operasional event yang efisien, akurat, dan
+                terstruktur.
             </p>
 
             {{-- Feature Cards --}}
             <div class="animate-fade-up delay-400 space-y-3">
-                @foreach([
-                    ['icon' => '🔄', 'title' => 'Transaksi real-time & otomatis',    'sub' => 'Eliminasi pencatatan manual'],
-                    ['icon' => '🔒', 'title' => 'Nomor transaksi unik & tervalidasi', 'sub' => 'Anti duplikasi & konflik'],
-                    ['icon' => '📊', 'title' => 'Laporan & export Excel instan',      'sub' => 'Data akurat setiap saat'],
-                ] as $f)
-                <div class="feature-card glass rounded-2xl px-4 py-3.5 flex items-center gap-4 cursor-default">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
-                        style="background: rgba(74,158,255,0.18)">{{ $f['icon'] }}</div>
-                    <div>
-                        <p class="text-white text-sm font-semibold leading-tight">{{ $f['title'] }}</p>
-                        <p class="text-xs mt-0.5" style="color: #60a5fa">{{ $f['sub'] }}</p>
+                @foreach ([['icon' => '🔄', 'title' => 'Transaksi real-time & otomatis', 'sub' => 'Eliminasi pencatatan manual'], ['icon' => '🔒', 'title' => 'Nomor transaksi unik & tervalidasi', 'sub' => 'Anti duplikasi & konflik'], ['icon' => '📊', 'title' => 'Laporan & export Excel instan', 'sub' => 'Data akurat setiap saat']] as $f)
+                    <div class="feature-card glass rounded-2xl px-4 py-3.5 flex items-center gap-4 cursor-default">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+                            style="background: rgba(74,158,255,0.18)">{{ $f['icon'] }}</div>
+                        <div>
+                            <p class="text-white text-sm font-semibold leading-tight">{{ $f['title'] }}</p>
+                            <p class="text-xs mt-0.5" style="color: #60a5fa">{{ $f['sub'] }}</p>
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>
@@ -211,18 +315,19 @@
         <div class="absolute top-0 right-0 pointer-events-none"
             style="width: 350px; height: 350px;
                    background: radial-gradient(circle, rgba(219,234,254,0.6), transparent);
-                   transform: translate(30%, -30%)"></div>
+                   transform: translate(30%, -30%)">
+        </div>
         <div class="absolute bottom-0 left-0 pointer-events-none"
             style="width: 280px; height: 280px;
                    background: radial-gradient(circle, rgba(219,234,254,0.4), transparent);
-                   transform: translate(-30%, 30%)"></div>
+                   transform: translate(-30%, 30%)">
+        </div>
 
         <div class="w-full max-w-[400px] relative z-10">
 
             {{-- Mobile Logo --}}
             <div class="lg:hidden flex justify-center mb-8 animate-fade-up">
-                <img src="{{ asset('images/logo.png') }}" alt="Savve Logo"
-                    class="h-14 w-auto object-contain">
+                <img src="{{ asset('images/logo.png') }}" alt="Savve Logo" class="h-14 w-auto object-contain">
             </div>
 
             {{-- Greeting --}}
@@ -237,18 +342,18 @@
             </div>
 
             {{-- Error Alert --}}
-            @if($errors->any())
-            <div class="animate-fade-up mb-5 flex items-start gap-3 px-4 py-3.5 rounded-2xl"
-                style="background: #fff5f5; border: 1.5px solid #fecaca;">
-                <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style="background: #fee2e2">
-                    <span class="text-red-500 text-xs font-bold">!</span>
+            @if ($errors->any())
+                <div class="animate-fade-up mb-5 flex items-start gap-3 px-4 py-3.5 rounded-2xl"
+                    style="background: #fff5f5; border: 1.5px solid #fecaca;">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                        style="background: #fee2e2">
+                        <span class="text-red-500 text-xs font-bold">!</span>
+                    </div>
+                    <div>
+                        <p class="text-red-700 font-semibold text-sm">Email atau password salah</p>
+                        <p class="text-red-400 text-xs mt-0.5">Periksa kembali dan coba lagi.</p>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-red-700 font-semibold text-sm">Email atau password salah</p>
-                    <p class="text-red-400 text-xs mt-0.5">Periksa kembali dan coba lagi.</p>
-                </div>
-            </div>
             @endif
 
             {{-- Form --}}
@@ -280,15 +385,15 @@
                             placeholder="Masukkan password">
                         <button type="button" onclick="togglePassword()"
                             class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
-                            <span id="eye-icon" class="text-sm">👁️</span>
+                            <span id="eye-icon" class="text-sm">👁</span>
                         </button>
                     </div>
                 </div>
 
                 {{-- Remember --}}
                 <div class="animate-fade-up delay-400 flex items-center gap-2.5">
-                    <input type="checkbox" name="remember" id="remember"
-                        class="w-4 h-4 rounded cursor-pointer" style="accent-color: #1a3a6b">
+                    <input type="checkbox" name="remember" id="remember" class="w-4 h-4 rounded cursor-pointer"
+                        style="accent-color: #1a3a6b">
                     <label for="remember" class="text-sm text-gray-500 cursor-pointer select-none">
                         Ingat saya
                     </label>
@@ -352,12 +457,12 @@
 <script>
     function togglePassword() {
         const input = document.getElementById('password');
-        const icon  = document.getElementById('eye-icon');
+        const icon = document.getElementById('eye-icon');
         if (input.type === 'password') {
-            input.type       = 'text';
+            input.type = 'text';
             icon.textContent = '🙈';
         } else {
-            input.type       = 'password';
+            input.type = 'password';
             icon.textContent = '👁️';
         }
     }

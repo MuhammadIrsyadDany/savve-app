@@ -22,6 +22,23 @@
     {{-- Stat Cards --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
 
+        @php
+            $totalTransaksiKasir = \App\Models\Transaksi::where('kasir_id', auth()->id())->count();
+            $pctDititipKasir =
+                $totalTransaksiKasir > 0 ? min(round(($belumDiambil / $totalTransaksiKasir) * 100), 100) : 0;
+            $pctDiambilKasir =
+                $totalTransaksiKasir > 0 ? min(round(($sudahDiambil / $totalTransaksiKasir) * 100), 100) : 0;
+            $transaksiKemarinKasir = \App\Models\Transaksi::where('kasir_id', auth()->id())
+                ->whereDate('created_at', today()->subDay())
+                ->count();
+            $pctTransaksiKasir =
+                $transaksiKemarinKasir > 0
+                    ? min(round(($transaksiHariIni / $transaksiKemarinKasir) * 100), 100)
+                    : ($transaksiHariIni > 0
+                        ? 100
+                        : 0);
+        @endphp
+
         <div class="stat-card anim-fade-up delay-2 bg-white rounded-2xl p-4 lg:p-5 border border-gray-100"
             style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
             <div class="flex justify-between items-start mb-3 lg:mb-4">
@@ -29,16 +46,18 @@
                     style="background: linear-gradient(135deg, #faf5ff, #ede9fe)">
                     <span class="text-base lg:text-lg">📊</span>
                 </div>
-                <span class="text-xs font-bold px-2 py-1 rounded-full"
-                    style="background: #faf5ff; color: #7c3aed">+12%</span>
+                <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: #faf5ff; color: #7c3aed">
+                    {{ $pctTransaksiKasir }}%
+                </span>
             </div>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1" style="font-size: 9px">Transaksi
                 Hari Ini</p>
             <p class="text-2xl lg:text-3xl font-black text-gray-900">{{ $transaksiHariIni }}</p>
             <div class="mt-3 h-1 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full rounded-full" style="width: 65%; background: linear-gradient(90deg, #5b21b6, #a78bfa)">
-                </div>
+                <div class="h-full rounded-full transition-all duration-700"
+                    style="width: {{ $pctTransaksiKasir }}%; background: linear-gradient(90deg, #5b21b6, #a78bfa)"></div>
             </div>
+            <p class="text-xs text-gray-400 mt-1">{{ $pctTransaksiKasir }}% dari kemarin</p>
         </div>
 
         <div class="stat-card anim-fade-up delay-3 bg-white rounded-2xl p-4 lg:p-5 border border-gray-100"
@@ -48,16 +67,18 @@
                     style="background: linear-gradient(135deg, #fff7ed, #fed7aa)">
                     <span class="text-base lg:text-lg">🗃️</span>
                 </div>
-                <span class="text-xs font-bold px-2 py-1 rounded-full"
-                    style="background: #fff7ed; color: #c2410c">Aktif</span>
+                <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: #fff7ed; color: #c2410c">
+                    {{ $pctDititipKasir }}%
+                </span>
             </div>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1" style="font-size: 9px">Masih
                 Dititipkan</p>
             <p class="text-2xl lg:text-3xl font-black text-gray-900">{{ $belumDiambil }}</p>
             <div class="mt-3 h-1 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full rounded-full" style="width: 45%; background: linear-gradient(90deg, #ea580c, #fb923c)">
-                </div>
+                <div class="h-full rounded-full transition-all duration-700"
+                    style="width: {{ $pctDititipKasir }}%; background: linear-gradient(90deg, #ea580c, #fb923c)"></div>
             </div>
+            <p class="text-xs text-gray-400 mt-1">{{ $pctDititipKasir }}% dari total transaksi saya</p>
         </div>
 
         <div class="stat-card anim-fade-up delay-4 bg-white rounded-2xl p-4 lg:p-5 border border-gray-100"
@@ -67,16 +88,18 @@
                     style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)">
                     <span class="text-base lg:text-lg">✅</span>
                 </div>
-                <span class="text-xs font-bold px-2 py-1 rounded-full"
-                    style="background: #f0fdf4; color: #15803d">Selesai</span>
+                <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: #f0fdf4; color: #15803d">
+                    {{ $pctDiambilKasir }}%
+                </span>
             </div>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1" style="font-size: 9px">Sudah
                 Diambil</p>
             <p class="text-2xl lg:text-3xl font-black text-gray-900">{{ $sudahDiambil }}</p>
             <div class="mt-3 h-1 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full rounded-full" style="width: 80%; background: linear-gradient(90deg, #16a34a, #4ade80)">
-                </div>
+                <div class="h-full rounded-full transition-all duration-700"
+                    style="width: {{ $pctDiambilKasir }}%; background: linear-gradient(90deg, #16a34a, #4ade80)"></div>
             </div>
+            <p class="text-xs text-gray-400 mt-1">{{ $pctDiambilKasir }}% dari total transaksi saya</p>
         </div>
 
         @php $firstEvent = $eventAktif->first(); @endphp
@@ -95,6 +118,19 @@
             <p class="text-sm font-black leading-tight">
                 {{ $firstEvent ? Str::limit($firstEvent->nama_event, 20) : 'Tidak ada event' }}
             </p>
+            @if ($firstEvent)
+                <div class="mt-3 h-1 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.15)">
+                    @php
+                        $durasiTotal = $firstEvent->tanggal_mulai->diffInDays($firstEvent->tanggal_selesai) ?: 1;
+                        $durasiJalan = $firstEvent->tanggal_mulai->diffInDays(now());
+                        $pctEvent = min(round(($durasiJalan / $durasiTotal) * 100), 100);
+                    @endphp
+                    <div class="h-full rounded-full" style="width: {{ $pctEvent }}%; background: #a78bfa"></div>
+                </div>
+                <p class="text-xs mt-1" style="color: rgba(255,255,255,0.5)">
+                    Hari ke-{{ $durasiJalan + 1 }} dari {{ $durasiTotal }} hari
+                </p>
+            @endif
             <div class="absolute -bottom-4 -right-4 w-20 h-20 rounded-full" style="background: rgba(255,255,255,0.05)">
             </div>
         </div>
