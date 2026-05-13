@@ -240,9 +240,9 @@
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap">
                                 <span class="px-3 py-1 rounded-full text-xs font-bold"
-                                    style="background: {{ $t->status === 'dititip' ? '#faf5ff' : '#f0fdf4' }};
-                                   color: {{ $t->status === 'dititip' ? '#7c3aed' : '#15803d' }}">
-                                    {{ $t->status === 'dititip' ? 'DITITIPKAN' : 'DIAMBIL' }}
+                                    style="background: {{ $t->status === 'dititip' ? '#faf5ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
+                                    color: {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
+                                    {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
                                 </span>
                             </td>
                             <td class="px-5 py-4">

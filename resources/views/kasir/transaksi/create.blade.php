@@ -101,7 +101,7 @@
                             <input type="text" name="no_whatsapp" value="{{ old('no_whatsapp') }}"
                                 class="w-full rounded-xl px-4 py-3 text-sm transition"
                                 style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151"
-                                placeholder="081234567890" onfocus="this.style.borderColor='#a78bfa'"
+                                placeholder="08*********" onfocus="this.style.borderColor='#a78bfa'"
                                 onblur="this.style.borderColor='#ede9fe'">
                             @error('no_whatsapp')
                                 <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p>
@@ -431,13 +431,13 @@
                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Ukuran Barang</label>
                 <div class="grid grid-cols-4 gap-3">
                     ${['S','M','L','XL'].map((u, i) => `
-                        <label class="ukuran-label cursor-pointer">
-                            <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
-                            <div class="ukuran-box border-2 rounded-xl py-3 text-center font-bold text-sm transition"
-                                style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: #faf5ff;' : 'border-color: #e5e7eb; color: #6b7280;'}">
-                        ${u}
-                    </div>
-                </label>`).join('')}
+                            <label class="ukuran-label cursor-pointer">
+                                <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
+                                <div class="ukuran-box border-2 rounded-xl py-3 text-center font-bold text-sm transition"
+                                    style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: #faf5ff;' : 'border-color: #e5e7eb; color: #6b7280;'}">
+                            ${u}
+                        </div>
+                    </label>`).join('')}
                 </div>
             </div>
         `;

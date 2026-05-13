@@ -45,6 +45,8 @@
                         class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition">
                         <option value="">Semua Status</option>
                         <option value="dititip" {{ request('status') === 'dititip' ? 'selected' : '' }}>Dititipkan</option>
+                        <option value="terlambat" {{ request('status') === 'terlambat' ? 'selected' : '' }}>Terlambat
+                        </option>
                         <option value="sudah_diambil" {{ request('status') === 'sudah_diambil' ? 'selected' : '' }}>Sudah
                             Diambil</option>
                     </select>
@@ -212,9 +214,9 @@
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap">
                                 <span class="px-3 py-1 rounded-full text-xs font-bold"
-                                    style="background: {{ $t->status === 'dititip' ? '#eff6ff' : '#f0fdf4' }};
-                                   color: {{ $t->status === 'dititip' ? '#1d4ed8' : '#15803d' }}">
-                                    {{ $t->status === 'dititip' ? 'DITITIPKAN' : 'DIAMBIL' }}
+                                    style="background: {{ $t->status === 'dititip' ? '#faf5ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
+                                    color: {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
+                                    {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
                                 </span>
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap text-gray-400 text-xs">

@@ -41,10 +41,17 @@ class TransaksiController extends Controller
 
     public function create()
     {
-        // Auto nonaktifkan event yang sudah expired
+        // Auto nonaktifkan event expired
         \App\Models\Event::where('status', 'aktif')
             ->where('tanggal_selesai', '<', today())
-            ->update(['status' => 'nonaktif']);
+            ->each(function ($event) {
+                $event->update(['status' => 'nonaktif']);
+
+                // Auto ubah transaksi menjadi terlambat
+                \App\Models\Transaksi::where('event_id', $event->id)
+                    ->where('status', 'dititip')
+                    ->update(['status' => 'terlambat']);
+            });
 
         $events = \App\Models\Event::where('status', 'aktif')->get();
         $kategoris = KategoriBarang::all();
@@ -54,17 +61,26 @@ class TransaksiController extends Controller
 
     public function store(Request $request)
     {
-        // Auto nonaktifkan event yang sudah expired
+        // Auto nonaktifkan event expired
         \App\Models\Event::where('status', 'aktif')
             ->where('tanggal_selesai', '<', today())
-            ->update(['status' => 'nonaktif']);
+            ->each(function ($event) {
+                $event->update(['status' => 'nonaktif']);
+
+                // Auto ubah transaksi menjadi terlambat
+                \App\Models\Transaksi::where('event_id', $event->id)
+                    ->where('status', 'dititip')
+                    ->update(['status' => 'terlambat']);
+            });
 
         // Validasi event
         $event = \App\Models\Event::findOrFail($request->event_id);
+
         if ($event->status !== 'aktif') {
             return back()->withInput()
                 ->with('error', 'Event ini sudah tidak aktif. Transaksi tidak dapat dilakukan.');
         }
+
         $transaksi = DB::transaction(function () use ($request) {
             $nomor = NomorTransaksi::generate();
 
@@ -79,8 +95,10 @@ class TransaksiController extends Controller
             ]);
 
             $event = Event::findOrFail($request->event_id);
+
             if ($event->status !== 'aktif') {
-                return back()->withInput()->with('error', 'Event ini sudah tidak aktif. Transaksi tidak dapat dilakukan.');
+                return back()->withInput()
+                    ->with('error', 'Event ini sudah tidak aktif. Transaksi tidak dapat dilakukan.');
             }
 
             foreach ($request->barang as $item) {
@@ -91,13 +109,13 @@ class TransaksiController extends Controller
                 $harga_satuan = $tarif ? $tarif->harga : 0;
 
                 DetailTransaksi::create([
-                    'transaksi_id' => $transaksi->id,
-                    'kategori_id' => $item['kategori_id'],
+                    'transaksi_id'       => $transaksi->id,
+                    'kategori_id'        => $item['kategori_id'],
                     'nama_barang_custom' => $item['nama_custom'] ?? null,
-                    'ukuran' => $item['ukuran'],
-                    'jumlah' => $item['jumlah'],
-                    'harga_satuan' => $harga_satuan,
-                    'subtotal' => $harga_satuan * $item['jumlah'],
+                    'ukuran'             => $item['ukuran'],
+                    'jumlah'             => $item['jumlah'],
+                    'harga_satuan'       => $harga_satuan,
+                    'subtotal'           => $harga_satuan * $item['jumlah'],
                 ]);
             }
 

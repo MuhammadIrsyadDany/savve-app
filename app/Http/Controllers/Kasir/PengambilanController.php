@@ -21,7 +21,7 @@ class PengambilanController extends Controller
 
         $transaksis = Transaksi::with(['event', 'details.kategori', 'kasir'])
             ->where('nama_penitip', 'like', '%' . $request->nama_penitip . '%')
-            ->where('status', 'dititip')
+            ->whereIn('status', ['dititip', 'terlambat'])
             ->get();
 
         if ($transaksis->isEmpty()) {
@@ -38,12 +38,18 @@ class PengambilanController extends Controller
                 ->with('error', 'Barang ini sudah diambil sebelumnya.');
         }
 
+        $isTerlambat = $transaksi->status === 'terlambat';
+
         $transaksi->update([
             'status'            => 'sudah_diambil',
             'waktu_pengambilan' => now(),
         ]);
 
+        $pesan = $isTerlambat
+            ? "Barang atas nama {$transaksi->nama_penitip} berhasil diambil. ⚠️ Catatan: Pengambilan melebihi batas waktu event."
+            : "Barang atas nama {$transaksi->nama_penitip} berhasil diambil.";
+
         return redirect()->route('kasir.pengambilan.index')
-            ->with('success', "Barang atas nama {$transaksi->nama_penitip} berhasil diambil.");
+            ->with('success', $pesan);
     }
 }
