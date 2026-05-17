@@ -3,101 +3,269 @@
 
 @section('content')
 
-<div class="anim-fade-up delay-1 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
-    <div>
-        <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #1a3a6b">Management</p>
-        <h1 class="text-xl lg:text-2xl font-black text-gray-900">Kelola Event</h1>
-        <p class="text-gray-400 text-sm mt-1">Kelola data event dan setting tarif penitipan barang.</p>
+    {{-- Header --}}
+    <div class="anim-fade-up delay-1 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #1a3a6b">Management</p>
+            <h1 class="text-xl lg:text-2xl font-black text-gray-900">Kelola Event</h1>
+            <p class="text-gray-400 text-sm mt-1">Kelola data event, tarif, dan lihat rekap performa.</p>
+        </div>
+        <a href="{{ route('admin.events.create') }}"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90 self-start flex-shrink-0"
+            style="background: linear-gradient(135deg, #0f2044, #1e4d8c); box-shadow: 0 4px 12px rgba(15,32,68,0.2)">
+            ＋ Tambah Event
+        </a>
     </div>
-    <a href="{{ route('admin.events.create') }}"
-        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90 self-start flex-shrink-0"
-        style="background: linear-gradient(135deg, #0f2044, #1e4d8c); box-shadow: 0 4px 12px rgba(15,32,68,0.2)">
-        ＋ Tambah Event
-    </a>
-</div>
 
-<div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 overflow-hidden"
-    style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm" style="min-width: 600px">
-            <thead>
-                <tr style="background: #f8faff; border-bottom: 2px solid #e2e8f0">
-                    <th class="px-5 py-4 text-left whitespace-nowrap" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Nama Event</th>
-                    <th class="px-5 py-4 text-left whitespace-nowrap" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Tanggal</th>
-                    <th class="px-5 py-4 text-left whitespace-nowrap" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Tarif S/M/L/XL</th>
-                    <th class="px-5 py-4 text-left whitespace-nowrap" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Status</th>
-                    <th class="px-5 py-4 text-left whitespace-nowrap" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Transaksi</th>
-                    <th class="px-5 py-4 text-left whitespace-nowrap" style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($events as $event)
-                <tr class="table-row" style="border-top: 1px solid #f1f5f9">
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        <p class="font-bold text-gray-800">{{ $event->nama_event }}</p>
-                    </td>
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        <p class="text-sm text-gray-600">{{ $event->tanggal_mulai->format('d M Y') }}</p>
-                        <p class="text-xs text-gray-400">s/d {{ $event->tanggal_selesai->format('d M Y') }}</p>
-                    </td>
-                    <td class="px-5 py-4">
-                        @php $tarifs = $event->tarifs->keyBy('ukuran'); @endphp
-                        <div class="flex gap-1 flex-wrap">
-                            @foreach(['S','M','L','XL'] as $u)
-                            <span class="px-2 py-0.5 rounded-lg text-xs font-bold whitespace-nowrap"
-                                style="background: #eff6ff; color: #1d4ed8">
-                                {{ $u }}: Rp {{ number_format($tarifs[$u]->harga ?? 0, 0, ',', '.') }}
-                            </span>
-                            @endforeach
-                        </div>
-                    </td>
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        <span class="px-3 py-1.5 rounded-full text-xs font-bold"
-                            style="background: {{ $event->status === 'aktif' ? '#f0fdf4' : '#fff5f5' }};
-                                   color: {{ $event->status === 'aktif' ? '#15803d' : '#dc2626' }}">
-                            {{ $event->status === 'aktif' ? '● Aktif' : '● Non Aktif' }}
-                        </span>
-                    </td>
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        <span class="font-black text-gray-800">{{ $event->transaksis->count() }}</span>
-                        <span class="text-xs text-gray-400 ml-1">transaksi</span>
-                    </td>
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        <div class="flex items-center gap-3">
-                            <a href="{{ route('admin.events.edit', $event) }}"
-                                class="text-xs font-bold hover:underline" style="color: #1a3a6b">Edit</a>
-                            <form action="{{ route('admin.events.destroy', $event) }}" method="POST"
-                                onsubmit="return confirm('Hapus event ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-xs font-bold hover:underline"
-                                    style="color: #dc2626">Hapus</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="px-5 py-16 text-center">
-                        <div class="flex flex-col items-center gap-3">
-                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
-                                style="background: #f8faff">🎪</div>
-                            <p class="font-semibold text-gray-400">Belum ada event.</p>
-                            <a href="{{ route('admin.events.create') }}"
-                                class="text-sm font-bold hover:underline" style="color: #1a3a6b">
-                                Tambah event pertama →
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    {{-- Summary Cards --}}
+    <div class="anim-fade-up delay-2 grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
+        <div class="bg-white rounded-2xl p-4 lg:p-5 border border-gray-100" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)">
+                    <span class="text-base">🟢</span>
+                </div>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider" style="font-size: 9px">Event Aktif
+                </p>
+            </div>
+            <p class="text-2xl lg:text-3xl font-black text-gray-900">{{ $totalEventAktif }}</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 lg:p-5 border border-gray-100" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style="background: linear-gradient(135deg, #f8faff, #e2e8f0)">
+                    <span class="text-base">⚫</span>
+                </div>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider" style="font-size: 9px">Event Selesai
+                </p>
+            </div>
+            <p class="text-2xl lg:text-3xl font-black text-gray-900">{{ $totalEventSelesai }}</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 lg:p-5 border border-gray-100" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style="background: linear-gradient(135deg, #eff6ff, #dbeafe)">
+                    <span class="text-base">📋</span>
+                </div>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider" style="font-size: 9px">Total
+                    Transaksi</p>
+            </div>
+            <p class="text-2xl lg:text-3xl font-black text-gray-900">{{ number_format($totalTransaksi) }}</p>
+        </div>
+        <div class="rounded-2xl p-4 lg:p-5 text-white relative overflow-hidden"
+            style="background: linear-gradient(135deg, #0f2044, #1a3a6b); box-shadow: 0 8px 24px rgba(15,32,68,0.2)">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style="background: rgba(255,255,255,0.15)">
+                    <span class="text-base">💰</span>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-wider"
+                    style="color: rgba(255,255,255,0.6); font-size: 9px">Total Pendapatan</p>
+            </div>
+            <p class="text-lg lg:text-xl font-black">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
+            <div class="absolute -bottom-3 -right-3 w-16 h-16 rounded-full" style="background: rgba(255,255,255,0.05)">
+            </div>
+        </div>
     </div>
-    @if($events->hasPages())
-    <div class="px-5 py-4" style="border-top: 1px solid #f1f5f9">
-        {{ $events->links() }}
+
+    {{-- Tabel Event --}}
+    <div class="anim-fade-up delay-3 bg-white rounded-2xl border border-gray-100 overflow-hidden"
+        style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+
+        {{-- Tab Filter --}}
+        <div class="flex items-center gap-1 px-5 py-4 border-b border-gray-100 overflow-x-auto">
+            <a href="{{ route('admin.events.index') }}"
+                class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex-shrink-0"
+                style="{{ !request('filter') ? 'background: #eff6ff; color: #1d4ed8' : 'color: #94a3b8' }}">
+                Semua ({{ $events->total() }})
+            </a>
+            <a href="{{ route('admin.events.index', ['filter' => 'aktif']) }}"
+                class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex-shrink-0"
+                style="{{ request('filter') === 'aktif' ? 'background: #f0fdf4; color: #15803d' : 'color: #94a3b8' }}">
+                ● Aktif ({{ $totalEventAktif }})
+            </a>
+            <a href="{{ route('admin.events.index', ['filter' => 'nonaktif']) }}"
+                class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex-shrink-0"
+                style="{{ request('filter') === 'nonaktif' ? 'background: #f8faff; color: #64748b' : 'color: #94a3b8' }}">
+                ● Selesai ({{ $totalEventSelesai }})
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm" style="min-width: 700px">
+                <thead>
+                    <tr style="background: #f8faff; border-bottom: 2px solid #e2e8f0">
+                        <th class="px-5 py-4 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Nama Event</th>
+                        <th class="px-5 py-4 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Tanggal</th>
+                        <th class="px-5 py-4 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Tarif S/M/L/XL</th>
+                        <th class="px-5 py-4 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Status</th>
+                        <th class="px-5 py-4 text-right whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Transaksi</th>
+                        <th class="px-5 py-4 text-right whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Pendapatan</th>
+                        <th class="px-5 py-4 text-center whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($events as $event)
+                        @php
+                            $transaksis = $event->transaksis;
+                            $pendapatan = $transaksis->sum(fn($t) => $t->total_harga);
+                            $dititip = $transaksis->where('status', 'dititip')->count();
+                            $terlambat = $transaksis->where('status', 'terlambat')->count();
+                            $diambil = $transaksis->where('status', 'sudah_diambil')->count();
+                            $tarifs = $event->tarifs->keyBy('ukuran');
+                        @endphp
+                        <tr class="table-row" style="border-top: 1px solid #f1f5f9">
+                            <td class="px-5 py-4">
+                                <p class="font-bold text-gray-800">{{ $event->nama_event }}</p>
+                                @if ($terlambat > 0)
+                                    <p class="text-xs font-semibold mt-0.5" style="color: #dc2626">
+                                        ⚠ {{ $terlambat }} terlambat diambil
+                                    </p>
+                                @endif
+                            </td>
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <p class="text-xs text-gray-600">{{ $event->tanggal_mulai->format('d M Y') }}</p>
+                                <p class="text-xs text-gray-400">s/d {{ $event->tanggal_selesai->format('d M Y') }}</p>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="flex gap-1 flex-wrap">
+                                    @foreach (['S', 'M', 'L', 'XL'] as $u)
+                                        <span class="px-2 py-0.5 rounded-lg text-xs font-bold whitespace-nowrap"
+                                            style="background: #eff6ff; color: #1d4ed8">
+                                            {{ $u }}: Rp
+                                            {{ number_format($tarifs[$u]->harga ?? 0, 0, ',', '.') }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </td>
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <span class="px-3 py-1.5 rounded-full text-xs font-bold"
+                                    style="background: {{ $event->status === 'aktif' ? '#f0fdf4' : '#f8faff' }};
+                                   color: {{ $event->status === 'aktif' ? '#15803d' : '#94a3b8' }}">
+                                    {{ $event->status === 'aktif' ? '● Aktif' : '● Selesai' }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-4 text-right whitespace-nowrap">
+                                <p class="font-black text-gray-800">{{ $transaksis->count() }}</p>
+                                <div class="flex justify-end gap-1 mt-1">
+                                    @if ($dititip > 0)
+                                        <span class="text-xs px-1.5 py-0.5 rounded font-bold"
+                                            style="background: #faf5ff; color: #7c3aed">{{ $dititip }}</span>
+                                    @endif
+                                    @if ($terlambat > 0)
+                                        <span class="text-xs px-1.5 py-0.5 rounded font-bold"
+                                            style="background: #fff5f5; color: #dc2626">{{ $terlambat }}</span>
+                                    @endif
+                                    @if ($diambil > 0)
+                                        <span class="text-xs px-1.5 py-0.5 rounded font-bold"
+                                            style="background: #f0fdf4; color: #15803d">{{ $diambil }}</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-5 py-4 text-right whitespace-nowrap">
+                                <span class="font-black" style="color: #0f2044; font-size: 13px">
+                                    Rp {{ number_format($pendapatan, 0, ',', '.') }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('admin.events.rekap', $event) }}"
+                                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition hover:opacity-80"
+                                        style="background: #eff6ff; color: #1d4ed8">
+                                        📊 Rekap
+                                    </a>
+                                    <a href="{{ route('admin.events.edit', $event) }}"
+                                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition hover:opacity-80"
+                                        style="background: #f8faff; color: #1a3a6b; border: 1px solid #e2e8f0">
+                                        Edit
+                                    </a>
+                                    <form action="{{ route('admin.events.destroy', $event) }}" method="POST"
+                                        onsubmit="return confirm('Hapus event ini?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit"
+                                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition hover:opacity-80"
+                                            style="background: #fff5f5; color: #dc2626; border: 1px solid #fecaca">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="px-5 py-16 text-center">
+                                <div class="flex flex-col items-center gap-3">
+                                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
+                                        style="background: #f8faff">🎪</div>
+                                    <p class="font-semibold text-gray-400">Belum ada event.</p>
+                                    <a href="{{ route('admin.events.create') }}"
+                                        class="text-sm font-bold hover:underline" style="color: #1a3a6b">
+                                        Tambah event pertama →
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if ($events->hasPages())
+            <div class="px-5 py-4 flex flex-col sm:flex-row items-center justify-between gap-3"
+                style="border-top: 1px solid #f1f5f9">
+                <p class="text-xs text-gray-400">
+                    Menampilkan {{ $events->firstItem() }}–{{ $events->lastItem() }} dari {{ $events->total() }} event
+                </p>
+                <div class="flex items-center gap-1">
+                    @if ($events->onFirstPage())
+                        <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm"
+                            style="background: #f8faff; border: 1.5px solid #e2e8f0">‹</span>
+                    @else
+                        <a href="{{ $events->previousPageUrl() }}"
+                            class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm"
+                            style="background: #f8faff; border: 1.5px solid #e2e8f0">‹</a>
+                    @endif
+                    @foreach ($events->getUrlRange(1, $events->lastPage()) as $page => $url)
+                        @if ($page == $events->currentPage())
+                            <span class="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold"
+                                style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">{{ $page }}</span>
+                        @elseif(abs($page - $events->currentPage()) <= 2)
+                            <a href="{{ $url }}"
+                                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm"
+                                style="background: #f8faff; border: 1.5px solid #e2e8f0">{{ $page }}</a>
+                        @elseif($page == 1 || $page == $events->lastPage())
+                            <a href="{{ $url }}"
+                                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm"
+                                style="background: #f8faff; border: 1.5px solid #e2e8f0">{{ $page }}</a>
+                        @elseif(abs($page - $events->currentPage()) == 3)
+                            <span class="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">…</span>
+                        @endif
+                    @endforeach
+                    @if ($events->hasMorePages())
+                        <a href="{{ $events->nextPageUrl() }}"
+                            class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm"
+                            style="background: #f8faff; border: 1.5px solid #e2e8f0">›</a>
+                    @else
+                        <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm"
+                            style="background: #f8faff; border: 1.5px solid #e2e8f0">›</span>
+                    @endif
+                </div>
+            </div>
+        @endif
     </div>
-    @endif
-</div>
 
 @endsection

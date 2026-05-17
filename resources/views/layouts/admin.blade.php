@@ -260,10 +260,6 @@
                     class="sidebar-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
                     <span class="w-5 text-center text-sm">📈</span> Laporan Harian
                 </a>
-                <a href="{{ route('admin.rekap.index') }}"
-                    class="sidebar-link {{ request()->routeIs('admin.rekap.*') ? 'active' : '' }}">
-                    <span class="w-5 text-center text-sm">📊</span> Rekap Event
-                </a>
             </nav>
 
             {{-- User --}}
@@ -292,40 +288,61 @@
         {{-- ═══ MAIN ═══ --}}
         <div class="flex-1 flex flex-col overflow-hidden min-w-0">
 
-            {{-- Topbar --}}
-            <header class="px-4 lg:px-6 h-16 bg-white border-b border-gray-200 flex items-center justify-between">
+            <header class="px-4 lg:px-6 h-16 bg-white border-b border-gray-200 flex items-center justify-between gap-3">
 
-                {{-- Search --}}
-                <div class="flex-1 max-w-xs hidden sm:block">
-                    <form method="GET" action="{{ route('admin.search') }}" class="w-full">
-                        <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                                style="font-size: 12px">🔍</span>
-                            <input type="text" name="q" value="{{ request('q') }}"
-                                placeholder="Cari transaksi, penitip, event..."
-                                class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm transition"
-                                style="background: #f8faff; border: 1.5px solid #e8edf5; font-size: 13px; color: #374151"
-                                onfocus="this.style.borderColor='#4a9eff'; this.style.boxShadow='0 0 0 3px rgba(74,158,255,0.1)'"
-                                onblur="this.style.borderColor='#e8edf5'; this.style.boxShadow='none'">
-                        </div>
-                    </form>
+                {{-- Left Section --}}
+                <div class="flex items-center gap-3">
+
+                    {{-- Hamburger Button Mobile --}}
+                    <button onclick="openSidebar()"
+                        class="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center transition"
+                        style="background:#f1f5f9; border:1px solid #e2e8f0;">
+                        <span style="font-size:18px;">☰</span>
+                    </button>
+
+                    {{-- Search --}}
+                    <div class="flex-1 max-w-xs hidden sm:block">
+                        <form method="GET" action="{{ route('admin.search') }}" class="w-full">
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                                    style="font-size: 12px">🔍</span>
+
+                                <input type="text" name="q" value="{{ request('q') }}"
+                                    placeholder="Cari transaksi, penitip, event..."
+                                    class="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm transition"
+                                    style="background: #f8faff; border: 1.5px solid #e8edf5; font-size: 13px; color: #374151"
+                                    onfocus="this.style.borderColor='#4a9eff'; this.style.boxShadow='0 0 0 3px rgba(74,158,255,0.1)'"
+                                    onblur="this.style.borderColor='#e8edf5'; this.style.boxShadow='none'">
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
 
+                {{-- Right Section --}}
                 <div class="flex items-center gap-2">
+
                     {{-- Profile --}}
                     <a href="{{ route('admin.profile') }}"
                         class="flex items-center gap-2.5 pl-2 lg:pl-3 hover:opacity-80 transition"
                         style="border-left: 1.5px solid #e8edf5">
+
                         <div class="text-right hidden md:block">
-                            <p class="text-xs font-bold leading-none" style="color: #0f2044">{{ auth()->user()->name }}
+                            <p class="text-xs font-bold leading-none" style="color: #0f2044">
+                                {{ auth()->user()->name }}
                             </p>
-                            <p class="text-xs mt-0.5" style="color: #4a9eff">Administrator</p>
+                            <p class="text-xs mt-0.5" style="color: #4a9eff">
+                                Administrator
+                            </p>
                         </div>
+
                         <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm text-white flex-shrink-0"
                             style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
+
                     </a>
+
                 </div>
 
             </header>

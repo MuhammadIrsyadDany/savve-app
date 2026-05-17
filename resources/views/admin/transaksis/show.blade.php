@@ -64,9 +64,9 @@
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Status</p>
                             <span class="px-3 py-1 rounded-full text-xs font-bold"
-                                style="background: {{ $t->status === 'dititip' ? '#faf5ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
-                                    color: {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
-                                {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
+                                style="background: {{ $transaksi->status === 'dititip' ? '#faf5ff' : ($transaksi->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
+                                    color: {{ $transaksi->status === 'dititip' ? '#7c3aed' : ($transaksi->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
+                                {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : ($transaksi->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
                             </span>
                         </div>
                     </div>

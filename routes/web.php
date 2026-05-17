@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\TransaksiController as AdminTransaksiController;
 use App\Http\Controllers\Admin\LaporanController;
 
 Route::get('/', function () {
-    return redirect('/login');
+    return redirect()->route('login');
 });
 
 // Route Admin
@@ -24,8 +24,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
     Route::delete('/transaksis/{transaksi}/destroy', [AdminTransaksiController::class, 'destroy'])->name('transaksis.destroy');
-    Route::get('/rekap-event', [App\Http\Controllers\Admin\RekapEventController::class, 'index'])->name('rekap.index');
-    Route::get('/rekap-event/{event}', [App\Http\Controllers\Admin\RekapEventController::class, 'show'])->name('rekap.show');
+    Route::resource('events', EventController::class);
+    Route::get('/events/{event}/rekap', [EventController::class, 'rekap'])->name('events.rekap');
     Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
     Route::get('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
