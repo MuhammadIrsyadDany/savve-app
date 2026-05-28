@@ -92,7 +92,7 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-sm" style="min-width: 700px">
+            <table id="tabel-event" class="w-full text-sm" style="width:100%">
                 <thead>
                     <tr style="background: #f8faff; border-bottom: 2px solid #e2e8f0">
                         <th class="px-5 py-4 text-left whitespace-nowrap"
@@ -155,7 +155,7 @@
                             <td class="px-5 py-4 whitespace-nowrap">
                                 <span class="px-3 py-1.5 rounded-full text-xs font-bold"
                                     style="background: {{ $event->status === 'aktif' ? '#f0fdf4' : '#f8faff' }};
-                                   color: {{ $event->status === 'aktif' ? '#15803d' : '#94a3b8' }}">
+                                    color: {{ $event->status === 'aktif' ? '#15803d' : '#94a3b8' }}">
                                     {{ $event->status === 'aktif' ? '● Aktif' : '● Selesai' }}
                                 </span>
                             </td>
@@ -223,49 +223,43 @@
                 </tbody>
             </table>
         </div>
-
-        @if ($events->hasPages())
-            <div class="px-5 py-4 flex flex-col sm:flex-row items-center justify-between gap-3"
-                style="border-top: 1px solid #f1f5f9">
-                <p class="text-xs text-gray-400">
-                    Menampilkan {{ $events->firstItem() }}–{{ $events->lastItem() }} dari {{ $events->total() }} event
-                </p>
-                <div class="flex items-center gap-1">
-                    @if ($events->onFirstPage())
-                        <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm"
-                            style="background: #f8faff; border: 1.5px solid #e2e8f0">‹</span>
-                    @else
-                        <a href="{{ $events->previousPageUrl() }}"
-                            class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm"
-                            style="background: #f8faff; border: 1.5px solid #e2e8f0">‹</a>
-                    @endif
-                    @foreach ($events->getUrlRange(1, $events->lastPage()) as $page => $url)
-                        @if ($page == $events->currentPage())
-                            <span class="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold"
-                                style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">{{ $page }}</span>
-                        @elseif(abs($page - $events->currentPage()) <= 2)
-                            <a href="{{ $url }}"
-                                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm"
-                                style="background: #f8faff; border: 1.5px solid #e2e8f0">{{ $page }}</a>
-                        @elseif($page == 1 || $page == $events->lastPage())
-                            <a href="{{ $url }}"
-                                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm"
-                                style="background: #f8faff; border: 1.5px solid #e2e8f0">{{ $page }}</a>
-                        @elseif(abs($page - $events->currentPage()) == 3)
-                            <span class="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">…</span>
-                        @endif
-                    @endforeach
-                    @if ($events->hasMorePages())
-                        <a href="{{ $events->nextPageUrl() }}"
-                            class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm"
-                            style="background: #f8faff; border: 1.5px solid #e2e8f0">›</a>
-                    @else
-                        <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm"
-                            style="background: #f8faff; border: 1.5px solid #e2e8f0">›</span>
-                    @endif
-                </div>
-            </div>
-        @endif
     </div>
 
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#tabel-event').DataTable({
+                responsive: true,
+                pageLength: 10,
+                language: {
+                    search: "🔍",
+                    searchPlaceholder: "Cari event...",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_–_END_ dari _TOTAL_ event",
+                    paginate: {
+                        previous: "‹",
+                        next: "›"
+                    },
+                    zeroRecords: "Tidak ada event yang cocok",
+                    emptyTable: "Belum ada event"
+                },
+                dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"Bf>rtip',
+                buttons: [{
+                        extend: 'excel',
+                        text: '📊 Excel',
+                        title: 'Data Event Savve'
+                    },
+                    {
+                        extend: 'print',
+                        text: '🖨️ Print'
+                    }
+                ],
+                columnDefs: [{
+                    orderable: false,
+                    targets: [-1, -2]
+                }]
+            });
+        });
+    </script>
+@endpush

@@ -11,9 +11,16 @@ use App\Models\DetailTransaksi;
 use App\Helpers\NomorTransaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class TransaksiController extends Controller
 {
+    // Ukuran maksimum data base64 foto (~5 MB setelah decode)
+    private const MAX_FOTO_BASE64_LENGTH = 7_000_000;
+
+    // Tipe MIME yang diizinkan untuk foto
+    private const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
     public function index(Request $request)
     {
         $query = Transaksi::with(['event', 'details.kategori'])
@@ -34,26 +41,19 @@ class TransaksiController extends Controller
             $query->whereDate('created_at', $request->tanggal);
         }
 
-        $transaksis = $query->latest()->paginate(10)->withQueryString();
+        $transaksis = $query->latest()->get();
 
         return view('kasir.transaksi.index', compact('transaksis'));
     }
 
     public function create()
     {
-        // Auto nonaktifkan event expired
-        \App\Models\Event::where('status', 'aktif')
-            ->where('tanggal_selesai', '<', today())
-            ->each(function ($event) {
-                $event->update(['status' => 'nonaktif']);
+        // FIX #10: Hapus logika auto-deaktivasi event dari sini.
+        // Logika ini sudah ditangani oleh Artisan Command 'event:update-status'
+        // yang dijadwalkan harian. Menjalankannya di setiap page load create()
+        // menyebabkan overhead tidak perlu dan duplikasi logika bisnis.
 
-                // Auto ubah transaksi menjadi terlambat
-                \App\Models\Transaksi::where('event_id', $event->id)
-                    ->where('status', 'dititip')
-                    ->update(['status' => 'terlambat']);
-            });
-
-        $events = \App\Models\Event::where('status', 'aktif')->get();
+        $events    = Event::where('status', 'aktif')->get();
         $kategoris = KategoriBarang::all();
 
         return view('kasir.transaksi.create', compact('events', 'kategoris'));
@@ -61,73 +61,94 @@ class TransaksiController extends Controller
 
     public function store(Request $request)
     {
-        // Auto nonaktifkan event expired
-        \App\Models\Event::where('status', 'aktif')
-            ->where('tanggal_selesai', '<', today())
-            ->each(function ($event) {
-                $event->update(['status' => 'nonaktif']);
+        $request->validate([
+            'event_id'             => 'required|exists:events,id',
+            'nama_penitip'         => 'required|string|max:255',
+            'no_whatsapp'          => 'required|string|max:20',
+            'barang'               => 'required|array|min:1',
+            'barang.*.kategori_id' => 'required|exists:kategori_barangs,id',
+            'barang.*.nama_custom' => 'nullable|string|max:255',
+            'barang.*.ukuran'      => 'required|in:S,M,L,XL',
+            'barang.*.jumlah'      => 'required|integer|min:1',
+            'foto_penitipan'       => 'nullable|string',
+        ]);
 
-                // Auto ubah transaksi menjadi terlambat
-                \App\Models\Transaksi::where('event_id', $event->id)
-                    ->where('status', 'dititip')
-                    ->update(['status' => 'terlambat']);
-            });
-
-        // Validasi event
-        $event = \App\Models\Event::findOrFail($request->event_id);
+        // Cek event aktif
+        $event = Event::findOrFail($request->event_id);
 
         if ($event->status !== 'aktif') {
             return back()->withInput()
-                ->with('error', 'Event ini sudah tidak aktif. Transaksi tidak dapat dilakukan.');
+                ->with('error', 'Event ini sudah tidak aktif.');
         }
 
-        $transaksi = DB::transaction(function () use ($request) {
+        // FIX #7: Validasi tambahan — event belum boleh menerima penitipan
+        // sebelum tanggal mulai event tiba.
+        if ($event->tanggal_mulai->isAfter(today())) {
+            return back()->withInput()
+                ->with('error', "Event '{$event->nama_event}' belum dimulai. Tanggal mulai: " . $event->tanggal_mulai->format('d M Y') . '.');
+        }
+
+        $transaksi = DB::transaction(function () use ($request, $event) {
+            // FIX #3: NomorTransaksi::generate() dipanggil di dalam DB::transaction()
+            // sehingga lockForUpdate() di dalamnya benar-benar menahan lock
+            // dan mencegah race condition duplikat nomor transaksi.
             $nomor = NomorTransaksi::generate();
 
-            $transaksi = Transaksi::create([
-                'nomor_transaksi'  => $nomor,
-                'event_id'         => $request->event_id,
-                'kasir_id'         => auth()->id(),
-                'nama_penitip'     => $request->nama_penitip,
-                'no_whatsapp'      => $request->no_whatsapp,
-                'status'           => 'dititip',
-                'waktu_penitipan'  => now(),
-            ]);
+            // Simpan foto penitipan jika ada
+            $fotoPath = null;
+            if ($request->filled('foto_penitipan')) {
+                $fotoPath = $this->simpanFotoBase64(
+                    $request->foto_penitipan,
+                    'foto-penitipan'
+                );
 
-            $event = Event::findOrFail($request->event_id);
-
-            if ($event->status !== 'aktif') {
-                return back()->withInput()
-                    ->with('error', 'Event ini sudah tidak aktif. Transaksi tidak dapat dilakukan.');
+                if ($fotoPath === false) {
+                    throw new \RuntimeException('Foto tidak valid atau ukuran terlalu besar (maks 5 MB).');
+                }
             }
 
-            foreach ($request->barang as $item) {
-                $tarif = Tarif::where('event_id', $request->event_id)
-                    ->where('ukuran', $item['ukuran'])
-                    ->first();
+            $transaksi = Transaksi::create([
+                'nomor_transaksi' => $nomor,
+                'event_id'        => $request->event_id,
+                'kasir_id'        => auth()->id(),
+                'nama_penitip'    => $request->nama_penitip,
+                'no_whatsapp'     => $request->no_whatsapp,
+                'status'          => 'dititip',
+                'waktu_penitipan' => now(),
+                'foto_penitipan'  => $fotoPath,
+            ]);
 
-                $harga_satuan = $tarif ? $tarif->harga : 0;
+            // FIX #9 (PERFORMA): Load semua tarif event sebelum loop untuk
+            // menghindari N+1 query (sebelumnya 1 query per item barang).
+            $tarifs = Tarif::where('event_id', $request->event_id)
+                ->get()
+                ->keyBy('ukuran');
+
+            foreach ($request->barang as $item) {
+                $harga_satuan = $tarifs->get($item['ukuran'])?->harga ?? 0;
+                $subtotal     = $harga_satuan * $item['jumlah'];
 
                 DetailTransaksi::create([
-                    'transaksi_id'       => $transaksi->id,
-                    'kategori_id'        => $item['kategori_id'],
+                    'transaksi_id'      => $transaksi->id,
+                    'kategori_id'       => $item['kategori_id'],
                     'nama_barang_custom' => $item['nama_custom'] ?? null,
-                    'ukuran'             => $item['ukuran'],
-                    'jumlah'             => $item['jumlah'],
-                    'harga_satuan'       => $harga_satuan,
-                    'subtotal'           => $harga_satuan * $item['jumlah'],
+                    'ukuran'            => $item['ukuran'],
+                    'jumlah'            => $item['jumlah'],
+                    'harga_satuan'      => $harga_satuan,
+                    'subtotal'          => $subtotal,
                 ]);
             }
 
             return $transaksi;
         });
 
-        return redirect()->route('kasir.transaksi.show', $transaksi->id);
+        return redirect()->route('kasir.transaksi.show', $transaksi->id)
+            ->with('success', 'Transaksi berhasil disimpan.');
     }
 
     public function show(Transaksi $transaksi)
     {
-        $transaksi = Transaksi::with(['event', 'details'])
+        $transaksi = Transaksi::with(['event', 'details.kategori'])
             ->where('kasir_id', auth()->id())
             ->findOrFail($transaksi->id);
 
@@ -136,7 +157,6 @@ class TransaksiController extends Controller
 
     public function tambahBarang(Transaksi $transaksi)
     {
-        // Pastikan hanya transaksi milik kasir ini & masih dititip
         if ($transaksi->kasir_id !== auth()->id()) {
             abort(403, 'Akses tidak diizinkan.');
         }
@@ -172,12 +192,13 @@ class TransaksiController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $transaksi) {
-            foreach ($request->barang as $item) {
-                $tarif = Tarif::where('event_id', $transaksi->event_id)
-                    ->where('ukuran', $item['ukuran'])
-                    ->first();
+            // FIX #9 (PERFORMA): Load semua tarif sebelum loop
+            $tarifs = Tarif::where('event_id', $transaksi->event_id)
+                ->get()
+                ->keyBy('ukuran');
 
-                $harga_satuan = $tarif ? $tarif->harga : 0;
+            foreach ($request->barang as $item) {
+                $harga_satuan = $tarifs->get($item['ukuran'])?->harga ?? 0;
                 $subtotal     = $harga_satuan * $item['jumlah'];
 
                 DetailTransaksi::create([
@@ -198,13 +219,64 @@ class TransaksiController extends Controller
 
     public function countToday()
     {
-        $count = Transaksi::whereDate('created_at', today())->count();
+        // FIX #6: Filter berdasarkan kasir_id yang login.
+        // Sebelumnya menghitung semua transaksi hari ini dari semua kasir.
+        $count = Transaksi::where('kasir_id', auth()->id())
+            ->whereDate('created_at', today())
+            ->count();
+
         return response()->json(['count' => $count]);
     }
 
     public function nota(Transaksi $transaksi)
     {
+        // Pastikan hanya kasir pemilik yang bisa cetak nota
+        if ($transaksi->kasir_id !== auth()->id()) {
+            abort(403, 'Akses tidak diizinkan.');
+        }
+
         $transaksi->load(['event', 'details.kategori', 'kasir']);
         return view('kasir.transaksi.nota', compact('transaksi'));
+    }
+
+    /**
+     * Decode, validasi, dan simpan foto base64 ke storage.
+     *
+     * FIX #8: Validasi ukuran dan MIME type sebelum menyimpan.
+     *
+     * @return string|false  Path relatif jika sukses, false jika gagal validasi.
+     */
+    private function simpanFotoBase64(string $base64, string $folder): string|false
+    {
+        if (strlen($base64) > self::MAX_FOTO_BASE64_LENGTH) {
+            return false;
+        }
+
+        $raw        = preg_replace('/^data:image\/\w+;base64,/', '', $base64);
+        $binaryData = base64_decode($raw, strict: true);
+
+        if ($binaryData === false) {
+            return false;
+        }
+
+        $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($binaryData);
+
+        if (!in_array($mimeType, self::ALLOWED_MIME_TYPES, strict: true)) {
+            return false;
+        }
+
+        $ext = match ($mimeType) {
+            'image/png'  => 'png',
+            'image/webp' => 'webp',
+            default      => 'jpg',
+        };
+
+        $filename = $folder . '-' . uniqid() . '.' . $ext;
+        $path     = 'foto-transaksi/' . $folder . '/' . $filename;
+
+        Storage::disk('public')->put($path, $binaryData);
+
+        return $path;
     }
 }

@@ -11,11 +11,15 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
-    public function create(): View
+    public function create()
     {
+        if (auth()->check()) {
+            if (auth()->user()->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+            return redirect()->route('kasir.dashboard');
+        }
+
         return view('auth.login');
     }
 

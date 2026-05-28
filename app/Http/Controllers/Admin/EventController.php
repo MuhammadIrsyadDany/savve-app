@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Tarif;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -17,11 +18,20 @@ class EventController extends Controller
             ->latest()
             ->paginate(10);
 
-        // Summary keseluruhan
-        $totalEventAktif    = Event::where('status', 'aktif')->count();
-        $totalEventSelesai  = Event::where('status', 'nonaktif')->count();
-        $totalPendapatan    = Transaksi::where('status', 'sudah_diambil')->get()->sum(fn($t) => $t->total_harga);
-        $totalTransaksi     = Transaksi::count();
+        $totalEventAktif   = Event::where('status', 'aktif')->count();
+        $totalEventSelesai = Event::where('status', 'nonaktif')->count();
+        $totalTransaksi    = Transaksi::count();
+
+        // FIX #11 (PERFORMA): Ganti N+1 query dengan aggregate langsung di DB.
+        // Sebelumnya: Transaksi::get()->sum(fn($t) => $t->total_harga)
+        // yang memuat SEMUA transaksi ke memori lalu menjumlahkan accessor
+        // total_harga (yang sendiri memanggil $this->details->sum('subtotal')
+        // = N query tambahan, satu per transaksi).
+        // Sekarang: satu query JOIN langsung di database.
+        $totalPendapatan = DB::table('transaksis')
+            ->join('detail_transaksis', 'transaksis.id', '=', 'detail_transaksis.transaksi_id')
+            ->where('transaksis.status', 'sudah_diambil')
+            ->sum('detail_transaksis.subtotal');
 
         return view('admin.events.index', compact(
             'events',
@@ -49,20 +59,22 @@ class EventController extends Controller
             'tarif.XL'        => 'required|integer|min:0',
         ]);
 
-        $event = Event::create([
-            'nama_event'      => $request->nama_event,
-            'tanggal_mulai'   => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'status'          => 'aktif',
-        ]);
-
-        foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
-            Tarif::create([
-                'event_id' => $event->id,
-                'ukuran'   => $ukuran,
-                'harga'    => $request->tarif[$ukuran],
+        DB::transaction(function () use ($request) {
+            $event = Event::create([
+                'nama_event'      => $request->nama_event,
+                'tanggal_mulai'   => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+                'status'          => 'aktif',
             ]);
-        }
+
+            foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
+                Tarif::create([
+                    'event_id' => $event->id,
+                    'ukuran'   => $ukuran,
+                    'harga'    => $request->tarif[$ukuran],
+                ]);
+            }
+        });
 
         return redirect()->route('admin.events.index')
             ->with('success', 'Event berhasil ditambahkan.');
@@ -87,19 +99,21 @@ class EventController extends Controller
             'status'          => 'required|in:aktif,nonaktif',
         ]);
 
-        $event->update([
-            'nama_event'      => $request->nama_event,
-            'tanggal_mulai'   => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'status'          => $request->status,
-        ]);
+        DB::transaction(function () use ($request, $event) {
+            $event->update([
+                'nama_event'      => $request->nama_event,
+                'tanggal_mulai'   => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+                'status'          => $request->status,
+            ]);
 
-        foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
-            Tarif::updateOrCreate(
-                ['event_id' => $event->id, 'ukuran' => $ukuran],
-                ['harga' => $request->tarif[$ukuran]]
-            );
-        }
+            foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
+                Tarif::updateOrCreate(
+                    ['event_id' => $event->id, 'ukuran' => $ukuran],
+                    ['harga' => $request->tarif[$ukuran]]
+                );
+            }
+        });
 
         return redirect()->route('admin.events.index')
             ->with('success', 'Event berhasil diupdate.');
@@ -107,7 +121,19 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
+        // FIX #12: Cegah penghapusan event yang masih memiliki transaksi aktif
+        // untuk menghindari data transaksi menjadi orphan.
+        $jumlahTransaksiAktif = $event->transaksis()
+            ->whereIn('status', ['dititip', 'terlambat'])
+            ->count();
+
+        if ($jumlahTransaksiAktif > 0) {
+            return redirect()->route('admin.events.index')
+                ->with('error', "Event tidak bisa dihapus karena masih ada {$jumlahTransaksiAktif} transaksi yang belum diambil.");
+        }
+
         $event->delete();
+
         return redirect()->route('admin.events.index')
             ->with('success', 'Event berhasil dihapus.');
     }

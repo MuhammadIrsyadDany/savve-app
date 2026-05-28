@@ -15,6 +15,8 @@ class Transaksi extends Model
         'status',
         'waktu_penitipan',
         'waktu_pengambilan',
+        'foto_penitipan',
+        'foto_pengambilan',
     ];
 
     protected $casts = [

@@ -22,9 +22,8 @@
 
     <div class="flex flex-col lg:flex-row gap-6">
 
-        {{-- Panel Kanan — tampil di atas form saat mobile --}}
+        {{-- Panel Kanan Mobile (tampil di atas form) --}}
         <div class="w-full lg:hidden space-y-3">
-            {{-- Transaction Number Preview (mobile only) --}}
             <div class="rounded-2xl p-5 text-white relative overflow-hidden"
                 style="background: linear-gradient(135deg, #1e1035, #4c1d95)">
                 <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #c4b5fd">Transaction Number
@@ -32,19 +31,17 @@
                 <p id="nomor-preview-mobile" class="text-2xl font-black tracking-tight leading-tight mb-3 font-mono">
                     SVV-{{ now()->format('ymd') }}-????
                 </p>
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
-                        <p class="font-bold text-white text-sm" id="status-preview-mobile">READY TO SAVE</p>
-                    </div>
+                <div>
+                    <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
+                    <p class="font-bold text-white text-sm" id="status-preview-mobile">READY TO SAVE</p>
                 </div>
                 <div class="absolute -bottom-4 -right-4 w-20 h-20 rounded-full" style="background: rgba(255,255,255,0.05)">
                 </div>
             </div>
         </div>
 
-        {{-- Form Kiri --}}
-        <div class="flex-1">
+        {{-- ═══ FORM KIRI ═══ --}}
+        <div class="flex-1 min-w-0">
             <form action="{{ route('kasir.transaksi.store') }}" method="POST" id="form-transaksi">
                 @csrf
 
@@ -177,17 +174,45 @@
                         + Tambah Barang Lain
                     </button>
 
+                    {{-- Upload Foto Barang --}}
+                    <div class="mb-5">
+                        <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">
+                            Foto Barang <span class="font-normal normal-case text-gray-400">(opsional)</span>
+                        </label>
+
+                        <div id="foto-preview-wrapper" class="hidden mb-3">
+                            <div class="relative">
+                                <img id="foto-preview" src="" alt="Preview"
+                                    class="w-full max-h-48 object-cover rounded-xl" style="border: 1.5px solid #ddd6fe">
+                                <button type="button" onclick="hapusFoto()"
+                                    class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full text-white text-xs font-bold"
+                                    style="background: rgba(0,0,0,0.6)">✕</button>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="foto_penitipan" id="foto_penitipan_input">
+
+                        <div id="foto-buttons" class="grid grid-cols-2 gap-3">
+                            <button type="button" onclick="bukaKamera('penitipan')"
+                                class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90"
+                                style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); color: #7c3aed; border: 1.5px solid #e9d5ff">
+                                <span>📷</span> Ambil Foto
+                            </button>
+                            <label
+                                class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm cursor-pointer transition hover:opacity-90"
+                                style="background: linear-gradient(135deg, #f8fbff, #eef4ff); color: #1d4ed8; border: 1.5px solid #dbeafe">
+                                <span>🖼️</span> Pilih dari Galeri
+                                <input type="file" accept="image/*" class="hidden" onchange="pilihDariGaleri(this)">
+                            </label>
+                        </div>
+                    </div>
+
                     {{-- Tombol Aksi --}}
                     <div class="flex flex-col sm:flex-row gap-3">
                         <button type="submit"
                             class="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
                             style="background: linear-gradient(135deg, #5b21b6, #7c3aed); box-shadow: 0 4px 12px rgba(91,33,182,0.25)">
                             💾 Simpan Transaksi
-                        </button>
-                        <button type="button"
-                            class="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm transition"
-                            style="background: #faf5ff; color: #7c3aed; border: 1.5px solid #ede9fe">
-                            🖨️ Cetak Nota
                         </button>
                     </div>
 
@@ -197,9 +222,9 @@
                             🔄 Reset
                         </button>
                         <a href="{{ route('kasir.dashboard') }}" id="btn-batal"
-                            class="text-sm flex items-center gap-2 font-semibold px-4 py-2 rounded-md transition"
-                            style="background-color: #ef4444; color: white;">
-                            Batal & Kembali
+                            class="text-sm flex items-center gap-2 font-semibold px-4 py-2 rounded-xl transition"
+                            style="background: #fff5f5; color: #ef4444; border: 1.5px solid #fecaca">
+                            ✕ Batal & Kembali
                         </a>
                     </div>
 
@@ -207,7 +232,7 @@
             </form>
         </div>
 
-        {{-- Panel Kanan — hanya tampil di desktop --}}
+        {{-- ═══ PANEL KANAN DESKTOP ═══ --}}
         <div class="hidden lg:flex w-72 flex-shrink-0 flex-col space-y-4">
 
             {{-- Transaction Number Preview --}}
@@ -218,11 +243,9 @@
                 <p id="nomor-preview" class="text-3xl font-black tracking-tight leading-tight mb-4 font-mono">
                     SVV-{{ now()->format('ymd') }}-????
                 </p>
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
-                        <p class="font-bold text-white" id="status-preview">READY TO SAVE</p>
-                    </div>
+                <div>
+                    <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
+                    <p class="font-bold text-white" id="status-preview">READY TO SAVE</p>
                 </div>
                 <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full"
                     style="background: rgba(255,255,255,0.05)"></div>
@@ -257,8 +280,9 @@
                         style="background: rgba(255,255,255,0.1)">❓</div>
                     <div>
                         <p class="font-bold text-sm mb-1">Quick Guide</p>
-                        <p class="text-xs leading-relaxed" style="color: #94a3b8">Ensure No WhatsApp is correct for
-                            automatic digital receipt delivery via Savve Cloud.</p>
+                        <p class="text-xs leading-relaxed" style="color: #94a3b8">
+                            Pastikan nomor WhatsApp benar untuk pengiriman bukti digital via Savve Cloud.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -284,180 +308,173 @@
                 </div>
             </div>
         </div>
+
+    </div>{{-- END flex container --}}
+
+    {{-- Modal Kamera Penitipan --}}
+    <div id="modal-kamera-penitipan" class="hidden fixed inset-0 z-50 flex items-center justify-center"
+        style="background: rgba(0,0,0,0.85)">
+        <div class="bg-white rounded-2xl overflow-hidden w-full max-w-sm mx-4">
+            <div class="flex justify-between items-center px-4 py-3" style="border-bottom: 1px solid #f1f5f9">
+                <p class="font-black text-gray-800 text-sm">📷 Foto Barang Titipan</p>
+                <button onclick="tutupKamera('penitipan')" class="w-8 h-8 flex items-center justify-center rounded-lg"
+                    style="background: #f1f5f9; color: #6b7280">✕</button>
+            </div>
+            <div class="p-4">
+                <div class="rounded-xl overflow-hidden mb-3"
+                    style="background: #0f0f1a; width: 100%; height: 260px; position: relative">
+                    <video id="video-penitipan" autoplay playsinline
+                        style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(1); display: block"></video>
+                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+                        <div style="width: 75%; height: 75%; position: relative">
+                            <div
+                                style="position:absolute;top:0;left:0;width:24px;height:24px;border-top:2.5px solid #a78bfa;border-left:2.5px solid #a78bfa;border-radius:4px 0 0 0">
+                            </div>
+                            <div
+                                style="position:absolute;top:0;right:0;width:24px;height:24px;border-top:2.5px solid #a78bfa;border-right:2.5px solid #a78bfa;border-radius:0 4px 0 0">
+                            </div>
+                            <div
+                                style="position:absolute;bottom:0;left:0;width:24px;height:24px;border-bottom:2.5px solid #a78bfa;border-left:2.5px solid #a78bfa;border-radius:0 0 0 4px">
+                            </div>
+                            <div
+                                style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-bottom:2.5px solid #a78bfa;border-right:2.5px solid #a78bfa;border-radius:0 0 4px 0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <canvas id="canvas-penitipan" class="hidden"></canvas>
+                <button type="button" onclick="jepretFoto('penitipan')"
+                    class="w-full py-3 rounded-xl text-white font-bold text-sm"
+                    style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
+                    📸 Jepret Foto
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // ── Konfirmasi sebelum keluar form ──
+        // ── Konfirmasi keluar ──
         let formDirty = false;
 
-        function konfirmasiKeluar(e, url) {
+        document.getElementById('btn-batal').addEventListener('click', function(e) {
             if (formDirty) {
                 e.preventDefault();
                 if (confirm('Data yang sudah kamu isi akan hilang. Yakin ingin keluar?')) {
                     formDirty = false;
-                    window.location.href = url;
+                    window.location.href = this.href;
                 }
-                return false;
             }
-            return true;
-        }
-
-        // Bind ke tombol Batal
-        document.getElementById('btn-batal').addEventListener('click', function(e) {
-            konfirmasiKeluar(e, this.href);
         });
 
-        // Tandai form sudah diisi jika ada perubahan
-        document.getElementById('form-transaksi').addEventListener('change', function() {
-            formDirty = true;
-        });
-        document.getElementById('form-transaksi').addEventListener('input', function() {
-            formDirty = true;
-        });
+        document.getElementById('form-transaksi').addEventListener('change', () => formDirty = true);
+        document.getElementById('form-transaksi').addEventListener('input', () => formDirty = true);
+        document.getElementById('form-transaksi').addEventListener('submit', () => formDirty = false);
+        document.querySelector('button[type="reset"]').addEventListener('click', () => formDirty = false);
 
-        // Tampilkan konfirmasi saat refresh/close tab
         window.addEventListener('beforeunload', function(e) {
             if (formDirty) {
                 e.preventDefault();
-                e.returnValue = 'Data yang sudah kamu isi akan hilang. Yakin ingin keluar?';
-                return e.returnValue;
+                e.returnValue = '';
             }
         });
 
-        // Reset flag saat form di-submit (supaya tidak muncul saat simpan)
-        document.getElementById('form-transaksi').addEventListener('submit', function() {
-            formDirty = false;
-        });
-
-        // Reset flag saat klik tombol Reset
-        document.querySelector('button[type="reset"]').addEventListener('click', function() {
-            formDirty = false;
-        });
-
+        // ── Barang ──
         const kategoris = @json($kategoris);
         let index = 1;
 
-        // Ukuran radio styling — fix scope per barang-item
         function bindUkuranChange(container) {
-            const radios = container.querySelectorAll('.ukuran-radio');
-            radios.forEach(radio => {
+            container.querySelectorAll('.ukuran-radio').forEach(radio => {
                 radio.addEventListener('change', function() {
-                    // Reset semua ukuran di dalam barang-item ini saja
                     const parentItem = this.closest('.barang-item');
                     parentItem.querySelectorAll('.ukuran-box').forEach(box => {
-                        box.classList.remove('border-purple-500', 'text-purple-600',
-                            'bg-purple-50');
-                        box.classList.add('border-gray-200', 'text-gray-500');
-                        box.style.borderColor = '#e5e7eb';
-                        box.style.color = '#6b7280';
-                        box.style.background = '';
+                        box.style.borderColor = '#ddd6fe';
+                        box.style.color = '#94a3b8';
+                        box.style.background = 'white';
                     });
-                    // Aktifkan hanya yang dipilih
-                    const selectedBox = this.nextElementSibling;
-                    selectedBox.style.borderColor = '#7c3aed';
-                    selectedBox.style.color = '#7c3aed';
-                    selectedBox.style.background = '#faf5ff';
+                    this.nextElementSibling.style.borderColor = '#7c3aed';
+                    this.nextElementSibling.style.color = '#7c3aed';
+                    this.nextElementSibling.style.background = '#faf5ff';
                 });
             });
         }
 
-        // Bind ke semua barang-item yang sudah ada
-        document.querySelectorAll('.barang-item').forEach(item => {
-            bindUkuranChange(item);
-        });
+        document.querySelectorAll('.barang-item').forEach(item => bindUkuranChange(item));
 
-        // Quantity +/-
         function changeQty(btn, delta) {
             const input = btn.parentElement.querySelector('input[type=number]');
             const val = parseInt(input.value) + delta;
             if (val >= 1) input.value = val;
         }
 
-        // Kategori change → show/hide custom
         function bindKategoriChange(select) {
             select.addEventListener('change', function() {
                 const wrapper = this.closest('.barang-item').querySelector('.nama-custom-wrapper');
-                const selected = this.options[this.selectedIndex];
-                wrapper.style.display = selected.dataset.custom == '1' ? 'block' : 'none';
+                wrapper.style.display = this.options[this.selectedIndex].dataset.custom == '1' ? 'block' : 'none';
             });
         }
         document.querySelectorAll('.kategori-select').forEach(bindKategoriChange);
 
-        // Preview update
         function updatePreview() {
             const nama = document.querySelector('[name=nama_penitip]').value;
-            const statusEl = document.getElementById('status-preview');
-            statusEl.textContent = nama ? 'READY TO SAVE' : 'FILL FORM FIRST';
+            const el = document.getElementById('status-preview');
+            if (el) el.textContent = nama ? 'READY TO SAVE' : 'FILL FORM FIRST';
         }
 
-        // Tambah barang
         document.getElementById('tambah-barang').addEventListener('click', function() {
             const container = document.getElementById('barang-container');
             const div = document.createElement('div');
-            div.className = 'barang-item border-t border-gray-100 pt-4 relative';
+            div.className = 'barang-item rounded-xl p-4 relative';
+            div.style.cssText = 'background: #faf5ff; border: 1.5px solid #ede9fe;';
             div.innerHTML = `
             <button type="button" onclick="this.closest('.barang-item').remove()"
-                class="absolute top-4 right-0 text-red-400 hover:text-red-600 text-xs font-semibold">✕ Hapus</button>
-            <div class="grid grid-cols-2 gap-4 mb-3">
+                class="absolute top-3 right-3 text-xs font-bold" style="color: #ef4444">✕ Hapus</button>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Nama Barang</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Nama Barang</label>
                     <select name="barang[${index}][kategori_id]"
-                        class="kategori-select w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                        class="kategori-select w-full rounded-xl px-3 py-2.5 text-sm"
+                        style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
                         ${kategoris.map(k => `<option value="${k.id}" data-custom="${k.is_custom}">${k.nama_kategori}</option>`).join('')}
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Quantity</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Quantity</label>
                     <div class="flex items-center gap-2 w-full">
-                        <button type="button" onclick="changeQty(this, -1)"
-                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg transition"
-                            style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed; min-width: 36px">−</button>
+                        <button type="button" onclick="changeQty(this,-1)"
+                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg"
+                            style="background:white;border:1.5px solid #ddd6fe;color:#7c3aed;min-width:36px">−</button>
                         <input type="number" name="barang[${index}][jumlah]" value="1" min="1"
-                            class="min-w-0 w-full text-center rounded-xl py-2 text-sm font-bold"
-                            style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
-                        <button type="button" onclick="changeQty(this, 1)"
-                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg transition"
-                            style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed; min-width: 36px">+</button>
+                            class="min-w-0 w-full text-center rounded-xl py-2.5 text-sm font-bold"
+                            style="background:white;border:1.5px solid #ddd6fe;color:#374151">
+                        <button type="button" onclick="changeQty(this,1)"
+                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg"
+                            style="background:white;border:1.5px solid #ddd6fe;color:#7c3aed;min-width:36px">+</button>
                     </div>
                 </div>
             </div>
             <div class="nama-custom-wrapper mb-3" style="display:none">
-                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Nama Barang (Lainnya)</label>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Nama Barang (Lainnya)</label>
                 <input type="text" name="barang[${index}][nama_custom]"
-                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    class="w-full rounded-xl px-4 py-3 text-sm"
+                    style="background:white;border:1.5px solid #ddd6fe;color:#374151"
                     placeholder="Tulis nama barang...">
             </div>
             <div>
-                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Ukuran Barang</label>
-                <div class="grid grid-cols-4 gap-3">
-                    ${['S','M','L','XL'].map((u, i) => `
-                            <label class="ukuran-label cursor-pointer">
-                                <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
-                                <div class="ukuran-box border-2 rounded-xl py-3 text-center font-bold text-sm transition"
-                                    style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: #faf5ff;' : 'border-color: #e5e7eb; color: #6b7280;'}">
-                            ${u}
-                        </div>
-                    </label>`).join('')}
+                <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Ukuran Barang</label>
+                <div class="grid grid-cols-4 gap-2">
+                    ${['S','M','L','XL'].map((u,i) => `
+                        <label class="ukuran-label cursor-pointer">
+                            <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
+                            <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
+                                style="${i===0?'border-color:#7c3aed;color:#7c3aed;background:white;':'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
+                                ${u}
+                            </div>
+                        </label>`).join('')}
                 </div>
-            </div>
-        `;
+            </div>`;
             container.appendChild(div);
             bindUkuranChange(div);
             bindKategoriChange(div.querySelector('.kategori-select'));
-            div.querySelectorAll('.ukuran-radio').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    const c = this.closest('.barang-item');
-                    c.querySelectorAll('.ukuran-box').forEach(box => {
-                        box.classList.remove('border-purple-500', 'text-purple-600',
-                            'bg-purple-50');
-                        box.classList.add('border-purple-500', 'text-purple-600',
-                            'bg-purple-50');
-                    });
-                    this.nextElementSibling.classList.add('border-indigo-500', 'text-indigo-600',
-                        'bg-indigo-50');
-                    this.nextElementSibling.classList.remove('border-gray-200', 'text-gray-500');
-                });
-            });
             index++;
         });
 
@@ -465,52 +482,46 @@
             index = 1;
             document.getElementById('barang-container').innerHTML = '';
             document.getElementById('tambah-barang').click();
+            hapusFoto();
+            formDirty = false;
         }
 
-        // Generate preview nomor transaksi
+        // ── Generate Nomor Preview ──
         async function generatePreviewNomor() {
             const today = new Date();
-            const y = today.getFullYear();
-            const m = String(today.getMonth() + 1).padStart(2, '0');
-            const d = String(today.getDate()).padStart(2, '0');
-            const tanggal = `${y}${m}${d}`;
-
+            const tanggal =
+                `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
             try {
                 const res = await fetch('{{ route('kasir.transaksi.count-today') }}');
                 const data = await res.json();
                 const urutan = String(data.count + 1).padStart(4, '0');
-                document.getElementById('nomor-preview').textContent = `SVV-${tanggal}-${urutan}`;
+                const el = document.getElementById('nomor-preview');
+                if (el) el.textContent = `SVV-${tanggal}-${urutan}`;
             } catch (e) {
-                document.getElementById('nomor-preview').textContent = `SVV-${tanggal}-????`;
+                const el = document.getElementById('nomor-preview');
+                if (el) el.textContent = `SVV-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-????`;
             }
         }
         generatePreviewNomor();
-        // Validasi form sebelum submit
+
+        // ── Validasi Form ──
         document.getElementById('form-transaksi').addEventListener('submit', function(e) {
-            let valid = true;
-            let pesanError = [];
-
-            // Reset semua error sebelumnya
             document.querySelectorAll('.error-msg').forEach(el => el.remove());
-            document.querySelectorAll('.border-red-500').forEach(el => {
-                el.classList.remove('border-red-500');
-            });
 
-            // Validasi event
+            let valid = true;
+
             const eventId = document.getElementById('event_id');
             if (!eventId.value) {
                 valid = false;
                 showError(eventId, 'Pilih event terlebih dahulu.');
             }
 
-            // Validasi nama penitip
             const namaPenitip = document.querySelector('[name=nama_penitip]');
             if (!namaPenitip.value.trim()) {
                 valid = false;
                 showError(namaPenitip, 'Nama penitip wajib diisi.');
             }
 
-            // Validasi no whatsapp
             const noWa = document.querySelector('[name=no_whatsapp]');
             if (!noWa.value.trim()) {
                 valid = false;
@@ -520,83 +531,111 @@
                 showError(noWa, 'Nomor WhatsApp tidak valid (9-15 digit angka).');
             }
 
-            // Validasi setiap barang
-            document.querySelectorAll('.barang-item').forEach(function(item, i) {
-                const kategori = item.querySelector('select[name*="kategori_id"]');
+            document.querySelectorAll('.barang-item').forEach(function(item) {
                 const jumlah = item.querySelector('input[name*="jumlah"]');
                 const namaCustomWrapper = item.querySelector('.nama-custom-wrapper');
                 const namaCustomInput = item.querySelector('input[name*="nama_custom"]');
-                const ukuranChecked = item.querySelector('input[name*="ukuran"]:checked');
-
-                // Cek nama custom kalau kategori Lainnya
-                if (namaCustomWrapper && namaCustomWrapper.style.display !== 'none') {
-                    if (!namaCustomInput.value.trim()) {
-                        valid = false;
-                        showError(namaCustomInput, 'Nama barang wajib diisi.');
-                    }
+                if (namaCustomWrapper?.style.display !== 'none' && !namaCustomInput?.value.trim()) {
+                    valid = false;
+                    showError(namaCustomInput, 'Nama barang wajib diisi.');
                 }
-
-                // Cek jumlah
-                if (!jumlah.value || jumlah.value < 1) {
+                if (!jumlah?.value || jumlah.value < 1) {
                     valid = false;
                     showError(jumlah, 'Jumlah minimal 1.');
-                }
-
-                // Cek ukuran
-                if (!ukuranChecked) {
-                    valid = false;
-                    const ukuranContainer = item.querySelector('.grid.grid-cols-4');
-                    showErrorDiv(ukuranContainer, 'Pilih ukuran barang.');
                 }
             });
 
             if (!valid) {
                 e.preventDefault();
-
-                // Scroll ke error pertama
-                const firstError = document.querySelector('.error-msg');
-                if (firstError) {
-                    firstError.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                }
+                document.querySelector('.error-msg')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
             }
         });
 
         function showError(input, message) {
-            input.classList.add('border-red-500', 'focus:ring-red-400');
-            input.classList.remove('border-gray-200');
-
             const msg = document.createElement('p');
-            msg.className = 'error-msg text-red-500 text-xs mt-1 flex items-center gap-1';
+            msg.className = 'error-msg text-red-500 text-xs mt-1';
             msg.innerHTML = `⚠ ${message}`;
             input.parentNode.insertBefore(msg, input.nextSibling);
         }
 
-        function showErrorDiv(container, message) {
-            const msg = document.createElement('p');
-            msg.className = 'error-msg text-red-500 text-xs mt-1 flex items-center gap-1';
-            msg.innerHTML = `⚠ ${message}`;
-            container.parentNode.insertBefore(msg, container.nextSibling);
+        document.addEventListener('input', e => {
+            if (['INPUT', 'SELECT'].includes(e.target.tagName)) {
+                e.target.parentNode.querySelector('.error-msg')?.remove();
+            }
+        });
+
+        // ── Kamera Foto Penitipan ──
+        let streamPenitipan = null;
+
+        async function bukaKamera(type) {
+            document.getElementById('modal-kamera-' + type).classList.remove('hidden');
+            try {
+                streamPenitipan = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: {
+                            ideal: 'environment'
+                        },
+                        width: {
+                            ideal: 1280
+                        },
+                        height: {
+                            ideal: 720
+                        }
+                    }
+                });
+            } catch (e) {
+                streamPenitipan = await navigator.mediaDevices.getUserMedia({
+                    video: true
+                });
+            }
+            const video = document.getElementById('video-' + type);
+            video.srcObject = streamPenitipan;
+            video.style.transform = 'scaleX(1)';
         }
 
-        // Real-time validation — hilangkan error saat user mulai mengisi
-        document.addEventListener('input', function(e) {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-                e.target.classList.remove('border-red-500');
-                const errorMsg = e.target.parentNode.querySelector('.error-msg');
-                if (errorMsg) errorMsg.remove();
-            }
-        });
+        function tutupKamera(type) {
+            streamPenitipan?.getTracks().forEach(t => t.stop());
+            streamPenitipan = null;
+            document.getElementById('modal-kamera-' + type).classList.add('hidden');
+        }
 
-        document.addEventListener('change', function(e) {
-            if (e.target.tagName === 'SELECT') {
-                e.target.classList.remove('border-red-500');
-                const errorMsg = e.target.parentNode.querySelector('.error-msg');
-                if (errorMsg) errorMsg.remove();
-            }
-        });
+        function jepretFoto(type) {
+            const video = document.getElementById('video-' + type);
+            const canvas = document.getElementById('canvas-' + type);
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            document.getElementById('foto_penitipan_input').value = dataUrl;
+            document.getElementById('foto-preview').src = dataUrl;
+            document.getElementById('foto-preview-wrapper').classList.remove('hidden');
+            document.getElementById('foto-buttons').classList.add('hidden');
+
+            tutupKamera(type);
+        }
+
+        function pilihDariGaleri(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('foto_penitipan_input').value = e.target.result;
+                document.getElementById('foto-preview').src = e.target.result;
+                document.getElementById('foto-preview-wrapper').classList.remove('hidden');
+                document.getElementById('foto-buttons').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function hapusFoto() {
+            document.getElementById('foto_penitipan_input').value = '';
+            document.getElementById('foto-preview-wrapper').classList.add('hidden');
+            document.getElementById('foto-buttons').classList.remove('hidden');
+        }
     </script>
 
 @endsection

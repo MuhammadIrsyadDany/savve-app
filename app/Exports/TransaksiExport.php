@@ -75,7 +75,12 @@ class TransaksiExport
         $infos = [
             ['Event',       $event ? $event->nama_event : 'Semua Event'],
             ['Periode',     $this->tanggal ? \Carbon\Carbon::parse($this->tanggal)->format('d F Y') : ($event ? $event->tanggal_mulai->format('d M Y') . ' — ' . $event->tanggal_selesai->format('d M Y') : 'Semua Tanggal')],
-            ['Status',      $this->status ? ($this->status === 'dititip' ? 'Dititipkan' : 'Sudah Diambil') : 'Semua Status'],
+            ['Status',      $this->status ? match ($this->status) {
+                'dititip'       => 'Dititipkan',
+                'terlambat'     => 'Terlambat',
+                'sudah_diambil' => 'Sudah Diambil',
+                default         => $this->status,
+            } : 'Semua Status'],
             ['Dicetak',     now()->format('d F Y, H:i') . ' WIB'],
         ];
 
@@ -130,9 +135,25 @@ class TransaksiExport
                 return "{$nama} (Ukuran {$d->ukuran}) x{$d->jumlah} = Rp " . number_format($d->subtotal, 0, ',', '.');
             })->implode("\n");
 
-            $statusText = $t->status === 'dititip' ? 'Dititipkan' : 'Sudah Diambil';
-            $statusColor = $t->status === 'dititip' ? '1D4ED8' : '15803D';
-            $statusBg    = $t->status === 'dititip' ? 'EFF6FF' : 'F0FDF4';
+            // FIX #5: Tambahkan case 'terlambat' agar tidak salah tampil sebagai 'Sudah Diambil'
+            $statusText  = match ($t->status) {
+                'dititip'      => 'Dititipkan',
+                'terlambat'    => 'Terlambat',
+                'sudah_diambil' => 'Sudah Diambil',
+                default        => ucfirst($t->status),
+            };
+            $statusColor = match ($t->status) {
+                'dititip'      => '1D4ED8',
+                'terlambat'    => '92400E',
+                'sudah_diambil' => '15803D',
+                default        => '374151',
+            };
+            $statusBg    = match ($t->status) {
+                'dititip'      => 'EFF6FF',
+                'terlambat'    => 'FEF3C7',
+                'sudah_diambil' => 'F0FDF4',
+                default        => 'F9FAFB',
+            };
 
             $values = [
                 'A' => $no,
@@ -201,6 +222,7 @@ class TransaksiExport
         $summaryData = [
             ['Total Transaksi', $no - 1],
             ['Total Dititipkan', $transaksis->where('status', 'dititip')->count()],
+            ['Total Terlambat', $transaksis->where('status', 'terlambat')->count()],
             ['Total Diambil', $transaksis->where('status', 'sudah_diambil')->count()],
             ['Total Pendapatan', 'Rp ' . number_format($transaksis->sum(fn($t) => $t->total_harga), 0, ',', '.')],
         ];

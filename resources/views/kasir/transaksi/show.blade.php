@@ -10,12 +10,6 @@
             <p class="text-gray-400 text-sm mt-1">Informasi lengkap transaksi penitipan barang.</p>
         </div>
         <div class="flex gap-3">
-            <a href="{{ route('kasir.transaksi.nota', $transaksi) }}" target="_blank"
-                class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition flex-shrink-0"
-                style="background: white; border: 1.5px solid #ede9fe; color: #7c3aed"
-                onmouseover="this.style.background='#faf5ff'" onmouseout="this.style.background='white'">
-                🖨️ Cetak Nota
-            </a>
             <a href="{{ route('kasir.transaksi.index') }}"
                 class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition flex-shrink-0"
                 style="background: white; border: 1.5px solid #e2e8f0; color: #374151"
@@ -138,6 +132,37 @@
                     </tfoot>
                 </table>
             </div>
+            {{-- Foto Penitipan --}}
+            @if ($transaksi->foto_penitipan)
+                <div class="anim-fade-up delay-4 bg-white rounded-2xl border border-gray-100 overflow-hidden"
+                    style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                    <div class="px-5 py-4" style="border-bottom: 1px solid #f5f3ff">
+                        <p class="font-black text-gray-800">📷 Foto Barang (Saat Penitipan)</p>
+                    </div>
+                    <div class="p-4">
+                        <img src="{{ asset('storage/' . $transaksi->foto_penitipan) }}" alt="Foto Barang"
+                            class="w-full rounded-xl object-cover cursor-pointer"
+                            style="max-height: 200px; border: 1.5px solid #ede9fe"
+                            onclick="this.classList.toggle('max-h-none')">
+                    </div>
+                </div>
+            @endif
+
+            {{-- Foto Pengambilan --}}
+            @if ($transaksi->foto_pengambilan)
+                <div class="anim-fade-up delay-5 bg-white rounded-2xl border border-gray-100 overflow-hidden"
+                    style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                    <div class="px-5 py-4" style="border-bottom: 1px solid #f5f3ff">
+                        <p class="font-black text-gray-800">📷 Foto Pengambilan</p>
+                    </div>
+                    <div class="p-4">
+                        <img src="{{ asset('storage/' . $transaksi->foto_pengambilan) }}" alt="Foto Pengambilan"
+                            class="w-full rounded-xl object-cover cursor-pointer"
+                            style="max-height: 200px; border: 1.5px solid #ede9fe"
+                            onclick="this.classList.toggle('max-h-none')">
+                    </div>
+                </div>
+            @endif
         </div>
 
         {{-- Kanan --}}
@@ -159,7 +184,8 @@
                     </div>
                     </p>
                 </div>
-                <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full" style="background: rgba(255,255,255,0.05)">
+                <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full"
+                    style="background: rgba(255,255,255,0.05)">
                 </div>
             </div>
 

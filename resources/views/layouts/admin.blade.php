@@ -10,6 +10,112 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <style>
+        /* ── DataTables Custom Admin ── */
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1.5px solid #e2e8f0 !important;
+            border-radius: 10px !important;
+            padding: 6px 12px !important;
+            font-size: 13px !important;
+            background: #f8faff !important;
+            color: #374151 !important;
+            outline: none !important;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #4a9eff !important;
+            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1) !important;
+        }
+
+        .dataTables_wrapper .dataTables_length label,
+        .dataTables_wrapper .dataTables_filter label {
+            font-size: 12px !important;
+            color: #64748b !important;
+            font-weight: 600 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            font-size: 12px !important;
+            color: #94a3b8 !important;
+            padding-top: 8px !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: 8px !important;
+            border: 1.5px solid #e2e8f0 !important;
+            background: #f8faff !important;
+            color: #374151 !important;
+            padding: 4px 10px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            margin: 0 2px !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #eff6ff !important;
+            border-color: #4a9eff !important;
+            color: #1a3a6b !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: linear-gradient(135deg, #0f2044, #1e4d8c) !important;
+            border-color: #1a3a6b !important;
+            color: white !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+            opacity: 0.4 !important;
+            cursor: not-allowed !important;
+        }
+
+        .dt-buttons .dt-button {
+            border-radius: 10px !important;
+            border: 1.5px solid #e2e8f0 !important;
+            background: #f8faff !important;
+            color: #374151 !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            padding: 6px 14px !important;
+            margin-right: 4px !important;
+            box-shadow: none !important;
+        }
+
+        .dt-buttons .dt-button:hover {
+            background: linear-gradient(135deg, #0f2044, #1e4d8c) !important;
+            color: white !important;
+            border-color: #1a3a6b !important;
+        }
+
+        table.dataTable thead th {
+            border-bottom: 2px solid #e2e8f0 !important;
+        }
+
+        table.dataTable tbody tr:hover {
+            background: #f8faff !important;
+        }
+
+        table.dataTable.no-footer {
+            border-bottom: none !important;
+        }
+
+        .dataTables_wrapper {
+            padding: 0 !important;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            padding: 16px 20px 12px !important;
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            padding: 12px 20px 16px !important;
+            border-top: 1px solid #f1f5f9 !important;
+        }
+
         * {
             font-family: 'Inter', sans-serif;
         }
@@ -196,6 +302,8 @@
             animation-delay: 0.40s;
             opacity: 0;
         }
+
+        {{-- DataTables --}} <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"><link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"><link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     </style>
 </head>
 
@@ -395,6 +503,19 @@
             }
         });
     </script>
+
+    {{-- DataTables JS --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    @stack('scripts')
 
 </body>
 

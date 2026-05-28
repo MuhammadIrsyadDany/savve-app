@@ -126,7 +126,7 @@
     <div class="anim-fade-up delay-4 bg-white rounded-2xl border border-gray-100 overflow-hidden"
         style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table id="tabel-laporan" class="w-full text-sm" style="width:100%">
                 <thead>
                     <tr style="background: #f8faff; border-bottom: 2px solid #e2e8f0">
                         <th class="px-5 py-4 text-left whitespace-nowrap"
@@ -244,65 +244,6 @@
                     @endforelse
                 </tbody>
             </table>
-
-            {{-- Pagination --}}
-            @if ($transaksis instanceof \Illuminate\Pagination\LengthAwarePaginator && $transaksis->hasPages())
-                <div class="px-5 py-4 flex items-center justify-between" style="border-top: 1px solid #f1f5f9">
-                    <p class="text-xs text-gray-400">
-                        Menampilkan {{ $transaksis->firstItem() }}–{{ $transaksis->lastItem() }}
-                        dari {{ $transaksis->total() }} transaksi
-                    </p>
-                    <div class="flex items-center gap-1">
-                        {{-- Prev --}}
-                        @if ($transaksis->onFirstPage())
-                            <span
-                                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm cursor-not-allowed"
-                                style="background: #f8faff; border: 1.5px solid #e2e8f0">‹</span>
-                        @else
-                            <a href="{{ $transaksis->previousPageUrl() }}"
-                                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition hover:text-white"
-                                style="background: #f8faff; border: 1.5px solid #e2e8f0"
-                                onmouseover="this.style.background='#1a3a6b'; this.style.borderColor='#1a3a6b'"
-                                onmouseout="this.style.background='#f8faff'; this.style.borderColor='#e2e8f0'">‹</a>
-                        @endif
-
-                        {{-- Page Numbers --}}
-                        @foreach ($transaksis->getUrlRange(1, $transaksis->lastPage()) as $page => $url)
-                            @if ($page == $transaksis->currentPage())
-                                <span
-                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold"
-                                    style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">{{ $page }}</span>
-                            @elseif(abs($page - $transaksis->currentPage()) <= 2)
-                                <a href="{{ $url }}"
-                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
-                                    style="background: #f8faff; border: 1.5px solid #e2e8f0"
-                                    onmouseover="this.style.background='#eff6ff'; this.style.color='#1a3a6b'"
-                                    onmouseout="this.style.background='#f8faff'; this.style.color='#6b7280'">{{ $page }}</a>
-                            @elseif($page == 1 || $page == $transaksis->lastPage())
-                                <a href="{{ $url }}"
-                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
-                                    style="background: #f8faff; border: 1.5px solid #e2e8f0">{{ $page }}</a>
-                            @elseif(abs($page - $transaksis->currentPage()) == 3)
-                                <span class="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">…</span>
-                            @endif
-                        @endforeach
-
-                        {{-- Next --}}
-                        @if ($transaksis->hasMorePages())
-                            <a href="{{ $transaksis->nextPageUrl() }}"
-                                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 text-sm transition"
-                                style="background: #f8faff; border: 1.5px solid #e2e8f0"
-                                onmouseover="this.style.background='#1a3a6b'; this.style.color='white'; this.style.borderColor='#1a3a6b'"
-                                onmouseout="this.style.background='#f8faff'; this.style.color='#6b7280'; this.style.borderColor='#e2e8f0'">›</a>
-                        @else
-                            <span
-                                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 text-sm cursor-not-allowed"
-                                style="background: #f8faff; border: 1.5px solid #e2e8f0">›</span>
-                        @endif
-                    </div>
-                </div>
-            @endif
-
         </div>
     </div>
 
@@ -312,28 +253,48 @@
     </p>
 
 @endsection
-
-<script>
-    document.getElementById('event_id').addEventListener('change', function() {
-        const selected = this.options[this.selectedIndex];
-        const tanggalInput = document.getElementById('tanggal');
-        if (selected.value && selected.dataset.mulai) {
-            tanggalInput.min = selected.dataset.mulai;
-            tanggalInput.max = selected.dataset.selesai;
-        } else {
-            tanggalInput.min = '';
-            tanggalInput.max = '';
-            tanggalInput.value = '';
-        }
-    });
-
-    window.addEventListener('load', function() {
-        const select = document.getElementById('event_id');
-        const selected = select.options[select.selectedIndex];
-        const tanggalInput = document.getElementById('tanggal');
-        if (selected.value && selected.dataset.mulai) {
-            tanggalInput.min = selected.dataset.mulai;
-            tanggalInput.max = selected.dataset.selesai;
-        }
-    });
-</script>
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#tabel-laporan').DataTable({
+                responsive: true,
+                pageLength: 15,
+                language: {
+                    search: "🔍",
+                    searchPlaceholder: "Cari laporan...",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_–_END_ dari _TOTAL_ transaksi",
+                    paginate: {
+                        previous: "‹",
+                        next: "›"
+                    },
+                    zeroRecords: "Tidak ada data yang cocok",
+                    emptyTable: "Belum ada data laporan"
+                },
+                dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"Bf>rtip',
+                buttons: [{
+                        extend: 'excel',
+                        text: '📊 Export Excel',
+                        title: 'Laporan Savve'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '📄 Export PDF',
+                        title: 'Laporan Savve'
+                    },
+                    {
+                        extend: 'print',
+                        text: '🖨️ Print'
+                    }
+                ],
+                order: [
+                    [6, 'desc']
+                ],
+                columnDefs: [{
+                    orderable: false,
+                    targets: -1
+                }]
+            });
+        });
+    </script>
+@endpush
