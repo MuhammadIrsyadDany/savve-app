@@ -13,6 +13,16 @@ class EventController extends Controller
 {
     public function index()
     {
+        // Auto nonaktifkan event expired
+        \App\Models\Event::where('status', 'aktif')
+            ->where('tanggal_selesai', '<', today())
+            ->each(function ($event) {
+                $event->update(['status' => 'nonaktif']);
+                \App\Models\Transaksi::where('event_id', $event->id)
+                    ->where('status', 'dititip')
+                    ->update(['status' => 'terlambat']);
+            });
+
         $events = Event::withCount('transaksis')
             ->with(['transaksis.details', 'tarifs'])
             ->latest()
@@ -22,12 +32,6 @@ class EventController extends Controller
         $totalEventSelesai = Event::where('status', 'nonaktif')->count();
         $totalTransaksi    = Transaksi::count();
 
-        // FIX #11 (PERFORMA): Ganti N+1 query dengan aggregate langsung di DB.
-        // Sebelumnya: Transaksi::get()->sum(fn($t) => $t->total_harga)
-        // yang memuat SEMUA transaksi ke memori lalu menjumlahkan accessor
-        // total_harga (yang sendiri memanggil $this->details->sum('subtotal')
-        // = N query tambahan, satu per transaksi).
-        // Sekarang: satu query JOIN langsung di database.
         $totalPendapatan = DB::table('transaksis')
             ->join('detail_transaksis', 'transaksis.id', '=', 'detail_transaksis.transaksi_id')
             ->where('transaksis.status', 'sudah_diambil')
