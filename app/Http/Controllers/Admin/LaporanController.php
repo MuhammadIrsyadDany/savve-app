@@ -26,11 +26,6 @@ class LaporanController extends Controller
             || $request->filled('show');
 
         if ($hasFilter) {
-            // FIX #4: Pisahkan query summary dan query pagination agar tidak
-            // ada double-query pada builder yang sama (sebelumnya ->get() lalu
-            // ->paginate() pada instance yang sama mengeksekusi 2x ke DB).
-            // Gunakan clone() agar kondisi WHERE tidak berulang secara manual.
-
             $baseQuery = Transaksi::with(['event', 'kasir', 'details.kategori']);
 
             if ($request->filled('event_id')) {
@@ -46,15 +41,15 @@ class LaporanController extends Controller
                 $baseQuery->where('status', $request->status);
             }
 
-            // Query 1: ambil semua untuk menghitung summary cards (tanpa pagination)
+            // Summary cards
             $allTransaksis   = (clone $baseQuery)->get();
             $totalPendapatan = $allTransaksis->sum(fn($t) => $t->total_harga);
             $totalDititip    = $allTransaksis->where('status', 'dititip')->count();
             $totalTerlambat  = $allTransaksis->where('status', 'terlambat')->count();
             $totalDiambil    = $allTransaksis->where('status', 'sudah_diambil')->count();
 
-            // Query 2: instance terpisah untuk pagination tabel
-            $transaksis = $query->latest()->get();
+            // Data tabel
+            $transaksis = (clone $baseQuery)->latest()->get();
         }
 
         return view('admin.laporan.index', compact(

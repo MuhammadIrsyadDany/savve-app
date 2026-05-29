@@ -204,64 +204,62 @@
                     ⬇ Export
                 </a>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs" style="min-width: 400px">
-                    <thead>
-                        <tr style="background: #f8faff">
-                            <th class="px-4 py-3 text-left font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
-                                style="font-size: 10px">ID</th>
-                            <th class="px-4 py-3 text-left font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
-                                style="font-size: 10px">Penitip</th>
-                            <th class="px-4 py-3 text-left font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
-                                style="font-size: 10px">Barang</th>
-                            <th class="px-4 py-3 text-left font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
-                                style="font-size: 10px">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse(\App\Models\Transaksi::with(['event','details.kategori'])->latest()->take(8)->get() as $t)
-                            <tr class="table-row border-t border-gray-50">
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <a href="{{ route('admin.transaksis.show', $t) }}" class="font-bold hover:underline"
-                                        style="color: #1a3a6b; font-family: monospace">
-                                        #{{ substr($t->nomor_transaksi, -4) }}
-                                    </a>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
-                                            style="background: linear-gradient(135deg, #1a3a6b, #4a9eff); font-size: 9px">
-                                            {{ strtoupper(substr($t->nama_penitip, 0, 1)) }}
-                                        </div>
-                                        <span
-                                            class="font-medium text-gray-700 whitespace-nowrap">{{ Str::limit($t->nama_penitip, 10) }}</span>
+            <table class="w-full text-xs" style="width:100%">
+                <thead>
+                    <tr style="background: #f8faff">
+                        <th class="px-4 py-3 text-left font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
+                            style="font-size: 10px">ID</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
+                            style="font-size: 10px">Penitip</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
+                            style="font-size: 10px">Barang</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
+                            style="font-size: 10px">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse(\App\Models\Transaksi::with(['event','details.kategori'])->latest()->take(8)->get() as $t)
+                        <tr class="table-row border-t border-gray-50">
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <a href="{{ route('admin.transaksis.show', $t) }}" class="font-bold hover:underline"
+                                    style="color: #1a3a6b; font-family: monospace">
+                                    #{{ substr($t->nomor_transaksi, -4) }}
+                                </a>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
+                                        style="background: linear-gradient(135deg, #1a3a6b, #4a9eff); font-size: 9px">
+                                        {{ strtoupper(substr($t->nama_penitip, 0, 1)) }}
                                     </div>
-                                </td>
-                                <td class="px-4 py-3">
-                                    @foreach ($t->details->take(1) as $d)
-                                        <span class="px-2 py-0.5 rounded-md text-gray-600 font-medium whitespace-nowrap"
-                                            style="background: #f1f5f9; font-size: 10px">
-                                            {{ Str::limit($d->nama_barang_custom ?? $d->kategori->nama_kategori, 10) }}
-                                        </span>
-                                    @endforeach
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <span class="px-2 py-1 rounded-full font-bold"
-                                        style="background: {{ $t->status === 'dititip' ? '#faf5ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
-                                    color: {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
-                                        {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
+                                    <span
+                                        class="font-medium text-gray-700 whitespace-nowrap">{{ Str::limit($t->nama_penitip, 10) }}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                @foreach ($t->details->take(1) as $d)
+                                    <span class="px-2 py-0.5 rounded-md text-gray-600 font-medium whitespace-nowrap"
+                                        style="background: #f1f5f9; font-size: 10px">
+                                        {{ Str::limit($d->nama_barang_custom ?? $d->kategori->nama_kategori, 10) }}
                                     </span>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="px-4 py-8 text-center text-gray-300">Belum ada transaksi.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                @endforeach
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="px-2 py-1 rounded-full font-bold"
+                                    style="background: {{ $t->status === 'dititip' ? '#faf5ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
+                                    color: {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
+                                    {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
+                                </span>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-4 py-8 text-center text-gray-300">Belum ada transaksi.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 

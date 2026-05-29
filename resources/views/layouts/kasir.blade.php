@@ -71,6 +71,47 @@
             cursor: not-allowed !important;
         }
 
+        /* ── DataTables Sorting Icons ── */
+        table.dataTable thead th.sorting,
+        table.dataTable thead th.sorting_asc,
+        table.dataTable thead th.sorting_desc {
+            padding-right: 26px !important;
+            position: relative !important;
+            cursor: pointer !important;
+        }
+
+        table.dataTable thead th.sorting::after,
+        table.dataTable thead th.sorting_asc::after,
+        table.dataTable thead th.sorting_desc::after {
+            position: absolute !important;
+            right: 8px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            font-size: 11px !important;
+            line-height: 1 !important;
+        }
+
+        /* Default — belum di-sort */
+        table.dataTable thead th.sorting::after {
+            content: '▲▼' !important;
+            color: #cbd5e1 !important;
+            font-size: 9px !important;
+        }
+
+        table.dataTable thead th.sorting_asc::after {
+            content: '▲' !important;
+            color: #7c3aed !important;
+        }
+
+        table.dataTable thead th.sorting_desc::after {
+            content: '▼' !important;
+            color: #7c3aed !important;
+        }
+
+        table.dataTable thead th.sorting:hover::after {
+            color: #a78bfa !important;
+        }
+
         .dt-buttons .dt-button {
             border-radius: 10px !important;
             border: 1.5px solid #ede9fe !important;

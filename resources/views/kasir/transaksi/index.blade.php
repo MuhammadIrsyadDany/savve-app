@@ -184,40 +184,28 @@
         </div>
     </div>
 
-@endsection
-
-@push('scripts')
-    <script>
-        $(document).ready(function() {
-            $('#tabel-riwayat').DataTable({
-                responsive: true,
-                pageLength: 10,
-                language: {
-                    search: "🔍",
-                    searchPlaceholder: "Cari transaksi...",
-                    lengthMenu: "Tampilkan _MENU_ data",
-                    info: "Menampilkan _START_–_END_ dari _TOTAL_ transaksi",
-                    paginate: {
-                        previous: "‹",
-                        next: "›"
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                $('#tabel-riwayat').DataTable({
+                    responsive: true,
+                    pageLength: 10,
+                    language: {
+                        search: "🔍",
+                        searchPlaceholder: "Cari transaksi...",
+                        lengthMenu: "Tampilkan _MENU_ data",
+                        info: "Menampilkan _START_–_END_ dari _TOTAL_ transaksi",
+                        paginate: {
+                            previous: "‹",
+                            next: "›"
+                        },
+                        zeroRecords: "Tidak ada transaksi yang cocok",
+                        emptyTable: "Belum ada transaksi"
                     },
-                    zeroRecords: "Tidak ada transaksi yang cocok",
-                    emptyTable: "Belum ada transaksi"
-                },
-                dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"Bf>rtip',
-                buttons: [{
-                    extend: 'excel',
-                    text: '📊 Excel',
-                    title: 'Riwayat Transaksi Saya'
-                }],
-                order: [
-                    [6, 'desc']
-                ],
-                columnDefs: [{
-                    orderable: false,
-                    targets: -1
-                }]
+                    dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"f>rtip',
+                });
             });
-        });
-    </script>
-@endpush
+        </script>
+    @endpush
+
+@endsection

@@ -106,7 +106,7 @@
                         <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                             <div class="h-full rounded-full"
                                 style="width: {{ $maxJumlah > 0 ? round(($data['jumlah'] / $maxJumlah) * 100) : 0 }}%;
-                               background: linear-gradient(90deg, {{ $ukuranColors[$ukuran][0] }}, {{ $ukuranColors[$ukuran][1] }})">
+                                background: linear-gradient(90deg, {{ $ukuranColors[$ukuran][0] }}, {{ $ukuranColors[$ukuran][1] }})">
                             </div>
                         </div>
                     </div>
@@ -121,69 +121,67 @@
                 <p class="font-black text-gray-800">Performa Kasir</p>
                 <p class="text-xs text-gray-400 mt-0.5">Kontribusi setiap kasir di event ini</p>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr style="background: #f8faff; border-bottom: 1px solid #e2e8f0">
-                            <th class="px-5 py-3 text-left whitespace-nowrap"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Kasir</th>
-                            <th class="px-5 py-3 text-right whitespace-nowrap"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Transaksi</th>
-                            <th class="px-5 py-3 text-right whitespace-nowrap"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Status</th>
-                            <th class="px-5 py-3 text-right whitespace-nowrap"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Pendapatan</th>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr style="background: #f8faff; border-bottom: 1px solid #e2e8f0">
+                        <th class="px-5 py-3 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Kasir</th>
+                        <th class="px-5 py-3 text-right whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Transaksi</th>
+                        <th class="px-5 py-3 text-right whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Status</th>
+                        <th class="px-5 py-3 text-right whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Pendapatan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($rekapKasir as $kasir)
+                        <tr class="table-row" style="border-top: 1px solid #f1f5f9">
+                            <td class="px-5 py-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
+                                        style="background: linear-gradient(135deg, #0f2044, #4a9eff); font-size: 10px">
+                                        {{ strtoupper(substr($kasir['nama'], 0, 1)) }}
+                                    </div>
+                                    <span
+                                        class="font-semibold text-gray-700 text-sm whitespace-nowrap">{{ $kasir['nama'] }}</span>
+                                </div>
+                            </td>
+                            <td class="px-5 py-3 text-right font-black text-gray-800">{{ $kasir['total_transaksi'] }}
+                            </td>
+                            <td class="px-5 py-3 text-right">
+                                <div class="flex justify-end gap-1">
+                                    @if ($kasir['total_dititip'] > 0)
+                                        <span class="text-xs px-1.5 py-0.5 rounded font-bold"
+                                            style="background: #faf5ff; color: #7c3aed">{{ $kasir['total_dititip'] }}</span>
+                                    @endif
+                                    @if ($kasir['total_terlambat'] > 0)
+                                        <span class="text-xs px-1.5 py-0.5 rounded font-bold"
+                                            style="background: #fff5f5; color: #dc2626">{{ $kasir['total_terlambat'] }}</span>
+                                    @endif
+                                    @if ($kasir['total_diambil'] > 0)
+                                        <span class="text-xs px-1.5 py-0.5 rounded font-bold"
+                                            style="background: #f0fdf4; color: #15803d">{{ $kasir['total_diambil'] }}</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-5 py-3 text-right font-black whitespace-nowrap"
+                                style="color: #0f2044; font-size: 12px">
+                                Rp {{ number_format($kasir['total_pendapatan'], 0, ',', '.') }}
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($rekapKasir as $kasir)
-                            <tr class="table-row" style="border-top: 1px solid #f1f5f9">
-                                <td class="px-5 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
-                                            style="background: linear-gradient(135deg, #0f2044, #4a9eff); font-size: 10px">
-                                            {{ strtoupper(substr($kasir['nama'], 0, 1)) }}
-                                        </div>
-                                        <span
-                                            class="font-semibold text-gray-700 text-sm whitespace-nowrap">{{ $kasir['nama'] }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-5 py-3 text-right font-black text-gray-800">{{ $kasir['total_transaksi'] }}
-                                </td>
-                                <td class="px-5 py-3 text-right">
-                                    <div class="flex justify-end gap-1">
-                                        @if ($kasir['total_dititip'] > 0)
-                                            <span class="text-xs px-1.5 py-0.5 rounded font-bold"
-                                                style="background: #faf5ff; color: #7c3aed">{{ $kasir['total_dititip'] }}</span>
-                                        @endif
-                                        @if ($kasir['total_terlambat'] > 0)
-                                            <span class="text-xs px-1.5 py-0.5 rounded font-bold"
-                                                style="background: #fff5f5; color: #dc2626">{{ $kasir['total_terlambat'] }}</span>
-                                        @endif
-                                        @if ($kasir['total_diambil'] > 0)
-                                            <span class="text-xs px-1.5 py-0.5 rounded font-bold"
-                                                style="background: #f0fdf4; color: #15803d">{{ $kasir['total_diambil'] }}</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-5 py-3 text-right font-black whitespace-nowrap"
-                                    style="color: #0f2044; font-size: 12px">
-                                    Rp {{ number_format($kasir['total_pendapatan'], 0, ',', '.') }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="px-5 py-8 text-center text-gray-300 text-sm">Belum ada data.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-5 py-8 text-center text-gray-300 text-sm">Belum ada data.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -194,63 +192,61 @@
             <p class="font-black text-gray-800">Rekap per Kategori Barang</p>
             <p class="text-xs text-gray-400 mt-0.5">Jenis barang yang paling banyak dititipkan di event ini</p>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm" style="min-width: 400px">
-                <thead>
-                    <tr style="background: #f8faff; border-bottom: 2px solid #e2e8f0">
-                        <th class="px-5 py-3 text-left whitespace-nowrap"
-                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                            Kategori</th>
-                        <th class="px-5 py-3 text-right whitespace-nowrap"
-                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                            Jumlah Unit</th>
-                        <th class="px-5 py-3 text-right whitespace-nowrap"
-                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                            Pendapatan</th>
-                        <th class="px-5 py-3 text-left whitespace-nowrap"
-                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                            Proporsi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $maxBarang = $totalBarang > 0 ? $totalBarang : 1; @endphp
-                    @forelse($rekapKategori as $nama => $data)
-                        <tr class="table-row" style="border-top: 1px solid #f1f5f9">
-                            <td class="px-5 py-3">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 rounded-full flex-shrink-0" style="background: #1a3a6b"></div>
-                                    <span class="font-semibold text-gray-700">{{ $nama }}</span>
-                                </div>
-                            </td>
-                            <td class="px-5 py-3 text-right font-black text-gray-800">
-                                {{ $data['jumlah'] }} <span class="text-xs font-normal text-gray-400">unit</span>
-                            </td>
-                            <td class="px-5 py-3 text-right font-bold whitespace-nowrap" style="color: #0f2044">
-                                Rp {{ number_format($data['pendapatan'], 0, ',', '.') }}
-                            </td>
-                            <td class="px-5 py-3">
-                                <div class="flex items-center gap-2">
-                                    <div class="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden"
-                                        style="min-width: 60px">
-                                        <div class="h-full rounded-full"
-                                            style="width: {{ round(($data['jumlah'] / $maxBarang) * 100) }}%;
-                                           background: linear-gradient(90deg, #1a3a6b, #4a9eff)">
-                                        </div>
+        <table class="w-full text-sm" style="min-width: 400px">
+            <thead>
+                <tr style="background: #f8faff; border-bottom: 2px solid #e2e8f0">
+                    <th class="px-5 py-3 text-left whitespace-nowrap"
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        Kategori</th>
+                    <th class="px-5 py-3 text-right whitespace-nowrap"
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        Jumlah Unit</th>
+                    <th class="px-5 py-3 text-right whitespace-nowrap"
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        Pendapatan</th>
+                    <th class="px-5 py-3 text-left whitespace-nowrap"
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        Proporsi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $maxBarang = $totalBarang > 0 ? $totalBarang : 1; @endphp
+                @forelse($rekapKategori as $nama => $data)
+                    <tr class="table-row" style="border-top: 1px solid #f1f5f9">
+                        <td class="px-5 py-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full flex-shrink-0" style="background: #1a3a6b"></div>
+                                <span class="font-semibold text-gray-700">{{ $nama }}</span>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3 text-right font-black text-gray-800">
+                            {{ $data['jumlah'] }} <span class="text-xs font-normal text-gray-400">unit</span>
+                        </td>
+                        <td class="px-5 py-3 text-right font-bold whitespace-nowrap" style="color: #0f2044">
+                            Rp {{ number_format($data['pendapatan'], 0, ',', '.') }}
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden"
+                                    style="min-width: 60px">
+                                    <div class="h-full rounded-full"
+                                        style="width: {{ round(($data['jumlah'] / $maxBarang) * 100) }}%;
+                                            background: linear-gradient(90deg, #1a3a6b, #4a9eff)">
                                     </div>
-                                    <span class="text-xs text-gray-400 flex-shrink-0">
-                                        {{ round(($data['jumlah'] / $maxBarang) * 100) }}%
-                                    </span>
                                 </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="px-5 py-8 text-center text-gray-300">Belum ada data barang.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                                <span class="text-xs text-gray-400 flex-shrink-0">
+                                    {{ round(($data['jumlah'] / $maxBarang) * 100) }}%
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="px-5 py-8 text-center text-gray-300">Belum ada data barang.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
 @endsection

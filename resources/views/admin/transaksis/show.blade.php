@@ -79,56 +79,53 @@
                 <div class="px-5 lg:px-6 py-4" style="border-bottom: 1px solid #f1f5f9">
                     <p class="font-black text-gray-800">Daftar Barang</p>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm" style="min-width: 400px">
-                        <thead>
-                            <tr style="background: #f8faff; border-bottom: 1px solid #e2e8f0">
-                                <th class="px-5 py-3 text-left whitespace-nowrap"
-                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                    Barang</th>
-                                <th class="px-5 py-3 text-left whitespace-nowrap"
-                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                    Ukuran</th>
-                                <th class="px-5 py-3 text-left whitespace-nowrap"
-                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                    Qty</th>
-                                <th class="px-5 py-3 text-right whitespace-nowrap"
-                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                    Harga</th>
-                                <th class="px-5 py-3 text-right whitespace-nowrap"
-                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                    Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($transaksi->details as $detail)
-                                <tr class="table-row" style="border-top: 1px solid #f1f5f9">
-                                    <td class="px-5 py-4 font-medium text-gray-700 whitespace-nowrap">
-                                        {{ $detail->nama_barang_custom ?? $detail->kategori->nama_kategori }}
-                                    </td>
-                                    <td class="px-5 py-4">
-                                        <span class="px-3 py-1 rounded-lg text-xs font-bold"
-                                            style="background: #eff6ff; color: #1d4ed8">{{ $detail->ukuran }}</span>
-                                    </td>
-                                    <td class="px-5 py-4 font-semibold text-gray-700">{{ $detail->jumlah }}</td>
-                                    <td class="px-5 py-4 text-right text-gray-500 whitespace-nowrap">Rp
-                                        {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
-                                    <td class="px-5 py-4 text-right font-bold text-gray-800 whitespace-nowrap">Rp
-                                        {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr style="border-top: 2px solid #e2e8f0">
-                                <td colspan="4" class="px-5 py-4 text-right font-black text-gray-700">Total</td>
-                                <td class="px-5 py-4 text-right font-black text-xl whitespace-nowrap"
-                                    style="color: #1a3a6b">
-                                    Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}
+                <table class="w-full text-sm" style="min-width: 400px">
+                    <thead>
+                        <tr style="background: #f8faff; border-bottom: 1px solid #e2e8f0">
+                            <th class="px-5 py-3 text-left whitespace-nowrap"
+                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                Barang</th>
+                            <th class="px-5 py-3 text-left whitespace-nowrap"
+                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                Ukuran</th>
+                            <th class="px-5 py-3 text-left whitespace-nowrap"
+                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                Qty</th>
+                            <th class="px-5 py-3 text-right whitespace-nowrap"
+                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                Harga</th>
+                            <th class="px-5 py-3 text-right whitespace-nowrap"
+                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($transaksi->details as $detail)
+                            <tr class="table-row" style="border-top: 1px solid #f1f5f9">
+                                <td class="px-5 py-4 font-medium text-gray-700 whitespace-nowrap">
+                                    {{ $detail->nama_barang_custom ?? $detail->kategori->nama_kategori }}
                                 </td>
+                                <td class="px-5 py-4">
+                                    <span class="px-3 py-1 rounded-lg text-xs font-bold"
+                                        style="background: #eff6ff; color: #1d4ed8">{{ $detail->ukuran }}</span>
+                                </td>
+                                <td class="px-5 py-4 font-semibold text-gray-700">{{ $detail->jumlah }}</td>
+                                <td class="px-5 py-4 text-right text-gray-500 whitespace-nowrap">Rp
+                                    {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                                <td class="px-5 py-4 text-right font-bold text-gray-800 whitespace-nowrap">Rp
+                                    {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                             </tr>
-                        </tfoot>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr style="border-top: 2px solid #e2e8f0">
+                            <td colspan="4" class="px-5 py-4 text-right font-black text-gray-700">Total</td>
+                            <td class="px-5 py-4 text-right font-black text-xl whitespace-nowrap" style="color: #1a3a6b">
+                                Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
         </div>
 

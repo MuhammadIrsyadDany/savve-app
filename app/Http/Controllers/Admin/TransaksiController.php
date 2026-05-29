@@ -32,7 +32,7 @@ class TransaksiController extends Controller
             $query->whereDate('created_at', $request->tanggal);
         }
 
-        $transaksis = $query->latest()->paginate(15)->withQueryString();
+        $transaksis = $query->latest()->get();
         $events = \App\Models\Event::all();
 
         return view('admin.transaksis.index', compact('transaksis', 'events'));
