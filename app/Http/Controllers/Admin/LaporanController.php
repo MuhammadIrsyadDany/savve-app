@@ -21,6 +21,8 @@ class LaporanController extends Controller
         $selectedEvent   = null;
 
         $hasFilter = $request->filled('event_id')
+            || $request->filled('tanggal_mulai')
+            || $request->filled('tanggal_selesai')
             || $request->filled('tanggal')
             || $request->filled('status')
             || $request->filled('show');
@@ -33,15 +35,25 @@ class LaporanController extends Controller
                 $selectedEvent = Event::find($request->event_id);
             }
 
-            if ($request->filled('tanggal')) {
-                $baseQuery->whereDate('created_at', $request->tanggal);
+            // Filter rentang tanggal
+            if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
+                $baseQuery->whereBetween('waktu_penitipan', [
+                    $request->tanggal_mulai . ' 00:00:00',
+                    $request->tanggal_selesai . ' 23:59:59',
+                ]);
+            } elseif ($request->filled('tanggal_mulai')) {
+                $baseQuery->whereDate('waktu_penitipan', '>=', $request->tanggal_mulai);
+            } elseif ($request->filled('tanggal_selesai')) {
+                $baseQuery->whereDate('waktu_penitipan', '<=', $request->tanggal_selesai);
+            } elseif ($request->filled('tanggal')) {
+                $baseQuery->whereDate('waktu_penitipan', $request->tanggal);
             }
 
             if ($request->filled('status')) {
                 $baseQuery->where('status', $request->status);
             }
 
-            // Summary cards
+            // Summary
             $allTransaksis   = (clone $baseQuery)->get();
             $totalPendapatan = $allTransaksis->sum(fn($t) => $t->total_harga);
             $totalDititip    = $allTransaksis->where('status', 'dititip')->count();
@@ -49,7 +61,7 @@ class LaporanController extends Controller
             $totalDiambil    = $allTransaksis->where('status', 'sudah_diambil')->count();
 
             // Data tabel
-            $transaksis = (clone $baseQuery)->latest()->get();
+            $transaksis = (clone $baseQuery)->latest('waktu_penitipan')->get();
         }
 
         return view('admin.laporan.index', compact(
@@ -69,8 +81,9 @@ class LaporanController extends Controller
 
         $export = new TransaksiExport(
             $request->event_id,
-            $request->tanggal,
-            $request->status
+            $request->tanggal_mulai ?? $request->tanggal,
+            $request->status,
+            $request->tanggal_selesai
         );
 
         return $export->download($namaFile);

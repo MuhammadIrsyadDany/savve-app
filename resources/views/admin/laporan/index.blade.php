@@ -7,7 +7,7 @@
     <div class="anim-fade-up delay-1 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
             <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #1a3a6b">Laporan</p>
-            <h1 class="text-2xl font-black text-gray-900">Laporan Harian</h1>
+            <h1 class="text-xl lg:text-2xl font-black text-gray-900">Laporan Harian</h1>
             <p class="text-gray-400 text-sm mt-1">Pantau aktivitas penitipan barang masuk dan keluar secara real-time.</p>
         </div>
         <a href="{{ route('admin.laporan.export', request()->query()) }}"
@@ -24,7 +24,8 @@
             <input type="hidden" name="show" value="1">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
 
-                <div class="flex-1 min-w-[160px]">
+                {{-- Event --}}
+                <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pilih Event</label>
                     <select name="event_id" id="event_id"
                         class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition">
@@ -39,33 +40,47 @@
                     </select>
                 </div>
 
-                <div class="flex-1 min-w-[140px]">
+                {{-- Status --}}
+                <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Status</label>
                     <select name="status"
                         class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition">
                         <option value="">Semua Status</option>
-                        <option value="dititip" {{ request('status') === 'dititip' ? 'selected' : '' }}>Dititipkan</option>
+                        <option value="dititip" {{ request('status') === 'dititip' ? 'selected' : '' }}>Dititipkan
+                        </option>
                         <option value="terlambat" {{ request('status') === 'terlambat' ? 'selected' : '' }}>Terlambat
                         </option>
-                        <option value="sudah_diambil" {{ request('status') === 'sudah_diambil' ? 'selected' : '' }}>Sudah
+                        <option value="sudah_diambil"{{ request('status') === 'sudah_diambil' ? 'selected' : '' }}>Sudah
                             Diambil</option>
                     </select>
                 </div>
 
-                <div class="flex-1 min-w-[140px]">
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Tanggal</label>
-                    <input type="date" name="tanggal" id="tanggal" value="{{ request('tanggal') }}"
-                        class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition">
+                {{-- Tanggal Rentang --}}
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                        Rentang Tanggal
+                        <span class="font-normal normal-case ml-1" style="color: #94a3b8">(otomatis dari event)</span>
+                    </label>
+                    <div class="flex gap-2 items-center">
+                        <input type="date" name="tanggal_mulai" id="tanggal_mulai"
+                            value="{{ request('tanggal_mulai') }}"
+                            class="flex-1 min-w-0 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition">
+                        <span class="text-gray-400 text-xs flex-shrink-0">s/d</span>
+                        <input type="date" name="tanggal_selesai" id="tanggal_selesai"
+                            value="{{ request('tanggal_selesai') }}"
+                            class="flex-1 min-w-0 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition">
+                    </div>
                 </div>
 
-                <div class="flex gap-2 flex-shrink-0">
+                {{-- Tombol --}}
+                <div class="flex gap-2">
                     <button type="submit"
-                        class="px-5 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
+                        class="flex-1 px-5 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
                         style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">
                         Tampilkan
                     </button>
                     <a href="{{ route('admin.laporan.index') }}"
-                        class="px-3.5 py-2.5 bg-gray-100 text-gray-500 rounded-xl text-sm font-semibold hover:bg-gray-200 transition">
+                        class="px-3.5 py-2.5 bg-gray-100 text-gray-500 rounded-xl text-sm font-semibold hover:bg-gray-200 transition flex-shrink-0">
                         🔄
                     </a>
                 </div>
@@ -75,10 +90,8 @@
     </div>
 
     {{-- Summary Cards --}}
-    @if (
-        ($transaksis instanceof \Illuminate\Pagination\LengthAwarePaginator ? $transaksis->total() : $transaksis->count()) >
-            0)
-        <div class="anim-fade-up delay-3 grid grid-cols-3 gap-4 mb-5">
+    @if ($transaksis->count() > 0)
+        <div class="anim-fade-up delay-3 grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
             <div class="bg-white rounded-2xl p-5 border border-gray-100" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -87,9 +100,8 @@
                     </div>
                     <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Transaksi</p>
                 </div>
-                <p class="text-3xl font-black text-gray-900">
-                    {{ $transaksis instanceof \Illuminate\Pagination\LengthAwarePaginator ? $transaksis->total() : $transaksis->count() }}
-                    transaksi</p>
+                <p class="text-3xl font-black text-gray-900">{{ $transaksis->count() }}</p>
+                <p class="text-xs text-gray-400 mt-1">transaksi ditemukan</p>
             </div>
 
             <div class="bg-white rounded-2xl p-5 border border-gray-100" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
@@ -111,11 +123,14 @@
                         style="background: linear-gradient(135deg, #fff7ed, #fed7aa)">
                         <span class="text-base">📦</span>
                     </div>
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Dititip / Diambil</p>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Dititip / Terlambat / Diambil
+                    </p>
                 </div>
                 <p class="text-2xl font-black text-gray-900">
-                    <span style="color: #ea580c">{{ $totalDititip }}</span>
-                    <span class="text-gray-300 mx-1">/</span>
+                    <span style="color: #7c3aed">{{ $totalDititip }}</span>
+                    <span class="text-gray-300 mx-1 text-lg">/</span>
+                    <span style="color: #dc2626">{{ $totalTerlambat }}</span>
+                    <span class="text-gray-300 mx-1 text-lg">/</span>
                     <span style="color: #15803d">{{ $totalDiambil }}</span>
                 </p>
             </div>
@@ -129,31 +144,31 @@
             <thead>
                 <tr style="background: #f8faff; border-bottom: 2px solid #e2e8f0">
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         No. Transaksi
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Penitip
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Barang & Ukuran
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Kasir
                     </th>
                     <th class="px-5 py-4 text-right whitespace-nowrap"
-                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Total
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Status
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em">
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Waktu
                     </th>
                 </tr>
@@ -162,7 +177,8 @@
                 @forelse($transaksis as $t)
                     <tr class="table-row border-t border-gray-50">
                         <td class="px-5 py-4 whitespace-nowrap">
-                            <a href="{{ route('admin.transaksis.show', $t) }}" class="font-bold hover:underline transition"
+                            <a href="{{ route('admin.transaksis.show', $t) }}"
+                                class="font-bold hover:underline transition"
                                 style="color: #1a3a6b; font-family: monospace; font-size: 12px">
                                 {{ $t->nomor_transaksi }}
                             </a>
@@ -182,7 +198,7 @@
                         </td>
                         <td class="px-5 py-4">
                             @foreach ($t->details->take(1) as $d)
-                                <p class="font-medium text-gray-700 text-sm">
+                                <p class="font-medium text-gray-700 text-sm whitespace-nowrap">
                                     {{ $d->nama_barang_custom ?? $d->kategori->nama_kategori }}
                                 </p>
                                 <span class="inline-block px-2 py-0.5 rounded-md text-xs font-bold mt-0.5"
@@ -213,7 +229,7 @@
                         <td class="px-5 py-4 whitespace-nowrap">
                             <span class="px-3 py-1 rounded-full text-xs font-bold"
                                 style="background: {{ $t->status === 'dititip' ? '#faf5ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
-                                    color: {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
+                               color: {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
                                 {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
                             </span>
                         </td>
@@ -249,57 +265,70 @@
         © {{ date('Y') }} Vendor Savve — Storage Management System
     </p>
 
-    @push('scripts')
-        <script>
-            $(document).ready(function() {
-                // Hanya inisialisasi jika ada data (bukan empty state)
-                @if ($transaksis->count() > 0)
-                    $('#tabel-laporan').DataTable({
-                        responsive: true,
-                        pageLength: 15,
-                        language: {
-                            search: "🔍",
-                            searchPlaceholder: "Cari laporan...",
-                            lengthMenu: "Tampilkan _MENU_ data",
-                            info: "Menampilkan _START_–_END_ dari _TOTAL_ transaksi",
-                            infoEmpty: "Tidak ada data",
-                            paginate: {
-                                previous: "‹",
-                                next: "›"
-                            },
-                            zeroRecords: "Tidak ada data yang cocok",
-                            emptyTable: "Belum ada data laporan"
-                        },
-                        dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"Bf>rtip',
-                        buttons: [{
-                                extend: 'excel',
-                                text: '📊 Export Excel',
-                                title: 'Laporan Savve'
-                            },
-                            {
-                                extend: 'pdf',
-                                text: '📄 Export PDF',
-                                title: 'Laporan Savve',
-                                orientation: 'landscape',
-                                pageSize: 'A4'
-                            },
-                            {
-                                extend: 'print',
-                                text: '🖨️ Print'
-                            }
-                        ],
-                        order: [
-                            [6, 'desc']
-                        ],
-                        columnDefs: [{
-                                orderable: false,
-                                targets: [2]
-                            } // kolom Barang tidak perlu sort
-                        ]
-                    });
-                @endif
-            });
-        </script>
-    @endpush
-
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            @if ($transaksis->count() > 0)
+                $('#tabel-laporan').DataTable({
+                    responsive: false,
+                    scrollX: true,
+                    pageLength: 15,
+                    language: {
+                        search: "🔍",
+                        searchPlaceholder: "Cari laporan...",
+                        lengthMenu: "Tampilkan _MENU_ data",
+                        info: "Menampilkan _START_–_END_ dari _TOTAL_ transaksi",
+                        infoEmpty: "Tidak ada data",
+                        paginate: {
+                            previous: "‹",
+                            next: "›"
+                        },
+                        zeroRecords: "Tidak ada data yang cocok",
+                        emptyTable: "Belum ada data laporan"
+                    },
+                    dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"f>rtip',
+                    order: [
+                        [6, 'desc']
+                    ],
+                    columnDefs: [{
+                        orderable: false,
+                        targets: [2]
+                    }]
+                });
+            @endif
+        });
+
+        // ── Auto-fill tanggal saat event dipilih ──
+        document.getElementById('event_id').addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            const mulai = selected.dataset.mulai;
+            const selesai = selected.dataset.selesai;
+
+            if (mulai && selesai) {
+                document.getElementById('tanggal_mulai').value = mulai;
+                document.getElementById('tanggal_selesai').value = selesai;
+            } else {
+                document.getElementById('tanggal_mulai').value = '';
+                document.getElementById('tanggal_selesai').value = '';
+            }
+        });
+
+        // ── Set tanggal saat halaman load jika event sudah dipilih ──
+        window.addEventListener('DOMContentLoaded', function() {
+            const eventSelect = document.getElementById('event_id');
+            if (eventSelect.value) {
+                const selected = eventSelect.options[eventSelect.selectedIndex];
+                const mulai = selected.dataset.mulai;
+                const selesai = selected.dataset.selesai;
+                if (mulai && selesai &&
+                    !document.getElementById('tanggal_mulai').value &&
+                    !document.getElementById('tanggal_selesai').value) {
+                    document.getElementById('tanggal_mulai').value = mulai;
+                    document.getElementById('tanggal_selesai').value = selesai;
+                }
+            }
+        });
+    </script>
+@endpush
