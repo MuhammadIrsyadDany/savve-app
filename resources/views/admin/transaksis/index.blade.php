@@ -196,7 +196,8 @@
         <script>
             $(document).ready(function() {
                 $('#tabel-transaksi').DataTable({
-                    responsive: true,
+                    responsive: false,
+                    scrollX: true,
                     pageLength: 15,
                     language: {
                         search: "🔍",
@@ -211,17 +212,7 @@
                         zeroRecords: "Tidak ada transaksi yang cocok",
                         emptyTable: "Belum ada transaksi"
                     },
-                    dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"Bf>rtip',
-                    buttons: [{
-                            extend: 'excel',
-                            text: '📊 Excel',
-                            title: 'Data Transaksi Savve'
-                        },
-                        {
-                            extend: 'print',
-                            text: '🖨️ Print'
-                        }
-                    ],
+                    dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"f>rtip',
                     order: [
                         [7, 'desc']
                     ],
