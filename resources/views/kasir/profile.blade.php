@@ -9,27 +9,28 @@
         <p class="text-gray-400 text-sm mt-1">Kelola informasi akun dan keamanan password kamu.</p>
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-6">
+    <div class="flex flex-col-reverse lg:flex-row gap-6">
 
-        {{-- Kiri --}}
+        {{-- ═══ KIRI — Form ═══ --}}
         <div class="flex-1 space-y-4">
-            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden"
+
+            <div class="anim-fade-up delay-3 bg-white rounded-2xl border border-gray-100 overflow-hidden"
                 style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
 
                 {{-- Tab Header --}}
-                <div class="flex border-b border-gray-100">
+                <div class="flex" style="border-bottom: 2px solid #f5f3ff">
                     <button onclick="switchTab('info')" id="tab-info"
-                        class="flex-1 py-3.5 text-sm font-bold transition tab-btn active-tab">
+                        class="flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-bold transition profile-tab active-profile-tab">
                         👤 Informasi Profil
                     </button>
                     <button onclick="switchTab('password')" id="tab-password"
-                        class="flex-1 py-3.5 text-sm font-bold transition tab-btn">
+                        class="flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-bold transition profile-tab">
                         🔒 Ganti Password
                     </button>
                 </div>
 
                 {{-- Tab Info --}}
-                <div id="panel-info" class="p-6">
+                <div id="panel-info" class="p-5 lg:p-6">
                     @if (session('success') && !session('tab'))
                         <div class="mb-5 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold"
                             style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed">
@@ -67,15 +68,15 @@
                         </div>
 
                         <button type="submit"
-                            class="px-6 py-3 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
-                            style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
+                            class="flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
+                            style="background: linear-gradient(135deg, #5b21b6, #7c3aed); box-shadow: 0 4px 12px rgba(91,33,182,0.2)">
                             💾 Simpan Perubahan
                         </button>
                     </form>
                 </div>
 
                 {{-- Tab Password --}}
-                <div id="panel-password" class="p-6 hidden">
+                <div id="panel-password" class="p-5 lg:p-6 hidden">
                     @if (session('success') && session('tab') === 'password')
                         <div class="mb-5 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold"
                             style="background: #faf5ff; border: 1.5px solid #ddd6fe; color: #7c3aed">
@@ -125,8 +126,8 @@
                         </div>
 
                         <button type="submit"
-                            class="px-6 py-3 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
-                            style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
+                            class="flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
+                            style="background: linear-gradient(135deg, #5b21b6, #7c3aed); box-shadow: 0 4px 12px rgba(91,33,182,0.2)">
                             🔒 Update Password
                         </button>
                     </form>
@@ -134,81 +135,76 @@
             </div>
         </div>
 
-        {{-- Kanan --}}
+        {{-- ═══ KANAN — Info (atas di mobile, kanan di desktop) ═══ --}}
         <div class="w-full lg:w-72 flex-shrink-0 space-y-4">
 
-            <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center"
+            {{-- Avatar & Info --}}
+            <div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-5"
                 style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
-                <div class="w-20 h-20 rounded-full flex items-center justify-center font-black text-3xl text-white mx-auto mb-3"
-                    style="background: linear-gradient(135deg, #5b21b6, #a78bfa)">
-                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                <div class="flex items-center gap-4 mb-4 pb-4" style="border-bottom: 1px solid #f5f3ff">
+                    <div class="w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl text-white flex-shrink-0"
+                        style="background: linear-gradient(135deg, #5b21b6, #a78bfa)">
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-black text-gray-800 text-base leading-tight truncate">{{ $user->name }}</p>
+                        <p class="text-gray-400 text-xs mt-0.5 truncate">{{ $user->email }}</p>
+                        <div class="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
+                            style="background: #faf5ff; color: #7c3aed">
+                            🧾 Kasir
+                        </div>
+                    </div>
                 </div>
-                <p class="font-black text-gray-800 text-lg">{{ $user->name }}</p>
-                <p class="text-gray-400 text-sm">{{ $user->email }}</p>
-                <div class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
-                    style="background: #faf5ff; color: #7c3aed">
-                    🧾 Kasir
-                </div>
-            </div>
 
-            <div class="bg-white rounded-2xl border border-gray-100 p-5" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
                 <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: #94a3b8">Statistik Saya</p>
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-500">Bergabung</span>
-                        <span class="font-bold text-gray-700 text-sm">{{ $user->created_at->format('d M Y') }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-500">Total Transaksi</span>
-                        <span class="font-black" style="color: #5b21b6">{{ $user->transaksis->count() }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-500">Masih Dititip</span>
-                        <span class="font-black" style="color: #ea580c">
-                            {{ $user->transaksis->where('status', 'dititip')->count() }}
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-500">Sudah Diambil</span>
-                        <span class="font-black" style="color: #15803d">
-                            {{ $user->transaksis->where('status', 'sudah_diambil')->count() }}
-                        </span>
-                    </div>
+                <div class="space-y-2.5">
+                    @foreach ([['Bergabung', $user->created_at->format('d M Y'), '#374151'], ['Role', 'Kasir', '#374151'], ['Total Transaksi', $user->transaksis->count() . ' transaksi', '#5b21b6'], ['Masih Dititip', $user->transaksis->where('status', 'dititip')->count() . ' transaksi', '#ea580c'], ['Sudah Diambil', $user->transaksis->where('status', 'sudah_diambil')->count() . ' transaksi', '#15803d']] as $s)
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-400">{{ $s[0] }}</span>
+                            <span class="text-xs font-bold"
+                                style="color: {{ $s[2] }}">{{ $s[1] }}</span>
+                        </div>
+                    @endforeach
                 </div>
             </div>
 
-            <div class="rounded-2xl p-5 text-white" style="background: linear-gradient(135deg, #1e293b, #334155)">
-                <p class="font-bold text-sm mb-2">🔐 Tips Keamanan</p>
-                <ul class="space-y-1.5 text-xs" style="color: #94a3b8">
-                    <li>• Ganti password secara berkala</li>
-                    <li>• Jangan bagikan password ke siapapun</li>
-                    <li>• Gunakan kombinasi huruf & angka</li>
-                    <li>• Minimal 6 karakter</li>
+            {{-- Tips Keamanan --}}
+            <div class="anim-fade-up delay-3 rounded-2xl p-5 text-white"
+                style="background: linear-gradient(135deg, #1e293b, #334155)">
+                <p class="font-bold text-sm mb-2.5">🔐 Tips Keamanan</p>
+                <ul class="space-y-1.5">
+                    @foreach (['Ganti password secara berkala', 'Jangan bagikan password ke siapapun', 'Gunakan kombinasi huruf & angka', 'Minimal 6 karakter'] as $tip)
+                        <li class="text-xs flex items-start gap-1.5" style="color: #94a3b8">
+                            <span class="flex-shrink-0 mt-0.5">•</span> {{ $tip }}
+                        </li>
+                    @endforeach
                 </ul>
             </div>
         </div>
+
     </div>
 
     <style>
-        .tab-btn {
+        .profile-tab {
             color: #94a3b8;
             border-bottom: 2px solid transparent;
         }
 
-        .active-tab {
+        .active-profile-tab {
             color: #5b21b6;
             border-bottom: 2px solid #7c3aed;
+            background: #faf5ff;
         }
     </style>
 
     <script>
         function switchTab(tab) {
-            document.getElementById('panel-info').classList.add('hidden');
-            document.getElementById('panel-password').classList.add('hidden');
-            document.getElementById('tab-info').classList.remove('active-tab');
-            document.getElementById('tab-password').classList.remove('active-tab');
+            ['info', 'password'].forEach(t => {
+                document.getElementById('panel-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).classList.remove('active-profile-tab');
+            });
             document.getElementById('panel-' + tab).classList.remove('hidden');
-            document.getElementById('tab-' + tab).classList.add('active-tab');
+            document.getElementById('tab-' + tab).classList.add('active-profile-tab');
         }
 
         @if (session('tab') === 'password' || $errors->has('current_password') || $errors->has('password'))
