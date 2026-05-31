@@ -227,7 +227,8 @@
         <script>
             $(document).ready(function() {
                 $('#tabel-event').DataTable({
-                    responsive: true,
+                    responsive: false,
+                    scrollX: true,
                     pageLength: 10,
                     language: {
                         search: "🔍",
@@ -242,17 +243,7 @@
                         zeroRecords: "Tidak ada event yang cocok",
                         emptyTable: "Belum ada event"
                     },
-                    dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"Bf>rtip',
-                    buttons: [{
-                            extend: 'excel',
-                            text: '📊 Excel',
-                            title: 'Data Event Savve'
-                        },
-                        {
-                            extend: 'print',
-                            text: '🖨️ Print'
-                        }
-                    ],
+                    dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"f>rtip',
                     order: [
                         [1, 'asc']
                     ],
