@@ -11,12 +11,16 @@ class TransaksiController extends Controller
 {
     public function index(Request $request)
     {
+        $events = \App\Models\Event::orderBy('nama_event')->get();
+
         $query = Transaksi::with(['event', 'kasir', 'details.kategori']);
 
         if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('nama_penitip', 'like', '%' . $request->search . '%')
-                    ->orWhere('nomor_transaksi', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_penitip', 'like', "%{$search}%")
+                    ->orWhere('nomor_transaksi', 'like', "%{$search}%")
+                    ->orWhere('no_whatsapp', 'like', "%{$search}%");
             });
         }
 
@@ -28,12 +32,21 @@ class TransaksiController extends Controller
             $query->where('status', $request->status);
         }
 
-        if ($request->filled('tanggal')) {
-            $query->whereDate('created_at', $request->tanggal);
+        // Filter rentang tanggal
+        if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
+            $query->whereBetween('waktu_penitipan', [
+                $request->tanggal_mulai . ' 00:00:00',
+                $request->tanggal_selesai . ' 23:59:59',
+            ]);
+        } elseif ($request->filled('tanggal_mulai')) {
+            $query->whereDate('waktu_penitipan', '>=', $request->tanggal_mulai);
+        } elseif ($request->filled('tanggal_selesai')) {
+            $query->whereDate('waktu_penitipan', '<=', $request->tanggal_selesai);
+        } elseif ($request->filled('tanggal')) {
+            $query->whereDate('waktu_penitipan', $request->tanggal);
         }
 
-        $transaksis = $query->latest()->get();
-        $events = \App\Models\Event::all();
+        $transaksis = $query->latest('waktu_penitipan')->get();
 
         return view('admin.transaksis.index', compact('transaksis', 'events'));
     }
