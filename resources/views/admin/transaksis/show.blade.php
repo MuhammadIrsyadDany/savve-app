@@ -16,6 +16,22 @@
         </a>
     </div>
 
+    {{-- Nomor Transaksi (mobile only, di atas segalanya) --}}
+    <div class="anim-fade-up delay-2 block lg:hidden rounded-2xl p-5 text-white relative overflow-hidden mb-4"
+        style="background: linear-gradient(135deg, #0f2044, #1a3a6b, #1e4d8c); box-shadow: 0 8px 24px rgba(15,32,68,0.2)">
+        <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color: #93c5fd">Nomor Transaksi</p>
+        <p class="text-xl font-black tracking-tight leading-tight mb-4 font-mono break-all">
+            {{ $transaksi->nomor_transaksi }}
+        </p>
+        <div>
+            <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
+            <p class="font-bold text-white">
+                {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : 'SUDAH DIAMBIL' }}
+            </p>
+        </div>
+        <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full" style="background: rgba(255,255,255,0.05)"></div>
+    </div>
+
     <div class="flex flex-col lg:flex-row gap-5">
 
         {{-- Kiri --}}
@@ -127,13 +143,46 @@
                     </tfoot>
                 </table>
             </div>
+
+            {{-- Foto Penitipan --}}
+            @if ($transaksi->foto_penitipan)
+                <div class="anim-fade-up delay-4 bg-white rounded-2xl border border-gray-100 overflow-hidden"
+                    style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                    <div class="px-5 py-4" style="border-bottom: 1px solid #f5f3ff">
+                        <p class="font-black text-gray-800">📷 Foto Barang (Saat Penitipan)</p>
+                    </div>
+                    <div class="p-4">
+                        <img src="{{ asset('storage/' . $transaksi->foto_penitipan) }}" alt="Foto Barang"
+                            class="w-full rounded-xl cursor-pointer"
+                            style="max-height: 320px; object-fit: contain; background: #f8f5ff; border: 1.5px solid #ede9fe"
+                            onclick="this.style.maxHeight = this.style.maxHeight === 'none' ? '320px' : 'none'">
+                    </div>
+                </div>
+            @endif
+
+            {{-- Foto Pengambilan --}}
+            @if ($transaksi->foto_pengambilan)
+                <div class="anim-fade-up delay-5 bg-white rounded-2xl border border-gray-100 overflow-hidden"
+                    style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                    <div class="px-5 py-4" style="border-bottom: 1px solid #f5f3ff">
+                        <p class="font-black text-gray-800">📷 Foto Pengambilan</p>
+                    </div>
+                    <div class="p-4">
+                        <img src="{{ asset('storage/' . $transaksi->foto_pengambilan) }}" alt="Foto Pengambilan"
+                            class="w-full rounded-xl cursor-pointer"
+                            style="max-height: 320px; object-fit: contain; background: #f8f5ff; border: 1.5px solid #ede9fe"
+                            onclick="this.style.maxHeight = this.style.maxHeight === 'none' ? '320px' : 'none'">
+                    </div>
+                </div>
+            @endif
+
         </div>
 
         {{-- Kanan --}}
         <div class="w-full lg:w-72 flex-shrink-0 space-y-4">
 
-            {{-- Nomor Transaksi --}}
-            <div class="anim-fade-up delay-2 rounded-2xl p-5 lg:p-6 text-white relative overflow-hidden"
+            {{-- Nomor Transaksi (desktop only) --}}
+            <div class="anim-fade-up delay-2 hidden lg:block rounded-2xl p-5 lg:p-6 text-white relative overflow-hidden"
                 style="background: linear-gradient(135deg, #0f2044, #1a3a6b, #1e4d8c); box-shadow: 0 8px 24px rgba(15,32,68,0.2)">
                 <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color: #93c5fd">Nomor Transaksi</p>
                 <p class="text-xl lg:text-2xl font-black tracking-tight leading-tight mb-4 font-mono break-all">
@@ -145,7 +194,8 @@
                         {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : 'SUDAH DIAMBIL' }}
                     </p>
                 </div>
-                <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full" style="background: rgba(255,255,255,0.05)">
+                <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full"
+                    style="background: rgba(255,255,255,0.05)">
                 </div>
             </div>
 
