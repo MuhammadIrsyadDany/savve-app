@@ -24,21 +24,33 @@
 
         @php
             $totalTransaksiKasir = \App\Models\Transaksi::where('kasir_id', auth()->id())->count();
+
             $pctDititipKasir =
                 $totalTransaksiKasir > 0 ? min(round(($belumDiambil / $totalTransaksiKasir) * 100), 100) : 0;
+
             $pctDiambilKasir =
                 $totalTransaksiKasir > 0 ? min(round(($sudahDiambil / $totalTransaksiKasir) * 100), 100) : 0;
+
             $transaksiKemarinKasir = \App\Models\Transaksi::where('kasir_id', auth()->id())
                 ->whereDate('created_at', today()->subDay())
                 ->count();
+
             $pctTransaksiKasir =
                 $transaksiKemarinKasir > 0
                     ? min(round(($transaksiHariIni / $transaksiKemarinKasir) * 100), 100)
                     : ($transaksiHariIni > 0
                         ? 100
                         : 0);
+
+            $diffTransaksiKasir =
+                $transaksiKemarinKasir > 0
+                    ? round((($transaksiHariIni - $transaksiKemarinKasir) / $transaksiKemarinKasir) * 100)
+                    : ($transaksiHariIni > 0
+                        ? 100
+                        : 0);
         @endphp
 
+        {{-- Transaksi Hari Ini --}}
         <div class="stat-card anim-fade-up delay-2 bg-white rounded-2xl p-4 lg:p-5 border border-gray-100"
             style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
             <div class="flex justify-between items-start mb-3 lg:mb-4">
@@ -46,8 +58,10 @@
                     style="background: linear-gradient(135deg, #faf5ff, #ede9fe)">
                     <span class="text-base lg:text-lg">📊</span>
                 </div>
-                <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: #faf5ff; color: #7c3aed">
-                    {{ $pctTransaksiKasir }}%
+                <span class="text-xs font-bold px-2 py-1 rounded-full"
+                    style="background: {{ $diffTransaksiKasir >= 0 ? '#faf5ff' : '#fff5f5' }};
+                           color: {{ $diffTransaksiKasir >= 0 ? '#7c3aed' : '#dc2626' }}">
+                    {{ $transaksiKemarinKasir > 0 ? ($diffTransaksiKasir >= 0 ? '+' : '') . $diffTransaksiKasir . '%' : ($transaksiHariIni > 0 ? 'Baru' : '0%') }}
                 </span>
             </div>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1" style="font-size: 9px">Transaksi
@@ -57,9 +71,12 @@
                 <div class="h-full rounded-full transition-all duration-700"
                     style="width: {{ $pctTransaksiKasir }}%; background: linear-gradient(90deg, #5b21b6, #a78bfa)"></div>
             </div>
-            <p class="text-xs text-gray-400 mt-1">{{ $pctTransaksiKasir }}% dari kemarin</p>
+            <p class="text-xs text-gray-400 mt-1">
+                {{ $transaksiKemarinKasir > 0 ? ($diffTransaksiKasir >= 0 ? '↑ Naik ' : '↓ Turun ') . abs($diffTransaksiKasir) . '% dari kemarin' : ($transaksiHariIni > 0 ? 'Transaksi pertama hari ini' : 'Belum ada transaksi') }}
+            </p>
         </div>
 
+        {{-- Masih Dititipkan --}}
         <div class="stat-card anim-fade-up delay-3 bg-white rounded-2xl p-4 lg:p-5 border border-gray-100"
             style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
             <div class="flex justify-between items-start mb-3 lg:mb-4">
@@ -81,6 +98,7 @@
             <p class="text-xs text-gray-400 mt-1">{{ $pctDititipKasir }}% dari total transaksi saya</p>
         </div>
 
+        {{-- Sudah Diambil --}}
         <div class="stat-card anim-fade-up delay-4 bg-white rounded-2xl p-4 lg:p-5 border border-gray-100"
             style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
             <div class="flex justify-between items-start mb-3 lg:mb-4">
@@ -102,6 +120,7 @@
             <p class="text-xs text-gray-400 mt-1">{{ $pctDiambilKasir }}% dari total transaksi saya</p>
         </div>
 
+        {{-- Event Aktif --}}
         @php $firstEvent = $eventAktif->first(); @endphp
         <div class="stat-card anim-fade-up delay-5 rounded-2xl p-4 lg:p-5 text-white relative overflow-hidden"
             style="background: linear-gradient(135deg, #1e1035 0%, #2d1b69 60%, #4c1d95 100%); box-shadow: 0 8px 24px rgba(91,33,182,0.3)">
@@ -119,12 +138,12 @@
                 {{ $firstEvent ? Str::limit($firstEvent->nama_event, 20) : 'Tidak ada event' }}
             </p>
             @if ($firstEvent)
+                @php
+                    $durasiTotal = $firstEvent->tanggal_mulai->diffInDays($firstEvent->tanggal_selesai) ?: 1;
+                    $durasiJalan = $firstEvent->tanggal_mulai->diffInDays(now());
+                    $pctEvent = min(round(($durasiJalan / $durasiTotal) * 100), 100);
+                @endphp
                 <div class="mt-3 h-1 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.15)">
-                    @php
-                        $durasiTotal = $firstEvent->tanggal_mulai->diffInDays($firstEvent->tanggal_selesai) ?: 1;
-                        $durasiJalan = $firstEvent->tanggal_mulai->diffInDays(now());
-                        $pctEvent = min(round(($durasiJalan / $durasiTotal) * 100), 100);
-                    @endphp
                     <div class="h-full rounded-full" style="width: {{ $pctEvent }}%; background: #a78bfa"></div>
                 </div>
                 <p class="text-xs mt-1" style="color: rgba(255,255,255,0.5)">
@@ -147,7 +166,6 @@
             </span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
             <a href="{{ route('kasir.transaksi.create') }}"
                 class="relative rounded-2xl p-6 lg:p-7 text-white overflow-hidden group transition hover:scale-[1.01]"
                 style="background: linear-gradient(135deg, #1e1035, #2d1b69, #4c1d95); box-shadow: 0 8px 24px rgba(91,33,182,0.25)">
@@ -160,7 +178,6 @@
                 <div class="absolute -bottom-6 -right-6 w-28 h-28 rounded-full" style="background: rgba(255,255,255,0.05)">
                 </div>
             </a>
-
             <a href="{{ route('kasir.pengambilan.index') }}"
                 class="relative rounded-2xl p-6 lg:p-7 overflow-hidden group transition hover:scale-[1.01]"
                 style="background: linear-gradient(135deg, #faf5ff, #ede9fe); border: 1.5px solid #ddd6fe; box-shadow: 0 4px 16px rgba(91,33,182,0.08)">
@@ -187,7 +204,6 @@
                 Lihat Semua →
             </a>
         </div>
-
         <table class="w-full text-xs" style="width:100%">
             <thead>
                 <tr style="background: #fdfbff; border-bottom: 1px solid #ede9fe">

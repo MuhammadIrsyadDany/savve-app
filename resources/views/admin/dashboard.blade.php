@@ -24,6 +24,7 @@
 
         @php
             $transaksiKemarin = \App\Models\Transaksi::whereDate('created_at', today()->subDay())->count();
+
             $pctTransaksi =
                 $transaksiKemarin > 0
                     ? min(round(($transaksiHariIni / $transaksiKemarin) * 100), 100)
@@ -31,15 +32,22 @@
                         ? 100
                         : 0);
 
+            $diffTransaksi =
+                $transaksiKemarin > 0
+                    ? round((($transaksiHariIni - $transaksiKemarin) / $transaksiKemarin) * 100)
+                    : ($transaksiHariIni > 0
+                        ? 100
+                        : 0);
+
             $totalTransaksi = \App\Models\Transaksi::count();
             $pctDititip = $totalTransaksi > 0 ? min(round(($belumDiambil / $totalTransaksi) * 100), 100) : 0;
-
             $pctDiambil = $totalTransaksi > 0 ? min(round(($sudahDiambil / $totalTransaksi) * 100), 100) : 0;
 
             $totalEvent = \App\Models\Event::count();
             $pctEvent = $totalEvent > 0 ? min(round(($totalEventAktif / $totalEvent) * 100), 100) : 0;
         @endphp
 
+        {{-- Transaksi Hari Ini --}}
         <div class="stat-card anim-fade-up delay-2 bg-white rounded-2xl p-4 lg:p-5 border border-gray-100"
             style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
             <div class="flex justify-between items-start mb-3 lg:mb-4">
@@ -47,8 +55,10 @@
                     style="background: linear-gradient(135deg, #eff6ff, #dbeafe)">
                     <span class="text-base lg:text-lg">📊</span>
                 </div>
-                <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: #f0fdf4; color: #15803d">
-                    {{ $transaksiKemarin > 0 ? ($transaksiHariIni >= $transaksiKemarin ? '+' : '') . round((($transaksiHariIni - $transaksiKemarin) / $transaksiKemarin) * 100) . '%' : ($transaksiHariIni > 0 ? 'Baru' : '0%') }}
+                <span class="text-xs font-bold px-2 py-1 rounded-full"
+                    style="background: {{ $diffTransaksi >= 0 ? '#f0fdf4' : '#fff5f5' }};
+                           color: {{ $diffTransaksi >= 0 ? '#15803d' : '#dc2626' }}">
+                    {{ $transaksiKemarin > 0 ? ($diffTransaksi >= 0 ? '+' : '') . $diffTransaksi . '%' : ($transaksiHariIni > 0 ? 'Baru' : '0%') }}
                 </span>
             </div>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1" style="font-size: 9px">Transaksi
@@ -58,9 +68,12 @@
                 <div class="h-full rounded-full transition-all duration-700"
                     style="width: {{ $pctTransaksi }}%; background: linear-gradient(90deg, #1a3a6b, #4a9eff)"></div>
             </div>
-            <p class="text-xs text-gray-400 mt-1">{{ $pctTransaksi }}% dari kemarin</p>
+            <p class="text-xs text-gray-400 mt-1">
+                {{ $transaksiKemarin > 0 ? ($diffTransaksi >= 0 ? '↑ Naik ' : '↓ Turun ') . abs($diffTransaksi) . '% dari kemarin' : ($transaksiHariIni > 0 ? 'Transaksi pertama hari ini' : 'Belum ada transaksi') }}
+            </p>
         </div>
 
+        {{-- Masih Dititipkan --}}
         <div class="stat-card anim-fade-up delay-3 bg-white rounded-2xl p-4 lg:p-5 border border-gray-100"
             style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
             <div class="flex justify-between items-start mb-3 lg:mb-4">
@@ -82,6 +95,7 @@
             <p class="text-xs text-gray-400 mt-1">{{ $pctDititip }}% dari total transaksi</p>
         </div>
 
+        {{-- Sudah Diambil --}}
         <div class="stat-card anim-fade-up delay-4 bg-white rounded-2xl p-4 lg:p-5 border border-gray-100"
             style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
             <div class="flex justify-between items-start mb-3 lg:mb-4">
@@ -103,6 +117,7 @@
             <p class="text-xs text-gray-400 mt-1">{{ $pctDiambil }}% dari total transaksi</p>
         </div>
 
+        {{-- Event Aktif --}}
         <div class="stat-card anim-fade-up delay-5 rounded-2xl p-4 lg:p-5 relative overflow-hidden text-white"
             style="background: linear-gradient(135deg, #0f2044 0%, #1a3a6b 60%, #1e4d8c 100%); box-shadow: 0 8px 24px rgba(15,32,68,0.25)">
             <div class="flex justify-between items-start mb-3 lg:mb-4">
@@ -162,7 +177,7 @@
                     <div class="flex-1 flex flex-col items-center gap-1 group">
                         <div class="w-full rounded-t-lg transition-all duration-500 relative"
                             style="height: {{ max(4, ($count / $max) * 72) }}px;
-                           background: {{ $i === $peakDay ? 'linear-gradient(to top, #0f2044, #4a9eff)' : 'linear-gradient(to top, #e2e8f0, #cbd5e1)' }}">
+                               background: {{ $i === $peakDay ? 'linear-gradient(to top, #0f2044, #4a9eff)' : 'linear-gradient(to top, #e2e8f0, #cbd5e1)' }}">
                         </div>
                     </div>
                 @endforeach
@@ -180,8 +195,7 @@
                 style="background: linear-gradient(135deg, #eff6ff, #dbeafe)">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wider" style="color: #3b82f6; font-size: 9px">
-                        Puncak
-                        Tertinggi</p>
+                        Puncak Tertinggi</p>
                     <p class="font-black text-gray-800 text-sm">{{ $days[$peakDay] }}, {{ max($counts) }} Transaksi
                     </p>
                 </div>
@@ -254,8 +268,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-4 py-8 text-center text-gray-300">Belum ada transaksi.
-                            </td>
+                            <td colspan="4" class="px-4 py-8 text-center text-gray-300">Belum ada transaksi.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -263,7 +276,7 @@
         </div>
     </div>
 
-    {{-- Bottom: Kapasitas --}}
+    {{-- Bottom: Distribusi Ukuran --}}
     <div class="anim-fade-up delay-8 bg-white rounded-2xl p-5 border border-gray-100"
         style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-5">
@@ -313,7 +326,7 @@
                     <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                         <div class="h-full rounded-full transition-all duration-700"
                             style="width: {{ $pct }}%;
-                           background: linear-gradient(90deg, {{ $colors[$i][0] }}, {{ $colors[$i][1] }})">
+                               background: linear-gradient(90deg, {{ $colors[$i][0] }}, {{ $colors[$i][1] }})">
                         </div>
                     </div>
                 </div>
