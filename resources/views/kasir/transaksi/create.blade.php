@@ -256,7 +256,7 @@
                 $totalDititip = \App\Models\DetailTransaksi::whereHas(
                     'transaksi',
                     fn($q) => $q->where('status', 'dititip'),
-                )->sum('jumlah');
+                )->count();
                 $kapasitas = 500;
                 $pct = min(round(($totalDititip / $kapasitas) * 100), 100);
             @endphp
@@ -474,13 +474,13 @@
                 <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Ukuran Barang</label>
                 <div class="grid grid-cols-4 gap-2">
                     ${['S','M','L','XL'].map((u,i) => `
-                                                                    <label class="ukuran-label cursor-pointer">
-                                                                        <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
-                                                                        <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
-                                                                            style="${i===0?'border-color:#7c3aed;color:#7c3aed;background:white;':'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
-                                                                            ${u}
-                                                                        </div>
-                                                                    </label>`).join('')}
+                                                                        <label class="ukuran-label cursor-pointer">
+                                                                            <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
+                                                                            <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
+                                                                                style="${i===0?'border-color:#7c3aed;color:#7c3aed;background:white;':'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
+                                                                                ${u}
+                                                                            </div>
+                                                                        </label>`).join('')}
                 </div>
             </div>`;
             container.appendChild(div);

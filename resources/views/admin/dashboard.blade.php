@@ -308,7 +308,7 @@
                     fn($q) => $q->where('status', 'dititip'),
                 )
                     ->where('ukuran', $u)
-                    ->sum('jumlah');
+                    ->count();
             }
             $maxUkuran = max($totalPerUkuran) ?: 1;
         @endphp
