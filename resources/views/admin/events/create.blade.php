@@ -33,15 +33,37 @@
                     </h3>
 
                     <div class="mb-4">
-                        <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Nama
-                            Event</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">
+                            Nama Event
+                        </label>
                         <input type="text" name="nama_event" value="{{ old('nama_event') }}"
                             class="w-full rounded-xl px-4 py-3 text-sm transition"
                             style="background: #f8faff; border: 1.5px solid #e2e8f0; color: #1e293b"
                             placeholder="Contoh: Konser Dewa 19"
                             onfocus="this.style.borderColor='#4a9eff'; this.style.boxShadow='0 0 0 3px rgba(74,158,255,0.1)'"
                             onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+
                         @error('nama_event')
+                            <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Kode
+                            Event</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" name="kode_event" value="{{ old('kode_event') }}"
+                                class="w-full rounded-xl px-4 py-3 text-sm transition"
+                                style="background: #f8faff; border: 1.5px solid #e2e8f0; color: #1e293b; text-transform: uppercase"
+                                placeholder="Contoh: PLP25, SOD26" maxlength="20"
+                                oninput="this.value = this.value.toUpperCase()"
+                                onfocus="this.style.borderColor='#4a9eff'; this.style.boxShadow='0 0 0 3px rgba(74,158,255,0.1)'"
+                                onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                        </div>
+                        <p class="text-xs mt-1" style="color: #94a3b8">
+                            Digunakan sebagai kode pada nomor transaksi. Contoh: SVV-<strong>SOD25</strong>-0001
+                        </p>
+                        @error('kode_event')
                             <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p>
                         @enderror
                     </div>

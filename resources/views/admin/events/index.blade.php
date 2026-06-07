@@ -99,6 +99,10 @@
                         Nama Event</th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
                         style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        Kode Event
+                    </th>
+                    <th class="px-5 py-4 text-left whitespace-nowrap"
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Tanggal</th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
                         style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
@@ -135,6 +139,12 @@
                                     ⚠ {{ $terlambat }} terlambat diambil
                                 </p>
                             @endif
+                        </td>
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 rounded-lg text-xs font-black font-mono"
+                                style="background: #eff6ff; color: #1d4ed8">
+                                {{ $event->kode_event ?? '-' }}
+                            </span>
                         </td>
                         <td class="px-5 py-4 whitespace-nowrap">
                             <p class="text-xs text-gray-600">{{ $event->tanggal_mulai->format('d M Y') }}</p>

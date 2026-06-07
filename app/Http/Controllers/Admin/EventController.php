@@ -55,6 +55,7 @@ class EventController extends Controller
     {
         $request->validate([
             'nama_event'      => 'required|string|max:255',
+            'kode_event'      => 'required|string|max:20|unique:events,kode_event',
             'tanggal_mulai'   => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'tarif.S'         => 'required|integer|min:0',
@@ -63,22 +64,21 @@ class EventController extends Controller
             'tarif.XL'        => 'required|integer|min:0',
         ]);
 
-        DB::transaction(function () use ($request) {
-            $event = Event::create([
-                'nama_event'      => $request->nama_event,
-                'tanggal_mulai'   => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'status'          => 'aktif',
-            ]);
+        $event = Event::create([
+            'nama_event'      => $request->nama_event,
+            'kode_event'      => strtoupper($request->kode_event),
+            'tanggal_mulai'   => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'status'          => 'aktif',
+        ]);
 
-            foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
-                Tarif::create([
-                    'event_id' => $event->id,
-                    'ukuran'   => $ukuran,
-                    'harga'    => $request->tarif[$ukuran],
-                ]);
-            }
-        });
+        foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
+            Tarif::create([
+                'event_id' => $event->id,
+                'ukuran'   => $ukuran,
+                'harga'    => $request->tarif[$ukuran],
+            ]);
+        }
 
         return redirect()->route('admin.events.index')
             ->with('success', 'Event berhasil ditambahkan.');
@@ -94,6 +94,7 @@ class EventController extends Controller
     {
         $request->validate([
             'nama_event'      => 'required|string|max:255',
+            'kode_event'      => 'required|string|max:20|unique:events,kode_event,' . $event->id,
             'tanggal_mulai'   => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'tarif.S'         => 'required|integer|min:0',
@@ -103,21 +104,20 @@ class EventController extends Controller
             'status'          => 'required|in:aktif,nonaktif',
         ]);
 
-        DB::transaction(function () use ($request, $event) {
-            $event->update([
-                'nama_event'      => $request->nama_event,
-                'tanggal_mulai'   => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'status'          => $request->status,
-            ]);
+        $event->update([
+            'nama_event'      => $request->nama_event,
+            'kode_event'      => strtoupper($request->kode_event),
+            'tanggal_mulai'   => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'status'          => $request->status,
+        ]);
 
-            foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
-                Tarif::updateOrCreate(
-                    ['event_id' => $event->id, 'ukuran' => $ukuran],
-                    ['harga' => $request->tarif[$ukuran]]
-                );
-            }
-        });
+        foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
+            Tarif::updateOrCreate(
+                ['event_id' => $event->id, 'ukuran' => $ukuran],
+                ['harga' => $request->tarif[$ukuran]]
+            );
+        }
 
         return redirect()->route('admin.events.index')
             ->with('success', 'Event berhasil diupdate.');
@@ -152,13 +152,20 @@ class EventController extends Controller
         $totalTerlambat  = $transaksis->where('status', 'terlambat')->count();
         $totalDiambil    = $transaksis->where('status', 'sudah_diambil')->count();
         $totalPendapatan = $transaksis->sum(fn($t) => $t->total_harga);
-        $totalBarang     = $transaksis->sum(fn($t) => $t->details->sum('jumlah'));
+        $totalBarang = $transaksis->sum(fn($t) => $t->details->count());
 
         // Rekap per ukuran
         $rekapUkuran = [];
         foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
-            $jumlah     = $transaksis->sum(fn($t) => $t->details->where('ukuran', $ukuran)->sum('jumlah'));
-            $pendapatan = $transaksis->sum(fn($t) => $t->details->where('ukuran', $ukuran)->sum('subtotal'));
+
+            $jumlah = $transaksis->sum(
+                fn($t) => $t->details->where('ukuran', $ukuran)->count()
+            );
+
+            $pendapatan = $transaksis->sum(
+                fn($t) => $t->details->where('ukuran', $ukuran)->sum('subtotal')
+            );
+
             $rekapUkuran[$ukuran] = [
                 'jumlah'     => $jumlah,
                 'pendapatan' => $pendapatan,
@@ -186,7 +193,7 @@ class EventController extends Controller
                 if (!isset($rekapKategori[$nama])) {
                     $rekapKategori[$nama] = ['jumlah' => 0, 'pendapatan' => 0];
                 }
-                $rekapKategori[$nama]['jumlah']     += $d->jumlah;
+                $rekapKategori[$nama]['jumlah']++;
                 $rekapKategori[$nama]['pendapatan'] += $d->subtotal;
             }
         }
