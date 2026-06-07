@@ -312,40 +312,51 @@
     </div>{{-- END flex container --}}
 
     {{-- Modal Kamera Penitipan --}}
-    <div id="modal-kamera-penitipan" class="hidden fixed inset-0 z-50 flex items-center justify-center"
-        style="background: rgba(0,0,0,0.85)">
-        <div class="bg-white rounded-2xl overflow-hidden w-full max-w-sm mx-4">
-            <div class="flex justify-between items-center px-4 py-3" style="border-bottom: 1px solid #f1f5f9">
-                <p class="font-black text-gray-800 text-sm">📷 Foto Barang Titipan</p>
-                <button onclick="tutupKamera('penitipan')" class="w-8 h-8 flex items-center justify-center rounded-lg"
-                    style="background: #f1f5f9; color: #6b7280">✕</button>
+    <div id="modal-kamera-penitipan" class="hidden fixed inset-0 z-50"
+        style="background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center;">
+
+        <div
+            style="background: white; border-radius: 16px; overflow: hidden; width: fit-content; max-width: 90vw; margin: 0 auto; position: relative;">
+
+            {{-- Header --}}
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;">
+                <p style="font-weight: 900; color: #1f2937; font-size: 14px; margin: 0;">📷 Foto Barang Titipan</p>
+                <button onclick="tutupKamera('penitipan')"
+                    style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: #f1f5f9; color: #6b7280; border: none; cursor: pointer;">✕</button>
             </div>
-            <div class="p-4">
-                <div class="rounded-xl overflow-hidden mb-3"
-                    style="background: #0f0f1a; width: 100%; height: 260px; position: relative">
-                    <video id="video-penitipan" autoplay playsinline
-                        style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(1); display: block"></video>
-                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
-                        <div style="width: 75%; height: 75%; position: relative">
-                            <div
-                                style="position:absolute;top:0;left:0;width:24px;height:24px;border-top:2.5px solid #a78bfa;border-left:2.5px solid #a78bfa;border-radius:4px 0 0 0">
-                            </div>
-                            <div
-                                style="position:absolute;top:0;right:0;width:24px;height:24px;border-top:2.5px solid #a78bfa;border-right:2.5px solid #a78bfa;border-radius:0 4px 0 0">
-                            </div>
-                            <div
-                                style="position:absolute;bottom:0;left:0;width:24px;height:24px;border-bottom:2.5px solid #a78bfa;border-left:2.5px solid #a78bfa;border-radius:0 0 0 4px">
-                            </div>
-                            <div
-                                style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-bottom:2.5px solid #a78bfa;border-right:2.5px solid #a78bfa;border-radius:0 0 4px 0">
-                            </div>
+
+            {{-- Video --}}
+            <div style="position: relative; background: #0f0f1a;">
+                <video id="video-penitipan" autoplay playsinline
+                    style="display: block; max-height: 65vh; width: auto; max-width: 90vw; transform: scaleX(-1);"></video>
+
+                {{-- Viewfinder overlay --}}
+                <div
+                    style="position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: center;">
+                    <div style="width: 75%; height: 75%; position: relative;">
+                        <div
+                            style="position:absolute;top:0;left:0;width:24px;height:24px;border-top:2.5px solid #a78bfa;border-left:2.5px solid #a78bfa;border-radius:4px 0 0 0">
+                        </div>
+                        <div
+                            style="position:absolute;top:0;right:0;width:24px;height:24px;border-top:2.5px solid #a78bfa;border-right:2.5px solid #a78bfa;border-radius:0 4px 0 0">
+                        </div>
+                        <div
+                            style="position:absolute;bottom:0;left:0;width:24px;height:24px;border-bottom:2.5px solid #a78bfa;border-left:2.5px solid #a78bfa;border-radius:0 0 0 4px">
+                        </div>
+                        <div
+                            style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-bottom:2.5px solid #a78bfa;border-right:2.5px solid #a78bfa;border-radius:0 0 4px 0">
                         </div>
                     </div>
                 </div>
-                <canvas id="canvas-penitipan" class="hidden"></canvas>
+            </div>
+
+            <canvas id="canvas-penitipan" class="hidden"></canvas>
+
+            {{-- Tombol --}}
+            <div style="padding: 12px 16px;">
                 <button type="button" onclick="jepretFoto('penitipan')"
-                    class="w-full py-3 rounded-xl text-white font-bold text-sm"
-                    style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
+                    style="width: 100%; padding: 12px; border-radius: 12px; color: white; font-weight: 700; font-size: 14px; border: none; cursor: pointer; background: linear-gradient(135deg, #5b21b6, #7c3aed);">
                     📸 Jepret Foto
                 </button>
             </div>
@@ -463,13 +474,13 @@
                 <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Ukuran Barang</label>
                 <div class="grid grid-cols-4 gap-2">
                     ${['S','M','L','XL'].map((u,i) => `
-                        <label class="ukuran-label cursor-pointer">
-                            <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
-                            <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
-                                style="${i===0?'border-color:#7c3aed;color:#7c3aed;background:white;':'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
-                                ${u}
-                            </div>
-                        </label>`).join('')}
+                                                                    <label class="ukuran-label cursor-pointer">
+                                                                        <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
+                                                                        <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
+                                                                            style="${i===0?'border-color:#7c3aed;color:#7c3aed;background:white;':'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
+                                                                            ${u}
+                                                                        </div>
+                                                                    </label>`).join('')}
                 </div>
             </div>`;
             container.appendChild(div);
@@ -571,7 +582,8 @@
         let streamPenitipan = null;
 
         async function bukaKamera(type) {
-            document.getElementById('modal-kamera-' + type).classList.remove('hidden');
+            const modal = document.getElementById('modal-kamera-' + type);
+            modal.style.display = 'flex'; // ← ganti dari classList.remove('hidden')
             try {
                 streamPenitipan = await navigator.mediaDevices.getUserMedia({
                     video: {
@@ -593,29 +605,44 @@
             }
             const video = document.getElementById('video-' + type);
             video.srcObject = streamPenitipan;
-            video.style.transform = 'scaleX(1)';
         }
 
         function tutupKamera(type) {
             streamPenitipan?.getTracks().forEach(t => t.stop());
             streamPenitipan = null;
-            document.getElementById('modal-kamera-' + type).classList.add('hidden');
+            document.getElementById('modal-kamera-' + type).style.display = 'none';
+        }
+
+        function tutupKamera(type) {
+            if (streamPenitipan) {
+                streamPenitipan.getTracks().forEach(function(track) {
+                    track.stop();
+                });
+                streamPenitipan = null;
+            }
+            const modal = document.getElementById('modal-kamera-' + type);
+            modal.style.display = 'none';
+            modal.classList.add('hidden'); // ← double kill, pastikan tertutup
         }
 
         function jepretFoto(type) {
             const video = document.getElementById('video-' + type);
             const canvas = document.getElementById('canvas-' + type);
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
 
             const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
             document.getElementById('foto_penitipan_input').value = dataUrl;
             document.getElementById('foto-preview').src = dataUrl;
             document.getElementById('foto-preview-wrapper').classList.remove('hidden');
             document.getElementById('foto-buttons').classList.add('hidden');
 
-            tutupKamera(type);
+            tutupKamera(type); // ← dipanggil terakhir setelah semua selesai
         }
 
         function pilihDariGaleri(input) {

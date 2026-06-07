@@ -414,6 +414,13 @@
             border-bottom: 2px solid #7c3aed;
             background: #faf5ff;
         }
+
+        /* Fix kamera tidak mirror di semua device */
+        #qr-video,
+        video[autoplay] {
+            transform: scaleX(1) !important;
+            -webkit-transform: scaleX(1) !important;
+        }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
@@ -430,8 +437,9 @@
         }
 
         // ── QR Scanner ──
-        let qrStream = null,
-            qrInterval = null;
+        let qrStream = null;
+        let qrInterval = null;
+        let isScanning = false;
 
         function setQrStatus(text, color) {
             document.getElementById('qr-status').innerHTML =
@@ -447,232 +455,410 @@
                 btn.style.background = 'linear-gradient(135deg,#5b21b6,#7c3aed)';
                 setQrStatus('📷 Kamera belum aktif', '#c4b5fd');
             } else {
+                btn.innerHTML = '⏳ Memuat kamera...';
+                btn.disabled = true;
                 await startQrScanner();
+                btn.disabled = false;
                 btn.innerHTML = '⏹ Hentikan Kamera';
                 btn.style.background = '#dc2626';
             }
         }
 
         async function startQrScanner() {
-            try {
-                qrStream = await navigator.mediaDevices.getUserMedia({
+            const constraints = [
+                // Prioritas 1: kamera belakang HP
+                {
                     video: {
                         facingMode: {
-                            ideal: 'environment'
+                            exact: 'environment'
                         },
                         width: {
-                            ideal: 1920
+                            ideal: 1280
                         },
                         height: {
-                            ideal: 1080
+                            ideal: 720
                         }
                     }
-                });
-            } catch (e) {
-                try {
-                    qrStream = await navigator.mediaDevices.getUserMedia({
-                        video: {
-                            width: {
-                                ideal: 1280
-                            },
-                            height: {
-                                ideal: 720
-                            }
+                },
+                // Prioritas 2: kamera belakang ideal
+                {
+                    video: {
+                        facingMode: 'environment',
+                        width: {
+                            ideal: 1280
+                        },
+                        height: {
+                            ideal: 720
                         }
-                    });
-                } catch (err) {
-                    alert('Tidak bisa mengakses kamera: ' + err.message);
-                    return;
+                    }
+                },
+                // Prioritas 3: kamera apapun resolusi tinggi
+                {
+                    video: {
+                        width: {
+                            ideal: 1280
+                        },
+                        height: {
+                            ideal: 720
+                        }
+                    }
+                },
+                // Fallback: kamera apapun
+                {
+                    video: true
                 }
+            ];
+
+            for (const constraint of constraints) {
+                try {
+                    qrStream = await navigator.mediaDevices.getUserMedia(constraint);
+                    break;
+                } catch (e) {
+                    continue;
+                }
+            }
+
+            if (!qrStream) {
+                alert('Tidak bisa mengakses kamera. Pastikan izin kamera diaktifkan di browser.');
+                return;
             }
 
             const video = document.getElementById('qr-video');
             video.srcObject = qrStream;
             video.style.cssText =
-                'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(1);display:block';
-            video.onloadedmetadata = () => {
-                video.play();
-                setQrStatus('🔍 Scanning...', '#c4b5fd');
-                qrInterval = setInterval(scanQrFrame, 150);
-            };
+                'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(1) !important;-webkit-transform:scaleX(1) !important;display:block';
+
+            await new Promise(resolve => {
+                video.onloadedmetadata = () => {
+                    video.play();
+                    resolve();
+                };
+            });
+
+            isScanning = true;
+            setQrStatus('🔍 Scanning...', '#c4b5fd');
+
+            // Gunakan requestAnimationFrame untuk scan lebih smooth
+            requestAnimationFrame(scanLoop);
         }
 
         function stopQrScanner() {
-            qrStream?.getTracks().forEach(t => t.stop());
-            qrStream = null;
+            isScanning = false;
+            if (qrStream) {
+                qrStream.getTracks().forEach(t => t.stop());
+                qrStream = null;
+            }
             clearInterval(qrInterval);
+        }
+
+        function scanLoop() {
+            if (!isScanning) return;
+
+            try {
+                scanQrFrame();
+            } catch (e) {
+                // silent
+            }
+
+            // Scan setiap 100ms untuk lebih responsif
+            setTimeout(() => requestAnimationFrame(scanLoop), 100);
         }
 
         function scanQrFrame() {
             const video = document.getElementById('qr-video');
-            if (!video || video.readyState < 2 || !video.videoWidth) return;
+            if (!video || video.readyState < 2 || !video.videoWidth || !video.videoHeight) return;
 
+            const w = video.videoWidth;
+            const h = video.videoHeight;
+
+            // Canvas utama — full frame
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d', {
+                willReadFrequently: true
+            });
 
+            // PENTING: jangan flip, gambar apa adanya dari kamera
+            ctx.drawImage(video, 0, 0, w, h);
+
+            // Coba scan full frame dengan semua mode
             for (const attempt of ['dontInvert', 'onlyInvert', 'attemptBoth']) {
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, canvas.width, canvas.height, {
+                const imageData = ctx.getImageData(0, 0, w, h);
+                const code = jsQR(imageData.data, w, h, {
                     inversionAttempts: attempt
                 });
                 if (code?.data?.trim()) {
-                    clearInterval(qrInterval);
-                    stopQrScanner();
-                    setQrStatus('✅ QR Terdeteksi!', '#4ade80');
-                    prosesQr(code.data.trim());
+                    handleQrFound(code.data.trim());
                     return;
                 }
             }
-        }
 
-        async function prosesQr(nomorTransaksi) {
-            setQrStatus('⏳ Memproses...', '#fbbf24');
+            // Coba scan crop area tengah (70%)
+            const size = Math.min(w, h) * 0.7;
+            const cx = (w - size) / 2;
+            const cy = (h - size) / 2;
 
-            const res = await fetch('{{ route('kasir.pengambilan.scan-qr') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    nomor_transaksi: nomorTransaksi
+            const c2 = document.createElement('canvas');
+            c2.width = size;
+            c2.height = size;
+            c2.getContext('2d', {
+                    willReadFrequently: true
                 })
-            });
-            const data = await res.json();
+                .drawImage(video, cx, cy, size, size, 0, 0, size, size);
 
-            const hasil = document.getElementById('hasil-qr');
-
-            if (!data.found) {
-                hasil.innerHTML = `
-            <div class="bg-white rounded-2xl border border-gray-100 p-10 text-center mb-4"
-                style="box-shadow:0 2px 12px rgba(0,0,0,0.04)">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"
-                    style="background:#fff5f5">😕</div>
-                <p class="font-black text-gray-700 text-lg mb-1">Transaksi Tidak Ditemukan</p>
-                <p class="text-gray-400 text-sm mb-1">Nomor: <span class="font-mono font-bold text-gray-600">${nomorTransaksi}</span></p>
-                <p class="text-gray-400 text-sm mb-4">Mungkin sudah diambil atau nomor tidak valid.</p>
-                <button onclick="resetQr()"
-                    class="px-6 py-2.5 rounded-xl text-white font-bold text-sm"
-                    style="background:linear-gradient(135deg,#5b21b6,#7c3aed)">
-                    🔄 Scan Ulang
-                </button>
-            </div>`;
-                hasil.classList.remove('hidden');
-                return;
+            for (const attempt of ['dontInvert', 'onlyInvert', 'attemptBoth']) {
+                const imageData = c2.getContext('2d').getImageData(0, 0, size, size);
+                const code = jsQR(imageData.data, size, size, {
+                    inversionAttempts: attempt
+                });
+                if (code?.data?.trim()) {
+                    handleQrFound(code.data.trim());
+                    return;
+                }
             }
 
-            const t = data.transaksi;
-            const isTerlambat = t.status === 'terlambat';
-
-            hasil.innerHTML = `
-        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-4"
-            style="box-shadow:0 2px 16px rgba(0,0,0,0.06)">
-
-            {{-- Header --}}
-            <div class="flex justify-between items-center px-5 py-4"
-                style="background:linear-gradient(135deg,#1e1035,#2d1b69)">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm text-white"
-                        style="background:rgba(167,139,250,0.3)">${t.nama_penitip.charAt(0).toUpperCase()}</div>
-                    <div>
-                        <p class="text-white font-black text-sm leading-none">${t.nama_penitip}</p>
-                        <p class="text-xs mt-0.5" style="color:#c4b5fd">✅ QR Terdeteksi</p>
-                    </div>
-                </div>
-                <span class="text-xs font-bold px-3 py-1.5 rounded-full font-mono flex-shrink-0"
-                    style="background:rgba(167,139,250,0.2);color:#c4b5fd">${t.nomor}</span>
-            </div>
-
-            <div class="p-5">
-
-                {{-- Info Grid --}}
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
-                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:#94a3b8;font-size:9px">Event</p>
-                        <p class="font-bold text-gray-800 text-sm">${t.event}</p>
-                    </div>
-                    <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
-                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:#94a3b8;font-size:9px">Total Barang</p>
-                        <p class="font-black text-gray-800 text-lg">${t.total_barang} <span style="font-size:11px;font-weight:400;color:#94a3b8">unit</span></p>
-                    </div>
-                    <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
-                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:#94a3b8;font-size:9px">Waktu Titip</p>
-                        <p class="font-bold text-gray-700 text-xs">${t.waktu_penitipan}</p>
-                    </div>
-                    <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
-                        <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:#94a3b8;font-size:9px">Status</p>
-                        <p class="font-bold text-sm flex items-center gap-1.5" style="color:${isTerlambat ? '#dc2626' : '#7c3aed'}">
-                            <span style="width:8px;height:8px;border-radius:50%;background:${isTerlambat ? '#ef4444' : '#a78bfa'};display:inline-block"></span>
-                            ${isTerlambat ? 'Terlambat' : 'Dititipkan'}
-                        </p>
-                    </div>
-                </div>
-
-                ${t.foto_penitipan ? `
-                    <div class="mb-4">
-                        <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">📷 Foto Barang Saat Penitipan</p>
-                        <img src="${t.foto_penitipan}" alt="Foto" class="w-full max-h-48 object-cover rounded-xl cursor-pointer"
-                            style="border:1.5px solid #ede9fe" onclick="bukaFotoModal(this.src)">
-                    </div>` : ''}
-
-                ${isTerlambat ? `
-                    <div class="flex items-start gap-3 px-4 py-3 rounded-xl mb-4"
-                        style="background:#fff5f5;border:1.5px solid #fecaca">
-                        <span style="color:#ef4444;flex-shrink:0">⚠️</span>
-                        <div>
-                            <p class="font-bold text-sm" style="color:#dc2626">Pengambilan Terlambat</p>
-                            <p class="text-xs mt-0.5" style="color:#f87171">Event sudah berakhir. Konfirmasi tetap bisa dilakukan.</p>
-                        </div>
-                    </div>` : ''}
-
-                {{-- Foto Pengambilan --}}
-                <div class="mb-5">
-                    <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
-                        Foto Pengambilan <span style="font-weight:400;text-transform:none;color:#94a3b8">(opsional)</span>
-                    </p>
-                    <div id="foto-qr-preview" class="hidden mb-3">
-                        <div style="position:relative">
-                            <img id="foto-qr-img" src="" class="w-full max-h-40 object-cover rounded-xl"
-                                style="border:1.5px solid #ddd6fe">
-                            <button onclick="hapusFotoQr()" type="button"
-                                class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full text-white text-xs font-bold"
-                                style="background:rgba(0,0,0,0.6)">✕</button>
-                        </div>
-                    </div>
-                    <button onclick="bukaKameraQrAmbil()" type="button"
-                        class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm"
-                        style="background:#faf5ff;color:#7c3aed;border:1.5px solid #ede9fe">
-                        📷 Ambil Foto
-                    </button>
-                    <input type="hidden" id="foto-qr-input">
-                </div>
-
-                {{-- Tombol Aksi --}}
-                <button onclick="konfirmasiQr(${t.id}, ${isTerlambat})"
-                    class="w-full py-4 rounded-2xl text-white font-black text-sm transition hover:opacity-90 flex items-center justify-center gap-2"
-                    style="background:${isTerlambat ? 'linear-gradient(135deg,#dc2626,#ef4444)' : 'linear-gradient(135deg,#5b21b6,#7c3aed)'};
-                           box-shadow:${isTerlambat ? '0 4px 12px rgba(220,38,38,0.25)' : '0 4px 12px rgba(91,33,182,0.25)'}">
-                    ${isTerlambat ? '⚠️ Konfirmasi Pengambilan (Terlambat)' : '🛡️ Konfirmasi Pengambilan'}
-                </button>
-                <button onclick="resetQr()"
-                    class="w-full mt-2 py-3 rounded-xl font-bold text-sm transition"
-                    style="background:white;border:1.5px solid #ede9fe;color:#7c3aed">
-                    🔄 Scan Ulang
-                </button>
-            </div>
-        </div>`;
-
-            hasil.classList.remove('hidden');
-            hasil.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+            // Coba dengan brightness boost (grayscale enhancement)
+            const c3 = document.createElement('canvas');
+            c3.width = w;
+            c3.height = h;
+            const ctx3 = c3.getContext('2d', {
+                willReadFrequently: true
             });
+            ctx3.filter = 'contrast(1.5) brightness(1.1)';
+            ctx3.drawImage(video, 0, 0, w, h);
+            ctx3.filter = 'none';
+
+            const imageData3 = ctx3.getImageData(0, 0, w, h);
+            const code3 = jsQR(imageData3.data, w, h, {
+                inversionAttempts: 'attemptBoth'
+            });
+            if (code3?.data?.trim()) {
+                handleQrFound(code3.data.trim());
+            }
+        }
+
+        function handleQrFound(value) {
+            console.log('✅ QR Found:', value);
+            isScanning = false;
+            stopQrScanner();
+            setQrStatus('✅ QR Terdeteksi!', '#4ade80');
+            prosesQr(value);
+        }
+
+        async function prosesQr(namaPenitip) {
+            setQrStatus('⏳ Memproses...', '#fbbf24');
+
+            try {
+                const res = await fetch('{{ route('kasir.pengambilan.scan-qr') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        nama_penitip: namaPenitip
+                    })
+                });
+
+                if (!res.ok) throw new Error('Server error: ' + res.status);
+
+                const data = await res.json();
+                const hasil = document.getElementById('hasil-qr');
+
+                if (!data.found) {
+                    setQrStatus('❌ Tidak ditemukan', '#f87171');
+                    hasil.innerHTML = `
+                <div class="bg-white rounded-2xl border border-gray-100 p-10 text-center mb-4"
+                    style="box-shadow:0 2px 12px rgba(0,0,0,0.04)">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"
+                        style="background:#fff5f5">😕</div>
+                    <p class="font-black text-gray-700 text-lg mb-1">Penitip Tidak Ditemukan</p>
+                    <p class="text-gray-400 text-sm mb-1">
+                        Nama: <span class="font-bold text-gray-600">${namaPenitip}</span>
+                    </p>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Mungkin sudah diambil atau tidak ada transaksi aktif.
+                    </p>
+                    <button onclick="resetQr()"
+                        class="px-6 py-2.5 rounded-xl text-white font-bold text-sm"
+                        style="background:linear-gradient(135deg,#5b21b6,#7c3aed)">
+                        🔄 Scan Ulang
+                    </button>
+                </div>`;
+                    hasil.classList.remove('hidden');
+                    return;
+                }
+
+                const t = data.transaksi;
+                const isTerlambat = t.status === 'terlambat';
+
+                hasil.innerHTML = `
+            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-4"
+                style="box-shadow:0 2px 16px rgba(0,0,0,0.06)">
+
+                <div class="flex justify-between items-center px-5 py-4"
+                    style="background:linear-gradient(135deg,#1e1035,#2d1b69)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm text-white"
+                            style="background:rgba(167,139,250,0.3)">
+                            ${t.nama_penitip.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <p class="text-white font-black text-sm leading-none">${t.nama_penitip}</p>
+                            <p class="text-xs mt-0.5" style="color:#c4b5fd">✅ QR Terdeteksi</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1.5 rounded-full font-mono flex-shrink-0"
+                        style="background:rgba(167,139,250,0.2);color:#c4b5fd">
+                        ${t.nomor}
+                    </span>
+                </div>
+
+                <div class="p-5">
+
+                    ${t.total_transaksi_aktif > 1 ? `
+                                    <div class="flex items-start gap-3 px-4 py-3 rounded-xl mb-4"
+                                        style="background:#fffbeb;border:1.5px solid #fde68a">
+                                        <span style="flex-shrink:0">⚠️</span>
+                                        <div>
+                                            <p class="font-bold text-sm" style="color:#92400e">
+                                                ${t.total_transaksi_aktif} transaksi aktif ditemukan
+                                            </p>
+                                            <p class="text-xs mt-0.5" style="color:#b45309">
+                                                Menampilkan transaksi terbaru. Gunakan Cari Nama untuk melihat semua.
+                                            </p>
+                                        </div>
+                                    </div>` : ''}
+
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
+                            <p class="text-xs font-semibold uppercase tracking-wider mb-1"
+                                style="color:#94a3b8;font-size:9px">Event</p>
+                            <p class="font-bold text-gray-800 text-sm">${t.event}</p>
+                        </div>
+                        <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
+                            <p class="text-xs font-semibold uppercase tracking-wider mb-1"
+                                style="color:#94a3b8;font-size:9px">Total Barang</p>
+                            <p class="font-black text-gray-800 text-lg">
+                                ${t.total_barang}
+                                <span style="font-size:11px;font-weight:400;color:#94a3b8">unit</span>
+                            </p>
+                        </div>
+                        <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
+                            <p class="text-xs font-semibold uppercase tracking-wider mb-1"
+                                style="color:#94a3b8;font-size:9px">Waktu Titip</p>
+                            <p class="font-bold text-gray-700 text-xs">${t.waktu_penitipan}</p>
+                        </div>
+                        <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
+                            <p class="text-xs font-semibold uppercase tracking-wider mb-1"
+                                style="color:#94a3b8;font-size:9px">Status</p>
+                            <p class="font-bold text-sm flex items-center gap-1.5"
+                                style="color:${isTerlambat ? '#dc2626' : '#7c3aed'}">
+                                <span style="width:8px;height:8px;border-radius:50%;
+                                    background:${isTerlambat ? '#ef4444' : '#a78bfa'};
+                                    display:inline-block"></span>
+                                ${isTerlambat ? 'Terlambat' : 'Dititipkan'}
+                            </p>
+                        </div>
+                    </div>
+
+                    ${t.details && t.details.length > 0 ? `
+                                    <div class="mb-4">
+                                        <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">
+                                            Daftar Barang
+                                        </p>
+                                        <div class="space-y-2">
+                                            ${t.details.map(d => `
+                            <div class="flex items-center justify-between px-3 py-2 rounded-lg"
+                                style="background:#f8faff;border:1px solid #ede9fe">
+                                <span class="text-sm font-semibold text-gray-700">${d.nama}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded-lg text-xs font-bold"
+                                        style="background:#ede9fe;color:#7c3aed">${d.ukuran}</span>
+                                    <span class="text-xs text-gray-400">x${d.jumlah}</span>
+                                    <span class="text-xs font-bold text-gray-700">${d.subtotal}</span>
+                                </div>
+                            </div>`).join('')}
+                                        </div>
+                                    </div>` : ''}
+
+                    ${t.foto_penitipan ? `
+                                    <div class="mb-4">
+                                        <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">
+                                            📷 Foto Barang Saat Penitipan
+                                        </p>
+                                        <img src="${t.foto_penitipan}" alt="Foto"
+                                            class="w-full max-h-48 object-cover rounded-xl cursor-pointer"
+                                            style="border:1.5px solid #ede9fe"
+                                            onclick="bukaFotoModal(this.src)">
+                                    </div>` : ''}
+
+                    ${isTerlambat ? `
+                                    <div class="flex items-start gap-3 px-4 py-3 rounded-xl mb-4"
+                                        style="background:#fff5f5;border:1.5px solid #fecaca">
+                                        <span style="color:#ef4444;flex-shrink:0">⚠️</span>
+                                        <div>
+                                            <p class="font-bold text-sm" style="color:#dc2626">Pengambilan Terlambat</p>
+                                            <p class="text-xs mt-0.5" style="color:#f87171">Event sudah berakhir.</p>
+                                        </div>
+                                    </div>` : ''}
+
+                    <div class="mb-5">
+                        <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
+                            Foto Pengambilan
+                            <span style="font-weight:400;text-transform:none;color:#94a3b8">(opsional)</span>
+                        </p>
+                        <div id="foto-qr-preview" class="hidden mb-3">
+                            <div style="position:relative">
+                                <img id="foto-qr-img" src=""
+                                    class="w-full max-h-40 object-cover rounded-xl"
+                                    style="border:1.5px solid #ddd6fe">
+                                <button onclick="hapusFotoQr()" type="button"
+                                    class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full text-white text-xs font-bold"
+                                    style="background:rgba(0,0,0,0.6)">✕</button>
+                            </div>
+                        </div>
+                        <button onclick="bukaKameraQrAmbil()" type="button"
+                            class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm"
+                            style="background:#faf5ff;color:#7c3aed;border:1.5px solid #ede9fe">
+                            📷 Ambil Foto
+                        </button>
+                        <input type="hidden" id="foto-qr-input">
+                    </div>
+
+                    <button onclick="konfirmasiQr(${t.id}, ${isTerlambat})"
+                        class="w-full py-4 rounded-2xl text-white font-black text-sm transition hover:opacity-90 flex items-center justify-center gap-2 mb-2"
+                        style="background:${isTerlambat
+                            ? 'linear-gradient(135deg,#dc2626,#ef4444)'
+                            : 'linear-gradient(135deg,#5b21b6,#7c3aed)'};
+                            box-shadow:${isTerlambat
+                            ? '0 4px 12px rgba(220,38,38,0.25)'
+                            : '0 4px 12px rgba(91,33,182,0.25)'}">
+                        ${isTerlambat ? '⚠️ Konfirmasi (Terlambat)' : '🛡️ Konfirmasi Pengambilan'}
+                    </button>
+                    <button onclick="resetQr()"
+                        class="w-full py-3 rounded-xl font-bold text-sm transition"
+                        style="background:white;border:1.5px solid #ede9fe;color:#7c3aed">
+                        🔄 Scan Ulang
+                    </button>
+                </div>
+            </div>`;
+
+                hasil.classList.remove('hidden');
+                hasil.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+
+            } catch (err) {
+                console.error('Error prosesQr:', err);
+                setQrStatus('❌ Error: ' + err.message, '#f87171');
+            }
         }
 
         function resetQr() {
+            isScanning = false;
             const hasil = document.getElementById('hasil-qr');
             hasil.innerHTML = '';
             hasil.classList.add('hidden');
@@ -689,18 +875,23 @@
             if (!confirm(msg)) return;
 
             const fotoInput = document.getElementById('foto-qr-input');
-            await fetch(`/kasir/pengambilan/konfirmasi/${transaksiId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: new URLSearchParams({
-                    '_token': '{{ csrf_token() }}',
-                    'foto_pengambilan': fotoInput?.value || ''
-                })
-            });
-            window.location.href = '{{ route('kasir.pengambilan.index') }}';
+
+            try {
+                await fetch(`/kasir/pengambilan/konfirmasi/${transaksiId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: new URLSearchParams({
+                        '_token': '{{ csrf_token() }}',
+                        'foto_pengambilan': fotoInput?.value || ''
+                    })
+                });
+                window.location.href = '{{ route('kasir.pengambilan.index') }}';
+            } catch (err) {
+                alert('Gagal konfirmasi: ' + err.message);
+            }
         }
 
         // ── Kamera QR Ambil ──
@@ -713,13 +904,16 @@
             modal.style.background = 'rgba(0,0,0,0.85)';
             modal.innerHTML = `
         <div class="bg-white rounded-2xl overflow-hidden w-full max-w-sm mx-4">
-            <div class="flex justify-between items-center px-4 py-3" style="border-bottom:1px solid #f1f5f9">
+            <div class="flex justify-between items-center px-4 py-3"
+                style="border-bottom:1px solid #f1f5f9">
                 <p class="font-black text-gray-800 text-sm">📷 Foto Pengambilan</p>
-                <button onclick="tutupModalQrAmbil()" class="w-8 h-8 flex items-center justify-center rounded-lg"
+                <button onclick="tutupModalQrAmbil()"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg"
                     style="background:#f1f5f9;color:#6b7280">✕</button>
             </div>
             <div class="p-4">
-                <div class="rounded-xl overflow-hidden mb-3" style="background:#0f0f1a;width:100%;height:260px;position:relative">
+                <div class="rounded-xl overflow-hidden mb-3"
+                    style="background:#0f0f1a;width:100%;height:260px;position:relative">
                     <video id="video-qr-ambil" autoplay playsinline
                         style="width:100%;height:100%;object-fit:cover;transform:scaleX(1);display:block"></video>
                     <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
@@ -734,30 +928,39 @@
                 <canvas id="canvas-qr-ambil" class="hidden"></canvas>
                 <button onclick="jepretQrAmbil()" type="button"
                     class="w-full py-3 rounded-xl text-white font-bold text-sm"
-                    style="background:linear-gradient(135deg,#5b21b6,#7c3aed)">📸 Jepret Foto</button>
+                    style="background:linear-gradient(135deg,#5b21b6,#7c3aed)">
+                    📸 Jepret Foto
+                </button>
             </div>
         </div>`;
             document.body.appendChild(modal);
 
-            navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: {
-                            ideal: 'environment'
+            const tryCamera = async () => {
+                for (const constraint of [{
+                            video: {
+                                facingMode: {
+                                    ideal: 'environment'
+                                }
+                            }
+                        },
+                        {
+                            video: true
                         }
+                    ]) {
+                    try {
+                        streamQrAmbil = await navigator.mediaDevices.getUserMedia(constraint);
+                        const video = document.getElementById('video-qr-ambil');
+                        video.srcObject = streamQrAmbil;
+                        video.style.transform = 'scaleX(1)';
+                        return;
+                    } catch (e) {
+                        continue;
                     }
-                })
-                .then(stream => {
-                    streamQrAmbil = stream;
-                    document.getElementById('video-qr-ambil').srcObject = stream;
-                })
-                .catch(() => {
-                    navigator.mediaDevices.getUserMedia({
-                        video: true
-                    }).then(stream => {
-                        streamQrAmbil = stream;
-                        document.getElementById('video-qr-ambil').srcObject = stream;
-                    });
-                });
+                }
+                alert('Tidak bisa mengakses kamera.');
+                tutupModalQrAmbil();
+            };
+            tryCamera();
         }
 
         function tutupModalQrAmbil() {
@@ -773,7 +976,6 @@
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
             const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-
             document.getElementById('foto-qr-input').value = dataUrl;
             document.getElementById('foto-qr-img').src = dataUrl;
             document.getElementById('foto-qr-preview').classList.remove('hidden');
@@ -790,24 +992,32 @@
 
         async function bukaKameraAmbil(id) {
             document.getElementById('modal-kamera-ambil-' + id).classList.remove('hidden');
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: {
-                            ideal: 'environment'
+            for (const constraint of [{
+                        video: {
+                            facingMode: {
+                                ideal: 'environment'
+                            }
                         }
+                    },
+                    {
+                        video: true
                     }
-                });
-                streamsAmbil[id] = stream;
-            } catch (e) {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: true
-                });
-                streamsAmbil[id] = stream;
+                ]) {
+                try {
+                    streamsAmbil[id] = await navigator.mediaDevices.getUserMedia(constraint);
+                    break;
+                } catch (e) {
+                    continue;
+                }
             }
-            const video = document.getElementById('video-ambil-' + id);
-            video.srcObject = streamsAmbil[id];
-            video.style.transform = 'scaleX(1)';
+            if (streamsAmbil[id]) {
+                const video = document.getElementById('video-ambil-' + id);
+                video.srcObject = streamsAmbil[id];
+                video.style.transform = 'scaleX(1)';
+            } else {
+                alert('Tidak bisa mengakses kamera.');
+                tutupKameraAmbil(id);
+            }
         }
 
         function tutupKameraAmbil(id) {
@@ -823,7 +1033,6 @@
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
             const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-
             document.getElementById('foto-ambil-input-' + id).value = dataUrl;
             document.getElementById('foto-ambil-img-' + id).src = dataUrl;
             document.getElementById('foto-ambil-preview-' + id).classList.remove('hidden');
