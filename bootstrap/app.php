@@ -14,6 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'event.selected' => \App\Http\Middleware\EnsureEventSelected::class,
+            'check.event'   => \App\Http\Middleware\CheckEventActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -384,6 +384,25 @@
                 <p class="text-xs font-bold" style="color: #34d399">CASHIER MODE AKTIF</p>
             </div>
 
+            {{-- Event Aktif Badge --}}
+            @if (session('kasir_event_id'))
+                <div class="mx-3 mt-2 px-3 py-2.5 rounded-xl"
+                    style="background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.15)">
+                    <p class="text-xs font-semibold uppercase tracking-wider mb-0.5"
+                        style="color: rgba(255,255,255,0.4); font-size: 9px">Event Aktif</p>
+                    <p class="text-white text-xs font-bold truncate">{{ session('kasir_event_nama') }}</p>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-xs font-mono font-bold"
+                            style="color: #a78bfa">{{ session('kasir_event_kode') }}</span>
+                        <form action="{{ route('kasir.event.ganti') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="text-xs" style="color: rgba(255,255,255,0.3)"
+                                onclick="return confirm('Ganti event?')">Ganti</button>
+                        </form>
+                    </div>
+                </div>
+            @endif
+
             {{-- Nav --}}
             <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
                 <p class="text-xs font-bold px-3 mb-2 mt-1"
