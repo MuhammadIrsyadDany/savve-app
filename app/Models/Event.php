@@ -8,6 +8,7 @@ class Event extends Model
 {
     protected $fillable = [
         'nama_event',
+        'kode_event',
         'tanggal_mulai',
         'tanggal_selesai',
         'status',

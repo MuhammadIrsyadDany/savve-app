@@ -12,15 +12,16 @@ class Transaksi extends Model
         'kasir_id',
         'nama_penitip',
         'no_whatsapp',
+        'metode_bayar',
         'status',
-        'waktu_penitipan',
-        'waktu_pengambilan',
         'foto_penitipan',
         'foto_pengambilan',
+        'waktu_penitipan',
+        'waktu_pengambilan',
     ];
 
     protected $casts = [
-        'waktu_penitipan'   => 'datetime',
+        'waktu_penitipan'  => 'datetime',
         'waktu_pengambilan' => 'datetime',
     ];
 
@@ -39,7 +40,8 @@ class Transaksi extends Model
         return $this->hasMany(DetailTransaksi::class);
     }
 
-    public function getTotalHargaAttribute()
+    // Total harga dari semua detail
+    public function getTotalHargaAttribute(): float
     {
         return $this->details->sum('subtotal');
     }

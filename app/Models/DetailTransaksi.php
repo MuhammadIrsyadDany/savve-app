@@ -8,12 +8,14 @@ class DetailTransaksi extends Model
 {
     protected $fillable = [
         'transaksi_id',
-        'kategori_id',
-        'nama_barang_custom',
         'ukuran',
-        'jumlah',
+        'jenis_barang',
         'harga_satuan',
         'subtotal',
+    ];
+
+    protected $casts = [
+        'jenis_barang' => 'array', // otomatis encode/decode JSON
     ];
 
     public function transaksi()
@@ -21,8 +23,9 @@ class DetailTransaksi extends Model
         return $this->belongsTo(Transaksi::class);
     }
 
-    public function kategori()
+    // Nama barang untuk ditampilkan
+    public function getJenisBarangStringAttribute(): string
     {
-        return $this->belongsTo(KategoriBarang::class, 'kategori_id');
+        return implode(', ', $this->jenis_barang ?? []);
     }
 }
