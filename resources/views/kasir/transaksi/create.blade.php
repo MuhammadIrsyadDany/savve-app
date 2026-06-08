@@ -3,313 +3,259 @@
 
 @section('content')
 
-    {{-- Banner Notifikasi --}}
-    @if ($events->count() > 0)
-        <div id="banner"
-            class="flex items-center justify-between bg-white border border-indigo-200 rounded-2xl px-5 py-3 mb-6 shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-sm">✓</div>
-                <div>
-                    <p class="font-bold text-gray-800 text-sm">Sistem Siap</p>
-                    <p class="text-xs text-gray-400">Input transaksi baru sekarang untuk Event:
-                        {{ $events->first()->nama_event }}</p>
-                </div>
-            </div>
-            <button onclick="document.getElementById('banner').remove()"
-                class="text-gray-300 hover:text-gray-500 text-lg">✕</button>
+    {{-- Header --}}
+    <div class="anim-fade-up delay-1 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #7c3aed">Penitipan</p>
+            <h1 class="text-xl lg:text-2xl font-black text-gray-900">Transaksi Penitipan Baru</h1>
+            <p class="text-gray-400 text-sm mt-1">
+                Event: <span class="font-bold" style="color: #7c3aed">{{ $event->nama_event }}</span>
+                <span class="font-mono text-xs ml-1" style="color: #a78bfa">({{ $event->kode_event }})</span>
+            </p>
         </div>
-    @endif
+        <div class="flex items-center gap-2 self-start flex-shrink-0">
+            <span class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full"
+                style="background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0">
+                <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block"></span>
+                LIVE
+            </span>
+        </div>
+    </div>
 
     <div class="flex flex-col lg:flex-row gap-6">
 
-        {{-- Panel Kanan Mobile (tampil di atas form) --}}
-        <div class="w-full lg:hidden space-y-3">
-            <div class="rounded-2xl p-5 text-white relative overflow-hidden"
-                style="background: linear-gradient(135deg, #1e1035, #4c1d95)">
-                <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #c4b5fd">Transaction Number
-                    Preview</p>
-                <p id="nomor-preview-mobile" class="text-2xl font-black tracking-tight leading-tight mb-3 font-mono">
-                    SVV-{{ now()->format('ymd') }}-????
-                </p>
-                <div>
-                    <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
-                    <p class="font-bold text-white text-sm" id="status-preview-mobile">READY TO SAVE</p>
-                </div>
-                <div class="absolute -bottom-4 -right-4 w-20 h-20 rounded-full" style="background: rgba(255,255,255,0.05)">
-                </div>
-            </div>
-        </div>
-
-        {{-- ═══ FORM KIRI ═══ --}}
+        {{-- ═══ FORM ═══ --}}
         <div class="flex-1 min-w-0">
             <form action="{{ route('kasir.transaksi.store') }}" method="POST" id="form-transaksi">
                 @csrf
 
-                <div class="bg-white rounded-2xl border border-gray-100 p-5 lg:p-6"
+                {{-- Data Customer --}}
+                <div class="anim-fade-up delay-2 bg-white rounded-2xl border border-gray-100 p-5 lg:p-6 mb-4"
                     style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                    <h3 class="font-black text-gray-800 mb-4 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs flex-shrink-0"
+                            style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">1</span>
+                        Data Customer
+                    </h3>
 
-                    {{-- Title --}}
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-lg lg:text-xl font-black text-gray-800">Transaksi Penitipan Baru</h1>
-                        <span class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full"
-                            style="background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0">
-                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block"></span>
-                            LIVE
-                        </span>
-                    </div>
-
-                    {{-- Pilih Event --}}
-                    <div class="mb-5">
-                        <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Pilih
-                            Event</label>
-                        <select name="event_id" id="event_id" class="w-full rounded-xl px-4 py-3 text-sm transition"
-                            style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151"
-                            onchange="updatePreview()" onfocus="this.style.borderColor='#a78bfa'"
-                            onblur="this.style.borderColor='#ede9fe'">
-                            <option value="">-- Pilih Event --</option>
-                            @foreach ($events as $event)
-                                <option value="{{ $event->id }}" {{ old('event_id') == $event->id ? 'selected' : '' }}>
-                                    {{ $event->nama_event }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('event_id')
-                            <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Nama Penitip & WhatsApp --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Nama
-                                Penitip</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5"
+                                style="color: #64748b">Nama Customer</label>
                             <input type="text" name="nama_penitip" value="{{ old('nama_penitip') }}"
                                 class="w-full rounded-xl px-4 py-3 text-sm transition"
                                 style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151"
-                                placeholder="Contoh: Budi Santoso" oninput="updatePreview()"
-                                onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='#ede9fe'">
+                                placeholder="Nama lengkap penitip"
+                                onfocus="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
+                                onblur="this.style.borderColor='#ede9fe'; this.style.boxShadow='none'">
                             @error('nama_penitip')
                                 <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p>
                             @enderror
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">No
-                                WhatsApp</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5"
+                                style="color: #64748b">Nomor HP / WhatsApp</label>
                             <input type="text" name="no_whatsapp" value="{{ old('no_whatsapp') }}"
                                 class="w-full rounded-xl px-4 py-3 text-sm transition"
                                 style="background: #faf5ff; border: 1.5px solid #ede9fe; color: #374151"
-                                placeholder="08*********" onfocus="this.style.borderColor='#a78bfa'"
-                                onblur="this.style.borderColor='#ede9fe'">
+                                placeholder="08xxxxxxxxxx"
+                                onfocus="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
+                                onblur="this.style.borderColor='#ede9fe'; this.style.boxShadow='none'">
                             @error('no_whatsapp')
                                 <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p>
                             @enderror
                         </div>
                     </div>
+                </div>
 
-                    {{-- Daftar Barang --}}
-                    <div id="barang-container" class="space-y-4 mb-4">
-                        <div class="barang-item rounded-xl p-4" style="background: #faf5ff; border: 1.5px solid #ede9fe">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider mb-2"
-                                        style="color: #64748b">Nama Barang</label>
-                                    <select name="barang[0][kategori_id]"
-                                        class="kategori-select w-full rounded-xl px-3 py-2.5 text-sm"
-                                        style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
-                                        @foreach ($kategoris as $k)
-                                            <option value="{{ $k->id }}" data-custom="{{ $k->is_custom }}">
-                                                {{ $k->nama_kategori }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider mb-2"
-                                        style="color: #64748b">Quantity</label>
-                                    <div class="flex items-center gap-2 w-full">
-                                        <button type="button" onclick="changeQty(this, -1)"
-                                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg transition"
-                                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed; min-width: 36px">−</button>
-                                        <input type="number" name="barang[0][jumlah]" value="1" min="1"
-                                            class="min-w-0 w-full text-center rounded-xl py-2.5 text-sm font-bold"
-                                            style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
-                                        <button type="button" onclick="changeQty(this, 1)"
-                                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg transition"
-                                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed; min-width: 36px">+</button>
+                {{-- Daftar Barang --}}
+                <div class="anim-fade-up delay-3 bg-white rounded-2xl border border-gray-100 p-5 lg:p-6 mb-4"
+                    style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-black text-gray-800 flex items-center gap-2">
+                            <span
+                                class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs flex-shrink-0"
+                                style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">2</span>
+                            Barang yang Dititipkan
+                        </h3>
+                        <button type="button" id="btn-tambah-item"
+                            class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white font-bold text-xs transition hover:opacity-90"
+                            style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
+                            + Tambah Kategori
+                        </button>
+                    </div>
+
+                    <div id="items-container" class="space-y-4">
+                        {{-- Item pertama --}}
+                        <div class="item-barang rounded-2xl p-4 relative"
+                            style="background: #faf5ff; border: 1.5px solid #ede9fe">
+                            @include('kasir.transaksi._item_barang', [
+                                'index' => 0,
+                                'jenisBarangs' => $jenisBarangs,
+                                'tarifs' => $tarifs,
+                                'isFirst' => true,
+                            ])
+                        </div>
+                    </div>
+
+                    {{-- Metode Bayar --}}
+                    <div class="mt-6">
+                        <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Metode
+                            Pembayaran</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            @foreach (['QRIS' => '📱', 'Cash' => '💵', 'Online' => '🌐'] as $metode => $icon)
+                                <label class="metode-label cursor-pointer">
+                                    <input type="radio" name="metode_bayar" value="{{ $metode }}"
+                                        class="hidden metode-radio"
+                                        {{ old('metode_bayar', 'Cash') === $metode ? 'checked' : '' }}>
+                                    <div class="metode-box border-2 rounded-xl py-3 text-center transition"
+                                        style="{{ old('metode_bayar', 'Cash') === $metode
+                                            ? 'border-color: #7c3aed; background: #faf5ff;'
+                                            : 'border-color: #ede9fe; background: white;' }}">
+                                        <div class="text-xl mb-1">{{ $icon }}</div>
+                                        <p class="text-xs font-bold"
+                                            style="{{ old('metode_bayar', 'Cash') === $metode ? 'color: #7c3aed' : 'color: #94a3b8' }}">
+                                            {{ $metode }}
+                                        </p>
                                     </div>
-                                </div>
-                            </div>
+                                </label>
+                            @endforeach
+                        </div>
+                        @error('metode_bayar')
+                            <p class="text-red-500 text-xs mt-1">⚠ {{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
 
-                            <div class="nama-custom-wrapper mb-3" style="display:none">
-                                <label class="block text-xs font-bold uppercase tracking-wider mb-2"
-                                    style="color: #64748b">Nama Barang (Lainnya)</label>
-                                <input type="text" name="barang[0][nama_custom]"
-                                    class="w-full rounded-xl px-4 py-3 text-sm"
-                                    style="background: white; border: 1.5px solid #ddd6fe; color: #374151"
-                                    placeholder="Tulis nama barang...">
-                            </div>
+                {{-- Foto Barang --}}
+                <div class="anim-fade-up delay-4 bg-white rounded-2xl border border-gray-100 p-5 lg:p-6 mb-4"
+                    style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                    <h3 class="font-black text-gray-800 mb-4 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs flex-shrink-0"
+                            style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">3</span>
+                        Foto Barang
+                        <span class="text-xs font-normal text-gray-400 ml-1">(opsional)</span>
+                    </h3>
 
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider mb-2"
-                                    style="color: #64748b">Ukuran Barang</label>
-                                <div class="grid grid-cols-4 gap-2">
-                                    @foreach (['S', 'M', 'L', 'XL'] as $u)
-                                        <label class="ukuran-label cursor-pointer">
-                                            <input type="radio" name="barang[0][ukuran]" value="{{ $u }}"
-                                                class="hidden ukuran-radio" {{ $u === 'S' ? 'checked' : '' }}>
-                                            <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
-                                                style="{{ $u === 'S' ? 'border-color: #7c3aed; color: #7c3aed; background: white;' : 'border-color: #ddd6fe; color: #94a3b8; background: white;' }}">
-                                                {{ $u }}
-                                            </div>
-                                        </label>
-                                    @endforeach
-                                </div>
+                    <input type="hidden" name="foto_penitipan" id="foto_penitipan_input">
+
+                    <div id="foto-preview-wrapper" class="hidden mb-3">
+                        <div class="relative rounded-xl overflow-hidden" style="border: 1.5px solid #ddd6fe">
+                            <img id="foto-preview" src="" alt="Preview" class="w-full max-h-52 object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none">
+                            </div>
+                            <button type="button" onclick="hapusFoto()"
+                                class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold"
+                                style="background: rgba(0,0,0,0.6)">✕</button>
+                            <div class="absolute bottom-2 left-2">
+                                <span class="px-2 py-1 rounded-lg text-xs font-bold text-white"
+                                    style="background: rgba(91,33,182,0.8)">✅ Foto tersimpan</span>
                             </div>
                         </div>
+                        <button type="button" onclick="hapusFoto()"
+                            class="mt-2 text-xs font-semibold flex items-center gap-1" style="color: #dc2626">
+                            🗑️ Hapus foto
+                        </button>
                     </div>
 
-                    {{-- Tambah Barang --}}
-                    <button type="button" id="tambah-barang"
-                        class="w-full py-2.5 rounded-xl text-sm font-semibold transition mb-5"
-                        style="border: 2px dashed #ddd6fe; color: #7c3aed; background: transparent">
-                        + Tambah Barang Lain
-                    </button>
-
-                    {{-- Upload Foto Barang --}}
-                    <div class="mb-5">
-                        <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">
-                            Foto Barang <span class="font-normal normal-case text-gray-400">(opsional)</span>
+                    <div id="foto-buttons" class="grid grid-cols-2 gap-3">
+                        <button type="button" onclick="bukaKamera('penitipan')"
+                            class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90"
+                            style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); color: #7c3aed; border: 1.5px solid #e9d5ff">
+                            <span>📷</span> Ambil Foto
+                        </button>
+                        <label
+                            class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm cursor-pointer transition hover:opacity-90"
+                            style="background: linear-gradient(135deg, #f8fbff, #eef4ff); color: #1d4ed8; border: 1.5px solid #dbeafe">
+                            <span>🖼️</span> Pilih dari Galeri
+                            <input type="file" accept="image/*" class="hidden" onchange="pilihDariGaleri(this)">
                         </label>
-
-                        <div id="foto-preview-wrapper" class="hidden mb-3">
-                            <div class="relative">
-                                <img id="foto-preview" src="" alt="Preview"
-                                    class="w-full max-h-48 object-cover rounded-xl" style="border: 1.5px solid #ddd6fe">
-                                <button type="button" onclick="hapusFoto()"
-                                    class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full text-white text-xs font-bold"
-                                    style="background: rgba(0,0,0,0.6)">✕</button>
-                            </div>
-                        </div>
-
-                        <input type="hidden" name="foto_penitipan" id="foto_penitipan_input">
-
-                        <div id="foto-buttons" class="grid grid-cols-2 gap-3">
-                            <button type="button" onclick="bukaKamera('penitipan')"
-                                class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90"
-                                style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); color: #7c3aed; border: 1.5px solid #e9d5ff">
-                                <span>📷</span> Ambil Foto
-                            </button>
-                            <label
-                                class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm cursor-pointer transition hover:opacity-90"
-                                style="background: linear-gradient(135deg, #f8fbff, #eef4ff); color: #1d4ed8; border: 1.5px solid #dbeafe">
-                                <span>🖼️</span> Pilih dari Galeri
-                                <input type="file" accept="image/*" class="hidden" onchange="pilihDariGaleri(this)">
-                            </label>
-                        </div>
                     </div>
+                </div>
 
-                    {{-- Tombol Aksi --}}
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <button type="submit"
-                            class="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
-                            style="background: linear-gradient(135deg, #5b21b6, #7c3aed); box-shadow: 0 4px 12px rgba(91,33,182,0.25)">
-                            💾 Simpan Transaksi
-                        </button>
-                    </div>
-
-                    <div class="flex items-center justify-between mt-3">
-                        <button type="reset" onclick="resetForm()" class="text-sm flex items-center gap-1 transition"
-                            style="color: #94a3b8">
-                            🔄 Reset
-                        </button>
-                        <a href="{{ route('kasir.dashboard') }}" id="btn-batal"
-                            class="text-sm flex items-center gap-2 font-semibold px-4 py-2 rounded-xl transition"
-                            style="background: #fff5f5; color: #ef4444; border: 1.5px solid #fecaca">
-                            ✕ Batal & Kembali
-                        </a>
-                    </div>
-
+                {{-- Tombol Aksi --}}
+                <div class="anim-fade-up delay-5 flex gap-3">
+                    <button type="submit"
+                        class="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
+                        style="background: linear-gradient(135deg, #5b21b6, #7c3aed); box-shadow: 0 4px 12px rgba(91,33,182,0.25)">
+                        💾 Simpan & Cetak Nota
+                    </button>
+                    <a href="{{ route('kasir.dashboard') }}" id="btn-batal"
+                        class="text-sm flex items-center gap-2 font-semibold px-4 py-2 rounded-xl transition"
+                        style="background: #fff5f5; color: #ef4444; border: 1.5px solid #fecaca">
+                        ✕ Batal & Kembali
+                    </a>
                 </div>
             </form>
         </div>
 
-        {{-- ═══ PANEL KANAN DESKTOP ═══ --}}
+        {{-- ═══ PANEL KANAN ═══ --}}
         <div class="hidden lg:flex w-72 flex-shrink-0 flex-col space-y-4">
 
-            {{-- Transaction Number Preview --}}
+            {{-- Nomor Preview --}}
             <div class="rounded-2xl p-6 text-white relative overflow-hidden"
                 style="background: linear-gradient(135deg, #1e1035, #4c1d95)">
-                <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color: #c4b5fd">Transaction Number
-                    Preview</p>
-                <p id="nomor-preview" class="text-3xl font-black tracking-tight leading-tight mb-4 font-mono">
-                    SVV-{{ now()->format('ymd') }}-????
+                <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color: #c4b5fd">
+                    Nomor Transaksi
                 </p>
-                <div>
-                    <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
-                    <p class="font-bold text-white" id="status-preview">READY TO SAVE</p>
-                </div>
+                <p id="nomor-preview" class="text-2xl font-black tracking-tight leading-tight mb-2 font-mono">
+                    SVV-{{ $event->kode_event }}-????
+                </p>
+                <p class="text-xs" style="color: rgba(255,255,255,0.5)">
+                    Event: {{ $event->nama_event }}
+                </p>
                 <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full"
                     style="background: rgba(255,255,255,0.05)"></div>
             </div>
 
-            {{-- Warehouse Capacity --}}
-            @php
-                $totalDititip = \App\Models\DetailTransaksi::whereHas(
-                    'transaksi',
-                    fn($q) => $q->where('status', 'dititip'),
-                )->count();
-                $kapasitas = 500;
-                $pct = min(round(($totalDititip / $kapasitas) * 100), 100);
-            @endphp
+            {{-- Tarif --}}
             <div class="bg-white rounded-2xl border border-gray-100 p-5" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
-                <div class="flex justify-between items-center mb-2">
-                    <p class="font-bold text-gray-800 text-sm">Warehouse Capacity</p>
-                    <p class="text-sm font-bold" style="color: #7c3aed">{{ $pct }}%</p>
-                </div>
-                <div class="w-full bg-gray-100 rounded-full h-2 mb-2">
-                    <div class="h-2 rounded-full"
-                        style="width: {{ $pct }}%; background: linear-gradient(to right, #5b21b6, #a78bfa)">
-                    </div>
-                </div>
-                <p class="text-xs text-gray-400">{{ $totalDititip }} items from {{ $kapasitas }} total slots used.</p>
-            </div>
-
-            {{-- Quick Guide --}}
-            <div class="rounded-2xl p-5 text-white" style="background: linear-gradient(135deg, #1e293b, #334155)">
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style="background: rgba(255,255,255,0.1)">❓</div>
-                    <div>
-                        <p class="font-bold text-sm mb-1">Quick Guide</p>
-                        <p class="text-xs leading-relaxed" style="color: #94a3b8">
-                            Pastikan nomor WhatsApp benar untuk pengiriman bukti digital via Savve Cloud.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Live Activity --}}
-            <div class="bg-white rounded-2xl border border-gray-100 p-5" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
-                <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: #94a3b8">Live Activity</p>
+                <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: #94a3b8">
+                    Tarif Event Ini
+                </p>
                 <div class="space-y-2">
-                    @foreach (\App\Models\Transaksi::with('kasir')->latest()->take(3)->get() as $lt)
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full flex-shrink-0"
-                                style="background: {{ $lt->status === 'dititip' ? '#a78bfa' : '#d1d5db' }}"></span>
-                            <p class="text-xs text-gray-500 truncate">
-                                {{ $lt->status === 'dititip' ? 'Saved' : 'Taken' }}: {{ $lt->nomor_transaksi }}
-                                ({{ $lt->nama_penitip }})
-                            </p>
+                    @foreach (['S', 'M', 'L', 'XL'] as $u)
+                        <div class="flex justify-between items-center">
+                            <span
+                                class="w-8 h-8 flex items-center justify-center rounded-full text-xs font-black text-white"
+                                style="background: linear-gradient(135deg, #5b21b6, #7c3aed)"> {{ $u }} </span>
+                            <span class="font-bold text-gray-700 text-sm">
+                                Rp {{ number_format($tarifs[$u]->harga ?? 0, 0, ',', '.') }}
+                            </span>
                         </div>
                     @endforeach
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-gray-200 flex-shrink-0 animate-pulse"></span>
-                        <p class="text-xs text-gray-400">Drafting: SVV-{{ now()->format('ymd') }}-...</p>
+                </div>
+            </div>
+
+            {{-- Summary Barang --}}
+            <div class="bg-white rounded-2xl border border-gray-100 p-5" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+                <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: #94a3b8">
+                    Summary
+                </p>
+                <div id="summary-container" class="space-y-2">
+                    <p class="text-xs text-gray-400 text-center py-2">Belum ada barang dipilih</p>
+                </div>
+                <div style="border-top: 1px solid #f5f3ff" class="mt-3 pt-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-gray-500">Total</span>
+                        <span id="total-harga" class="font-black text-lg" style="color: #5b21b6">
+                            Rp 0
+                        </span>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div>{{-- END flex container --}}
+            {{-- Tips --}}
+            <div class="rounded-2xl p-5" style="background: linear-gradient(135deg, #1e293b, #334155)">
+                <p class="font-bold text-white text-sm mb-2">💡 Tips</p>
+                <ul class="space-y-1.5 text-xs" style="color: #94a3b8">
+                    <li>• Satu transaksi bisa berisi banyak kategori barang</li>
+                    <li>• Centang semua jenis barang yang dititipkan</li>
+                    <li>• Tarif dihitung per kategori (S/M/L/XL)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     {{-- Modal Kamera Penitipan --}}
     <div id="modal-kamera-penitipan" class="hidden fixed inset-0 z-50"
@@ -319,11 +265,15 @@
             style="background: white; border-radius: 16px; overflow: hidden; width: fit-content; max-width: 90vw; margin: 0 auto; position: relative;">
 
             {{-- Header --}}
-            <div
-                style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;">
-                <p style="font-weight: 900; color: #1f2937; font-size: 14px; margin: 0;">📷 Foto Barang Titipan</p>
+            <div class="flex justify-between items-center px-5 py-4"
+                style="background: linear-gradient(135deg, #1e1035, #2d1b69)">
+                <div>
+                    <p class="font-black text-white text-sm">📷 Foto Barang</p>
+                    <p class="text-xs mt-0.5" style="color: #c4b5fd">Pastikan barang terlihat jelas</p>
+                </div>
                 <button onclick="tutupKamera('penitipan')"
-                    style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: #f1f5f9; color: #6b7280; border: none; cursor: pointer;">✕</button>
+                    class="w-8 h-8 flex items-center justify-center rounded-xl text-white font-bold"
+                    style="background: rgba(255,255,255,0.15)">✕</button>
             </div>
 
             {{-- Video --}}
@@ -354,231 +304,215 @@
             <canvas id="canvas-penitipan" class="hidden"></canvas>
 
             {{-- Tombol --}}
-            <div style="padding: 12px 16px;">
-                <button type="button" onclick="jepretFoto('penitipan')"
-                    style="width: 100%; padding: 12px; border-radius: 12px; color: white; font-weight: 700; font-size: 14px; border: none; cursor: pointer; background: linear-gradient(135deg, #5b21b6, #7c3aed);">
-                    📸 Jepret Foto
-                </button>
-            </div>
+            <button type="button" onclick="jepretFoto('penitipan')"
+                class="w-full py-4 rounded-2xl text-white font-black text-sm flex items-center justify-center gap-2"
+                style="background: linear-gradient(135deg, #5b21b6, #7c3aed)">
+                📸 Ambil Foto Sekarang
+            </button>
         </div>
+    </div>
     </div>
 
     <script>
-        // ── Konfirmasi keluar ──
-        let formDirty = false;
+        // ── Data tarif dari server ──
+        const tarifData = @json($tarifs->map(fn($t) => $t->harga));
+        const jenisBarangData = @json($jenisBarangs);
+        let itemIndex = 1;
 
-        document.getElementById('btn-batal').addEventListener('click', function(e) {
-            if (formDirty) {
-                e.preventDefault();
-                if (confirm('Data yang sudah kamu isi akan hilang. Yakin ingin keluar?')) {
-                    formDirty = false;
-                    window.location.href = this.href;
-                }
-            }
+        // ── Metode bayar styling ──
+        document.querySelectorAll('.metode-radio').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.metode-box').forEach(box => {
+                    box.style.borderColor = '#ede9fe';
+                    box.style.background = 'white';
+                    box.querySelector('p').style.color = '#94a3b8';
+                });
+                const box = this.nextElementSibling;
+                box.style.borderColor = '#7c3aed';
+                box.style.background = '#faf5ff';
+                box.querySelector('p').style.color = '#7c3aed';
+            });
         });
 
-        document.getElementById('form-transaksi').addEventListener('change', () => formDirty = true);
-        document.getElementById('form-transaksi').addEventListener('input', () => formDirty = true);
-        document.getElementById('form-transaksi').addEventListener('submit', () => formDirty = false);
-        document.querySelector('button[type="reset"]').addEventListener('click', () => formDirty = false);
-
-        window.addEventListener('beforeunload', function(e) {
-            if (formDirty) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
+        // ── Tambah Item ──
+        document.getElementById('btn-tambah-item').addEventListener('click', function() {
+            const container = document.getElementById('items-container');
+            const div = document.createElement('div');
+            div.className = 'item-barang rounded-2xl p-4 relative';
+            div.style.cssText = 'background: #faf5ff; border: 1.5px solid #ede9fe;';
+            div.innerHTML = buildItemHTML(itemIndex);
+            container.appendChild(div);
+            bindItemEvents(div, itemIndex);
+            itemIndex++;
+            updateSummary();
         });
 
-        // ── Barang ──
-        const kategoris = @json($kategoris);
-        let index = 1;
+        function buildItemHTML(idx) {
+            const ukurans = ['S', 'M', 'L', 'XL'];
 
-        function bindUkuranChange(container) {
+            const ukuranButtons = ukurans.map((u, i) => `
+        <label class="ukuran-label-${idx} cursor-pointer">
+            <input type="radio" name="items[${idx}][ukuran]" value="${u}"
+                class="hidden ukuran-radio" ${i === 0 ? 'checked' : ''}>
+            <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
+                style="${i === 0
+                    ? 'border-color:#7c3aed;color:#7c3aed;background:white;'
+                    : 'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
+                ${u}
+                <div class="text-xs font-normal mt-0.5" style="color:${i===0?'#a78bfa':'#cbd5e1'}">
+                    Rp ${(tarifData[u] || 0).toLocaleString('id-ID')}
+                </div>
+            </div>
+        </label>`).join('');
+
+            // Default tampilkan jenis barang ukuran S
+            const firstUkuran = 'S';
+            const jenisRows = buildJenisBarangCheckboxes(idx, firstUkuran);
+
+            return `
+        <button type="button" onclick="hapusItem(this)"
+            class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full text-white text-xs font-bold"
+            style="background: rgba(220,38,38,0.8)">✕</button>
+
+        <div class="mb-3">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
+                Kategori (Ukuran)
+            </label>
+            <div class="grid grid-cols-4 gap-2">
+                ${ukuranButtons}
+            </div>
+        </div>
+
+        <div class="jenis-barang-wrapper">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
+                Jenis Barang
+                <span class="font-normal normal-case ml-1" style="color:#94a3b8">(pilih satu atau lebih)</span>
+            </label>
+            <div class="jenis-container grid grid-cols-2 gap-2">
+                ${jenisRows}
+            </div>
+        </div>`;
+        }
+
+        function buildJenisBarangCheckboxes(idx, ukuran) {
+            const items = jenisBarangData[ukuran] || [];
+            return items.map(item => `
+        <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition jenis-item"
+            style="background:white;border:1.5px solid #ddd6fe">
+            <input type="checkbox" name="items[${idx}][jenis_barang][]"
+                value="${item.nama}" class="jenis-checkbox"
+                style="accent-color:#7c3aed;width:14px;height:14px;flex-shrink:0">
+            <span class="text-xs font-semibold text-gray-700">${item.nama}</span>
+        </label>`).join('');
+        }
+
+        function bindItemEvents(container, idx) {
+            // Ukuran radio change
             container.querySelectorAll('.ukuran-radio').forEach(radio => {
                 radio.addEventListener('change', function() {
-                    const parentItem = this.closest('.barang-item');
+                    const parentItem = this.closest('.item-barang');
+
+                    // Reset styling
                     parentItem.querySelectorAll('.ukuran-box').forEach(box => {
                         box.style.borderColor = '#ddd6fe';
                         box.style.color = '#94a3b8';
                         box.style.background = 'white';
+                        box.querySelector('div').style.color = '#cbd5e1';
                     });
-                    this.nextElementSibling.style.borderColor = '#7c3aed';
-                    this.nextElementSibling.style.color = '#7c3aed';
-                    this.nextElementSibling.style.background = '#faf5ff';
+
+                    // Aktifkan yang dipilih
+                    const box = this.nextElementSibling;
+                    box.style.borderColor = '#7c3aed';
+                    box.style.color = '#7c3aed';
+                    box.style.background = 'white';
+                    box.querySelector('div').style.color = '#a78bfa';
+
+                    // Update jenis barang sesuai ukuran
+                    const ukuran = this.value;
+                    const jenisContainer = parentItem.querySelector('.jenis-container');
+                    jenisContainer.innerHTML = buildJenisBarangCheckboxes(idx, ukuran);
+
+                    // Bind checkbox events
+                    bindCheckboxEvents(jenisContainer);
+                    updateSummary();
+                });
+            });
+
+            // Bind checkbox events
+            bindCheckboxEvents(container);
+        }
+
+        function bindCheckboxEvents(container) {
+            container.querySelectorAll('.jenis-checkbox').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const label = this.closest('label');
+                    if (this.checked) {
+                        label.style.borderColor = '#7c3aed';
+                        label.style.background = '#faf5ff';
+                    } else {
+                        label.style.borderColor = '#ddd6fe';
+                        label.style.background = 'white';
+                    }
+                    updateSummary();
                 });
             });
         }
 
-        document.querySelectorAll('.barang-item').forEach(item => bindUkuranChange(item));
-
-        function changeQty(btn, delta) {
-            const input = btn.parentElement.querySelector('input[type=number]');
-            const val = parseInt(input.value) + delta;
-            if (val >= 1) input.value = val;
+        function hapusItem(btn) {
+            const item = btn.closest('.item-barang');
+            const container = document.getElementById('items-container');
+            if (container.querySelectorAll('.item-barang').length <= 1) {
+                alert('Minimal harus ada 1 kategori barang.');
+                return;
+            }
+            item.remove();
+            updateSummary();
         }
 
-        function bindKategoriChange(select) {
-            select.addEventListener('change', function() {
-                const wrapper = this.closest('.barang-item').querySelector('.nama-custom-wrapper');
-                wrapper.style.display = this.options[this.selectedIndex].dataset.custom == '1' ? 'block' : 'none';
-            });
-        }
-        document.querySelectorAll('.kategori-select').forEach(bindKategoriChange);
+        // ── Summary ──
+        function updateSummary() {
+            const items = document.querySelectorAll('.item-barang');
+            let html = '';
+            let total = 0;
 
-        function updatePreview() {
-            const nama = document.querySelector('[name=nama_penitip]').value;
-            const el = document.getElementById('status-preview');
-            if (el) el.textContent = nama ? 'READY TO SAVE' : 'FILL FORM FIRST';
-        }
+            items.forEach(item => {
+                const ukuranChecked = item.querySelector('.ukuran-radio:checked');
+                if (!ukuranChecked) return;
 
-        document.getElementById('tambah-barang').addEventListener('click', function() {
-            const container = document.getElementById('barang-container');
-            const div = document.createElement('div');
-            div.className = 'barang-item rounded-xl p-4 relative';
-            div.style.cssText = 'background: #faf5ff; border: 1.5px solid #ede9fe;';
-            div.innerHTML = `
-            <button type="button" onclick="this.closest('.barang-item').remove()"
-                class="absolute top-3 right-3 text-xs font-bold" style="color: #ef4444">✕ Hapus</button>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Nama Barang</label>
-                    <select name="barang[${index}][kategori_id]"
-                        class="kategori-select w-full rounded-xl px-3 py-2.5 text-sm"
-                        style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
-                        ${kategoris.map(k => `<option value="${k.id}" data-custom="${k.is_custom}">${k.nama_kategori}</option>`).join('')}
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Quantity</label>
-                    <div class="flex items-center gap-2 w-full">
-                        <button type="button" onclick="changeQty(this,-1)"
-                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg"
-                            style="background:white;border:1.5px solid #ddd6fe;color:#7c3aed;min-width:36px">−</button>
-                        <input type="number" name="barang[${index}][jumlah]" value="1" min="1"
-                            class="min-w-0 w-full text-center rounded-xl py-2.5 text-sm font-bold"
-                            style="background:white;border:1.5px solid #ddd6fe;color:#374151">
-                        <button type="button" onclick="changeQty(this,1)"
-                            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg"
-                            style="background:white;border:1.5px solid #ddd6fe;color:#7c3aed;min-width:36px">+</button>
+                const ukuran = ukuranChecked.value;
+                const harga = tarifData[ukuran] || 0;
+                const checked = [...item.querySelectorAll('.jenis-checkbox:checked')];
+                const namaBarang = checked.map(c => c.value).join(', ');
+
+                if (checked.length > 0) {
+                    html += `
+                <div class="flex justify-between items-start gap-2">
+                    <div>
+                        <span class="px-1.5 py-0.5 rounded text-xs font-black text-white"
+                            style="background:#5b21b6">${ukuran}</span>
+                        <p class="text-xs text-gray-500 mt-0.5">${namaBarang}</p>
                     </div>
-                </div>
-            </div>
-            <div class="nama-custom-wrapper mb-3" style="display:none">
-                <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Nama Barang (Lainnya)</label>
-                <input type="text" name="barang[${index}][nama_custom]"
-                    class="w-full rounded-xl px-4 py-3 text-sm"
-                    style="background:white;border:1.5px solid #ddd6fe;color:#374151"
-                    placeholder="Tulis nama barang...">
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Ukuran Barang</label>
-                <div class="grid grid-cols-4 gap-2">
-                    ${['S','M','L','XL'].map((u,i) => `
-                                                                        <label class="ukuran-label cursor-pointer">
-                                                                            <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
-                                                                            <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
-                                                                                style="${i===0?'border-color:#7c3aed;color:#7c3aed;background:white;':'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
-                                                                                ${u}
-                                                                            </div>
-                                                                        </label>`).join('')}
-                </div>
-            </div>`;
-            container.appendChild(div);
-            bindUkuranChange(div);
-            bindKategoriChange(div.querySelector('.kategori-select'));
-            index++;
-        });
-
-        function resetForm() {
-            index = 1;
-            document.getElementById('barang-container').innerHTML = '';
-            document.getElementById('tambah-barang').click();
-            hapusFoto();
-            formDirty = false;
-        }
-
-        // ── Generate Nomor Preview ──
-        async function generatePreviewNomor() {
-            const today = new Date();
-            const tanggal =
-                `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
-            try {
-                const res = await fetch('{{ route('kasir.transaksi.count-today') }}');
-                const data = await res.json();
-                const urutan = String(data.count + 1).padStart(4, '0');
-                const el = document.getElementById('nomor-preview');
-                if (el) el.textContent = `SVV-${tanggal}-${urutan}`;
-            } catch (e) {
-                const el = document.getElementById('nomor-preview');
-                if (el) el.textContent = `SVV-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-????`;
-            }
-        }
-        generatePreviewNomor();
-
-        // ── Validasi Form ──
-        document.getElementById('form-transaksi').addEventListener('submit', function(e) {
-            document.querySelectorAll('.error-msg').forEach(el => el.remove());
-
-            let valid = true;
-
-            const eventId = document.getElementById('event_id');
-            if (!eventId.value) {
-                valid = false;
-                showError(eventId, 'Pilih event terlebih dahulu.');
-            }
-
-            const namaPenitip = document.querySelector('[name=nama_penitip]');
-            if (!namaPenitip.value.trim()) {
-                valid = false;
-                showError(namaPenitip, 'Nama penitip wajib diisi.');
-            }
-
-            const noWa = document.querySelector('[name=no_whatsapp]');
-            if (!noWa.value.trim()) {
-                valid = false;
-                showError(noWa, 'Nomor WhatsApp wajib diisi.');
-            } else if (!/^[0-9]{9,15}$/.test(noWa.value.trim())) {
-                valid = false;
-                showError(noWa, 'Nomor WhatsApp tidak valid (9-15 digit angka).');
-            }
-
-            document.querySelectorAll('.barang-item').forEach(function(item) {
-                const jumlah = item.querySelector('input[name*="jumlah"]');
-                const namaCustomWrapper = item.querySelector('.nama-custom-wrapper');
-                const namaCustomInput = item.querySelector('input[name*="nama_custom"]');
-                if (namaCustomWrapper?.style.display !== 'none' && !namaCustomInput?.value.trim()) {
-                    valid = false;
-                    showError(namaCustomInput, 'Nama barang wajib diisi.');
-                }
-                if (!jumlah?.value || jumlah.value < 1) {
-                    valid = false;
-                    showError(jumlah, 'Jumlah minimal 1.');
+                    <span class="text-xs font-bold text-gray-700 flex-shrink-0">
+                        Rp ${harga.toLocaleString('id-ID')}
+                    </span>
+                </div>`;
+                    total += harga;
                 }
             });
 
-            if (!valid) {
-                e.preventDefault();
-                document.querySelector('.error-msg')?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }
-        });
-
-        function showError(input, message) {
-            const msg = document.createElement('p');
-            msg.className = 'error-msg text-red-500 text-xs mt-1';
-            msg.innerHTML = `⚠ ${message}`;
-            input.parentNode.insertBefore(msg, input.nextSibling);
+            document.getElementById('summary-container').innerHTML =
+                html || '<p class="text-xs text-gray-400 text-center py-2">Belum ada barang dipilih</p>';
+            document.getElementById('total-harga').textContent =
+                'Rp ' + total.toLocaleString('id-ID');
         }
 
-        document.addEventListener('input', e => {
-            if (['INPUT', 'SELECT'].includes(e.target.tagName)) {
-                e.target.parentNode.querySelector('.error-msg')?.remove();
-            }
+        // ── Bind events pada item pertama ──
+        document.querySelectorAll('.item-barang').forEach((item, idx) => {
+            bindItemEvents(item, idx);
         });
+        updateSummary();
 
-        // ── Kamera Foto Penitipan ──
+        // ── Kamera ──
         let streamPenitipan = null;
 
         async function bukaKamera(type) {
@@ -628,21 +562,16 @@
         function jepretFoto(type) {
             const video = document.getElementById('video-' + type);
             const canvas = document.getElementById('canvas-' + type);
-
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
-
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
             const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
 
             document.getElementById('foto_penitipan_input').value = dataUrl;
             document.getElementById('foto-preview').src = dataUrl;
             document.getElementById('foto-preview-wrapper').classList.remove('hidden');
             document.getElementById('foto-buttons').classList.add('hidden');
-
-            tutupKamera(type); // ← dipanggil terakhir setelah semua selesai
+            tutupKamera(type);
         }
 
         function pilihDariGaleri(input) {
@@ -663,6 +592,30 @@
             document.getElementById('foto-preview-wrapper').classList.add('hidden');
             document.getElementById('foto-buttons').classList.remove('hidden');
         }
+
+        // ── Generate nomor preview ──
+        async function generatePreviewNomor() {
+            try {
+                const res = await fetch('{{ route('kasir.transaksi.count-today') }}');
+                const data = await res.json();
+                const urutan = String(data.count + 1).padStart(4, '0');
+                document.getElementById('nomor-preview').textContent =
+                    `SVV-{{ $event->kode_event }}-${urutan}`;
+            } catch (e) {}
+        }
+        generatePreviewNomor();
+
+        // ── Konfirmasi keluar ──
+        let formDirty = false;
+        document.getElementById('form-transaksi').addEventListener('input', () => formDirty = true);
+        document.getElementById('form-transaksi').addEventListener('change', () => formDirty = true);
+        document.getElementById('form-transaksi').addEventListener('submit', () => formDirty = false);
+        window.addEventListener('beforeunload', e => {
+            if (formDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
     </script>
 
 @endsection

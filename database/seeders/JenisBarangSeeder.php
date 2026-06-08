@@ -9,31 +9,41 @@ class JenisBarangSeeder extends Seeder
 {
     public function run(): void
     {
+        JenisBarang::truncate();
+
         $data = [
             // Ukuran S
-            ['ukuran' => 'S', 'nama' => 'Dompet',       'urutan' => 1],
-            ['ukuran' => 'S', 'nama' => 'HP / Gadget',  'urutan' => 2],
-            ['ukuran' => 'S', 'nama' => 'Kacamata',     'urutan' => 3],
+            ['ukuran' => 'S', 'nama' => 'Bedak',       'urutan' => 1],
+            ['ukuran' => 'S', 'nama' => 'Cermin',  'urutan' => 2],
+            ['ukuran' => 'S', 'nama' => 'Lipstik',     'urutan' => 3],
+            ['ukuran' => 'S', 'nama' => 'Parfum',   'urutan' => 4],
+            ['ukuran' => 'S', 'nama' => 'Rokok',     'urutan' => 5],
+            ['ukuran' => 'S', 'nama' => 'Tiket',     'urutan' => 6],
+            ['ukuran' => 'S', 'nama' => 'Vape',     'urutan' => 7],
             ['ukuran' => 'S', 'nama' => 'Lainnya',      'urutan' => 99],
 
             // Ukuran M
-            ['ukuran' => 'M', 'nama' => 'Parfum',       'urutan' => 1],
-            ['ukuran' => 'M', 'nama' => 'Vape',         'urutan' => 2],
-            ['ukuran' => 'M', 'nama' => 'Payung',       'urutan' => 3],
-            ['ukuran' => 'M', 'nama' => 'Tas Kecil',    'urutan' => 4],
+            ['ukuran' => 'M', 'nama' => 'Bedak',       'urutan' => 1],
+            ['ukuran' => 'M', 'nama' => 'Make-up',         'urutan' => 2],
+            ['ukuran' => 'M', 'nama' => 'Parfum',       'urutan' => 3],
+            ['ukuran' => 'M', 'nama' => 'Payung',    'urutan' => 4],
+            ['ukuran' => 'M', 'nama' => 'Tripod',    'urutan' => 5],
+            ['ukuran' => 'M', 'nama' => 'Tumbler',    'urutan' => 6],
+            ['ukuran' => 'M', 'nama' => 'Vape',    'urutan' => 7],
             ['ukuran' => 'M', 'nama' => 'Lainnya',      'urutan' => 99],
 
             // Ukuran L
-            ['ukuran' => 'L', 'nama' => 'Jaket',        'urutan' => 1],
-            ['ukuran' => 'L', 'nama' => 'Helm',         'urutan' => 2],
-            ['ukuran' => 'L', 'nama' => 'Totebag',      'urutan' => 3],
-            ['ukuran' => 'L', 'nama' => 'Ransel',       'urutan' => 4],
+            ['ukuran' => 'L', 'nama' => 'Bunga',        'urutan' => 1],
+            ['ukuran' => 'L', 'nama' => 'Helm',        'urutan' => 2],
+            ['ukuran' => 'L', 'nama' => 'Jaket',         'urutan' => 3],
+            ['ukuran' => 'L', 'nama' => 'Slingbag',      'urutan' => 4],
+            ['ukuran' => 'L', 'nama' => 'Totebag',       'urutan' => 5],
             ['ukuran' => 'L', 'nama' => 'Lainnya',      'urutan' => 99],
 
             // Ukuran XL
-            ['ukuran' => 'XL', 'nama' => 'Koper',       'urutan' => 1],
-            ['ukuran' => 'XL', 'nama' => 'Stroller',    'urutan' => 2],
-            ['ukuran' => 'XL', 'nama' => 'Sepeda',      'urutan' => 3],
+            ['ukuran' => 'XL', 'nama' => 'Tas',       'urutan' => 1],
+            ['ukuran' => 'XL', 'nama' => 'Koper',    'urutan' => 2],
+            ['ukuran' => 'XL', 'nama' => 'Carrier',      'urutan' => 3],
             ['ukuran' => 'XL', 'nama' => 'Lainnya',     'urutan' => 99],
         ];
 
