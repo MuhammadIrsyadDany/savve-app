@@ -15,13 +15,15 @@ class TransaksiExport
 {
     protected $event_id;
     protected $tanggal;
+    protected $tanggal_selesai;
     protected $status;
 
-    public function __construct($event_id = null, $tanggal = null, $status = null)
+    public function __construct($event_id = null, $tanggal = null, $status = null, $tanggal_selesai = null)
     {
-        $this->event_id = $event_id;
-        $this->tanggal  = $tanggal;
-        $this->status   = $status;
+        $this->event_id       = $event_id;
+        $this->tanggal        = $tanggal;
+        $this->tanggal_selesai = $tanggal_selesai;
+        $this->status         = $status;
     }
 
     public function download(string $filename)
@@ -39,14 +41,15 @@ class TransaksiExport
         $sheet->getColumnDimension('F')->setWidth(20);
         $sheet->getColumnDimension('G')->setWidth(30);
         $sheet->getColumnDimension('H')->setWidth(16);
-        $sheet->getColumnDimension('I')->setWidth(16);
-        $sheet->getColumnDimension('J')->setWidth(18);
-        $sheet->getColumnDimension('K')->setWidth(18);
+        $sheet->getColumnDimension('I')->setWidth(15);  // Metode Bayar
+        $sheet->getColumnDimension('J')->setWidth(16);  // Status
+        $sheet->getColumnDimension('K')->setWidth(18);  // Waktu Penitipan
+        $sheet->getColumnDimension('L')->setWidth(18);  // Waktu Pengambilan
 
         // ═══ HEADER LAPORAN ═══
         $event = $this->event_id ? Event::find($this->event_id) : null;
 
-        $sheet->mergeCells('A1:K1');
+        $sheet->mergeCells('A1:L1');
         $sheet->setCellValue('A1', 'LAPORAN TRANSAKSI PENITIPAN BARANG');
         $sheet->getStyle('A1')->applyFromArray([
             'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => 'FFFFFF']],
@@ -55,7 +58,7 @@ class TransaksiExport
         ]);
         $sheet->getRowDimension(1)->setRowHeight(32);
 
-        $sheet->mergeCells('A2:K2');
+        $sheet->mergeCells('A2:L2');
         $sheet->setCellValue('A2', 'Vendor Savve — Storage Management System');
         $sheet->getStyle('A2')->applyFromArray([
             'font' => ['size' => 10, 'color' => ['rgb' => 'FFFFFF'], 'italic' => true],
@@ -65,7 +68,7 @@ class TransaksiExport
         $sheet->getRowDimension(2)->setRowHeight(20);
 
         // ═══ INFO LAPORAN ═══
-        $sheet->mergeCells('A3:K3');
+        $sheet->mergeCells('A3:L3');
         $sheet->getStyle('A3')->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'F8FAFF']],
         ]);
@@ -98,7 +101,7 @@ class TransaksiExport
         }
         $sheet->getRowDimension($infoRow)->setRowHeight(18);
 
-        $sheet->mergeCells('A5:K5');
+        $sheet->mergeCells('A5:L5');
         $sheet->getStyle('A5')->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'F8FAFF']],
         ]);
@@ -106,14 +109,13 @@ class TransaksiExport
 
         // ═══ HEADER TABEL ═══
         $headerRow = 6;
-        $headers = ['No', 'No. Transaksi', 'Nama Penitip', 'No. WhatsApp', 'Event', 'Kasir', 'Detail Barang', 'Total (Rp)', 'Status', 'Waktu Penitipan', 'Waktu Pengambilan'];
-
+        $headers = ['No', 'No. Transaksi', 'Nama Penitip', 'No. WhatsApp', 'Event', 'Kasir', 'Detail Barang', 'Total (Rp)', 'Metode Bayar', 'Status', 'Waktu Penitipan', 'Waktu Pengambilan'];
         foreach ($headers as $i => $header) {
             $col = chr(65 + $i);
             $sheet->setCellValue($col . $headerRow, $header);
         }
 
-        $sheet->getStyle('A' . $headerRow . ':K' . $headerRow)->applyFromArray([
+        $sheet->getStyle('A' . $headerRow . ':L' . $headerRow)->applyFromArray([
             'font' => ['bold' => true, 'size' => 10, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '1A3A6B']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
@@ -131,8 +133,8 @@ class TransaksiExport
             $bgColor = $isEven ? 'F8FAFF' : 'FFFFFF';
 
             $barang = $t->details->map(function ($d) {
-                $nama = ;
-                return "{$nama} (Ukuran {$d->ukuran}) x{$d->jumlah} = Rp " . number_format($d->subtotal, 0, ',', '.');
+                $nama = implode(', ', $d->jenis_barang ?? []);
+                return "{$nama} (Ukuran {$d->ukuran}) = Rp " . number_format($d->subtotal, 0, ',', '.');
             })->implode("\n");
 
             // FIX #5: Tambahkan case 'terlambat' agar tidak salah tampil sebagai 'Sudah Diambil'
@@ -155,6 +157,13 @@ class TransaksiExport
                 default        => 'F9FAFB',
             };
 
+            $metodeText = match ($t->metode_bayar) {
+                'tunai'    => 'Tunai',
+                'transfer' => 'Transfer',
+                'qris'     => 'QRIS',
+                default    => ucfirst($t->metode_bayar ?? '-'),
+            };
+
             $values = [
                 'A' => $no,
                 'B' => $t->nomor_transaksi,
@@ -164,9 +173,10 @@ class TransaksiExport
                 'F' => $t->kasir->name,
                 'G' => $barang,
                 'H' => $t->total_harga,
-                'I' => $statusText,
-                'J' => $t->waktu_penitipan->format('d/m/Y H:i'),
-                'K' => $t->waktu_pengambilan?->format('d/m/Y H:i') ?? '-',
+                'I' => $metodeText,
+                'J' => $statusText,
+                'K' => $t->waktu_penitipan->format('d/m/Y H:i'),
+                'L' => $t->waktu_pengambilan?->format('d/m/Y H:i') ?? '-',
             ];
 
             foreach ($values as $col => $val) {
@@ -174,7 +184,7 @@ class TransaksiExport
             }
 
             // Style per baris
-            $sheet->getStyle('A' . $row . ':K' . $row)->applyFromArray([
+            $sheet->getStyle('A' . $row . ':L' . $row)->applyFromArray([
                 'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => $bgColor]],
                 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'E2E8F0']]],
                 'alignment' => ['vertical' => Alignment::VERTICAL_TOP, 'wrapText' => true],
@@ -194,14 +204,18 @@ class TransaksiExport
                 'numberFormat' => ['formatCode' => '#,##0'],
             ]);
             $sheet->getStyle('I' . $row)->applyFromArray([
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                'font' => ['bold' => true, 'color' => ['rgb' => '374151']],
+            ]);
+            $sheet->getStyle('J' . $row)->applyFromArray([
                 'font' => ['bold' => true, 'color' => ['rgb' => $statusColor]],
                 'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => $statusBg]],
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             ]);
-            $sheet->getStyle('J' . $row)->applyFromArray([
+            $sheet->getStyle('K' . $row)->applyFromArray([
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             ]);
-            $sheet->getStyle('K' . $row)->applyFromArray([
+            $sheet->getStyle('L' . $row)->applyFromArray([
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
                 'font' => ['color' => ['rgb' => $t->waktu_pengambilan ? '15803D' : '94A3B8']],
             ]);
@@ -212,8 +226,8 @@ class TransaksiExport
         }
 
         // ═══ FOOTER SUMMARY ═══
-        $sheet->mergeCells('A' . $row . ':K' . $row);
-        $sheet->getStyle('A' . $row . ':K' . $row)->applyFromArray([
+        $sheet->mergeCells('A' . $row . ':L' . $row);
+        $sheet->getStyle('A' . $row . ':L' . $row)->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'F8FAFF']],
         ]);
         $sheet->getRowDimension($row)->setRowHeight(8);
@@ -242,7 +256,7 @@ class TransaksiExport
         $sheet->getRowDimension($row)->setRowHeight(20);
 
         $row++;
-        $sheet->mergeCells('A' . $row . ':K' . $row);
+        $sheet->mergeCells('A' . $row . ':L' . $row);
         $sheet->setCellValue('A' . $row, '© ' . date('Y') . ' Vendor Savve — Storage Management System');
         $sheet->getStyle('A' . $row)->applyFromArray([
             'font' => ['italic' => true, 'size' => 8, 'color' => ['rgb' => '94A3B8']],
@@ -275,14 +289,19 @@ class TransaksiExport
             $query->where('event_id', $this->event_id);
         }
 
-        if ($this->tanggal) {
-            $query->whereDate('created_at', $this->tanggal);
+        if ($this->tanggal && $this->tanggal_selesai) {
+            $query->whereBetween('waktu_penitipan', [
+                $this->tanggal . ' 00:00:00',
+                $this->tanggal_selesai . ' 23:59:59',
+            ]);
+        } elseif ($this->tanggal) {
+            $query->whereDate('waktu_penitipan', $this->tanggal);
         }
 
         if ($this->status) {
             $query->where('status', $this->status);
         }
 
-        return $query->latest()->get();
+        return $query->latest('waktu_penitipan')->get();
     }
 }

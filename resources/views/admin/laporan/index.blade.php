@@ -618,6 +618,10 @@
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
                         style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        Metode Bayar
+                    </th>
+                    <th class="px-5 py-4 text-left whitespace-nowrap"
+                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Status
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
@@ -680,6 +684,24 @@
                             </span>
                         </td>
                         <td class="px-5 py-4 whitespace-nowrap">
+                            @php
+                                $metodeBadge = [
+                                    'tunai' => ['label' => 'Tunai', 'bg' => '#f0fdf4', 'color' => '#15803d'],
+                                    'transfer' => ['label' => 'Transfer', 'bg' => '#eff6ff', 'color' => '#1d4ed8'],
+                                    'qris' => ['label' => 'QRIS', 'bg' => '#faf5ff', 'color' => '#7c3aed'],
+                                ];
+                                $m = $metodeBadge[$t->metode_bayar] ?? [
+                                    'label' => ucfirst($t->metode_bayar ?? '-'),
+                                    'bg' => '#f1f5f9',
+                                    'color' => '#64748b',
+                                ];
+                            @endphp
+                            <span class="px-3 py-1 rounded-full text-xs font-bold"
+                                style="background: {{ $m['bg'] }}; color: {{ $m['color'] }}">
+                                {{ $m['label'] }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 whitespace-nowrap">
                             <span class="px-3 py-1 rounded-full text-xs font-bold"
                                 style="background: {{ $t->status === 'dititip' ? '#faf5ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
                                color: {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
@@ -693,7 +715,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-5 py-16 text-center">
+                        <td colspan="8" class="px-5 py-16 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
                                     style="background: #f8faff">📋</div>
@@ -743,7 +765,7 @@
                     },
                     dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"f>rtip',
                     order: [
-                        [6, 'desc']
+                        [7, 'desc']
                     ],
                     columnDefs: [{
                         orderable: false,
