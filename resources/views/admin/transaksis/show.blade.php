@@ -26,7 +26,7 @@
         <div>
             <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
             <p class="font-bold text-white">
-                {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : 'SUDAH DIAMBIL' }}
+                {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : ($transaksi->status === 'terlambat' ? 'TERLAMBAT' : 'SUDAH DIAMBIL') }}
             </p>
         </div>
         <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full" style="background: rgba(255,255,255,0.05)"></div>
@@ -66,7 +66,7 @@
                             <p class="text-base lg:text-lg font-black text-gray-800">{{ $transaksi->event->nama_event }}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 lg:gap-6">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Kasir</p>
                             <p class="font-bold text-gray-700">{{ $transaksi->kasir->name }}</p>
@@ -83,6 +83,26 @@
                                 style="background: {{ $transaksi->status === 'dititip' ? '#faf5ff' : ($transaksi->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
                                     color: {{ $transaksi->status === 'dititip' ? '#7c3aed' : ($transaksi->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
                                 {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : ($transaksi->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Metode
+                                Bayar</p>
+                            @php
+                                $metodeBadge = [
+                                    'tunai' => ['label' => 'Tunai', 'bg' => '#f0fdf4', 'color' => '#15803d'],
+                                    'transfer' => ['label' => 'Transfer', 'bg' => '#eff6ff', 'color' => '#1d4ed8'],
+                                    'qris' => ['label' => 'QRIS', 'bg' => '#faf5ff', 'color' => '#7c3aed'],
+                                ];
+                                $m = $metodeBadge[$transaksi->metode_bayar] ?? [
+                                    'label' => ucfirst($transaksi->metode_bayar ?? '-'),
+                                    'bg' => '#f1f5f9',
+                                    'color' => '#64748b',
+                                ];
+                            @endphp
+                            <span class="px-3 py-1 rounded-full text-xs font-bold"
+                                style="background: {{ $m['bg'] }}; color: {{ $m['color'] }}">
+                                {{ $m['label'] }}
                             </span>
                         </div>
                     </div>
@@ -119,7 +139,7 @@
                         @foreach ($transaksi->details as $detail)
                             <tr class="table-row" style="border-top: 1px solid #f1f5f9">
                                 <td class="px-5 py-4 font-medium text-gray-700 whitespace-nowrap">
-                                    implode(', ', $detail->jenis_barang ?? [])
+                                    {{ implode(', ', $detail->jenis_barang ?? []) }}
                                 </td>
                                 <td class="px-5 py-4">
                                     <span class="px-3 py-1 rounded-lg text-xs font-bold"
@@ -192,7 +212,7 @@
                 <div>
                     <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.5)">Status</p>
                     <p class="font-bold text-white">
-                        {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : 'SUDAH DIAMBIL' }}
+                        {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : ($transaksi->status === 'terlambat' ? 'TERLAMBAT' : 'SUDAH DIAMBIL') }}
                     </p>
                 </div>
                 <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-full"
