@@ -11,30 +11,40 @@ use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Auto nonaktifkan event expired
-        \App\Models\Event::where('status', 'aktif')
+        Event::where('status', 'aktif')
             ->where('tanggal_selesai', '<', today())
             ->each(function ($event) {
                 $event->update(['status' => 'nonaktif']);
-                \App\Models\Transaksi::where('event_id', $event->id)
+                Transaksi::where('event_id', $event->id)
                     ->where('status', 'dititip')
                     ->update(['status' => 'terlambat']);
             });
 
-        $events = Event::withCount('transaksis')
+        // menerapkan filter dari tab
+        $query = Event::withCount('transaksis')
             ->with(['transaksis.details', 'tarifs'])
-            ->latest()
-            ->paginate(10);
+            ->latest();
+
+        if ($request->filter === 'aktif') {
+            $query->where('status', 'aktif');
+        } elseif ($request->filter === 'nonaktif') {
+            $query->where('status', 'nonaktif');
+        }
+
+        // hapus paginate, pakai get() karena DataTables yang handle pagination
+        $events = $query->get();
 
         $totalEventAktif   = Event::where('status', 'aktif')->count();
         $totalEventSelesai = Event::where('status', 'nonaktif')->count();
         $totalTransaksi    = Transaksi::count();
 
-        $totalPendapatan = DB::table('transaksis')
-            ->join('detail_transaksis', 'transaksis.id', '=', 'detail_transaksis.transaksi_id')
-            ->where('transaksis.status', 'sudah_diambil')
+        // menghitung semua pendapatan (bukan hanya sudah_diambil)
+        // karena pembayaran diterima saat penitipan
+        $totalPendapatan = DB::table('detail_transaksis')
+            ->join('transaksis', 'transaksis.id', '=', 'detail_transaksis.transaksi_id')
             ->sum('detail_transaksis.subtotal');
 
         return view('admin.events.index', compact(
@@ -125,7 +135,7 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
-        // FIX #12: Cegah penghapusan event yang masih memiliki transaksi aktif
+        // mencegah penghapusan event yang masih memiliki transaksi aktif
         // untuk menghindari data transaksi menjadi orphan.
         $jumlahTransaksiAktif = $event->transaksis()
             ->whereIn('status', ['dititip', 'terlambat'])

@@ -77,7 +77,7 @@
             <a href="{{ route('admin.events.index') }}"
                 class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex-shrink-0"
                 style="{{ !request('filter') ? 'background: #eff6ff; color: #1d4ed8' : 'color: #94a3b8' }}">
-                Semua ({{ $events->total() }})
+                Semua ({{ $totalEventAktif + $totalEventSelesai }})
             </a>
             <a href="{{ route('admin.events.index', ['filter' => 'aktif']) }}"
                 class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex-shrink-0"
@@ -99,8 +99,7 @@
                         Nama Event</th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
                         style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                        Kode Event
-                    </th>
+                        Kode Event</th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
                         style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Tanggal</th>
@@ -155,8 +154,7 @@
                                 @foreach (['S', 'M', 'L', 'XL'] as $u)
                                     <span class="px-2 py-0.5 rounded-lg text-xs font-bold whitespace-nowrap"
                                         style="background: #eff6ff; color: #1d4ed8">
-                                        {{ $u }}: Rp
-                                        {{ number_format($tarifs[$u]->harga ?? 0, 0, ',', '.') }}
+                                        {{ $u }}: Rp {{ number_format($tarifs[$u]->harga ?? 0, 0, ',', '.') }}
                                     </span>
                                 @endforeach
                             </div>
@@ -164,7 +162,7 @@
                         <td class="px-5 py-4 whitespace-nowrap">
                             <span class="px-3 py-1.5 rounded-full text-xs font-bold"
                                 style="background: {{ $event->status === 'aktif' ? '#f0fdf4' : '#f8faff' }};
-                                    color: {{ $event->status === 'aktif' ? '#15803d' : '#94a3b8' }}">
+                                       color: {{ $event->status === 'aktif' ? '#15803d' : '#94a3b8' }}">
                                 {{ $event->status === 'aktif' ? '● Aktif' : '● Selesai' }}
                             </span>
                         </td>
@@ -202,68 +200,75 @@
                                     style="background: #f8faff; color: #1a3a6b; border: 1px solid #e2e8f0">
                                     Edit
                                 </a>
-                                <form action="{{ route('admin.events.destroy', $event) }}" method="POST"
-                                    onsubmit="return confirm('Hapus event ini?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition hover:opacity-80"
-                                        style="background: #fff5f5; color: #dc2626; border: 1px solid #fecaca">
-                                        Hapus
-                                    </button>
-                                </form>
+                                <button type="button"
+                                    onclick="hapusEvent('{{ route('admin.events.destroy', $event) }}')"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition hover:opacity-80"
+                                    style="background: #fff5f5; color: #dc2626; border: 1px solid #fecaca">
+                                    Hapus
+                                </button>
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-5 py-16 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
-                                    style="background: #f8faff">🎪</div>
-                                <p class="font-semibold text-gray-400">Belum ada event.</p>
-                                <a href="{{ route('admin.events.create') }}" class="text-sm font-bold hover:underline"
-                                    style="color: #1a3a6b">
-                                    Tambah event pertama →
-                                </a>
-                            </div>
+                        <td colspan="8" class="px-5 py-8 text-center text-gray-400 text-sm">
+                            Belum ada event yang tersedia.
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+
+        {{-- Form hapus tersembunyi, di luar tabel tapi masih dalam container --}}
+        <form id="form-hapus" method="POST" style="display:none">
+            @csrf
+            @method('DELETE')
+        </form>
+
     </div>
 
-    @push('scripts')
-        <script>
-            $(document).ready(function() {
-                $('#tabel-event').DataTable({
-                    responsive: false,
-                    scrollX: true,
-                    pageLength: 10,
-                    language: {
-                        search: "🔍",
-                        searchPlaceholder: "Cari event...",
-                        lengthMenu: "Tampilkan _MENU_ data",
-                        info: "Menampilkan _START_–_END_ dari _TOTAL_ event",
-                        infoEmpty: "Tidak ada data",
-                        paginate: {
-                            previous: "‹",
-                            next: "›"
-                        },
-                        zeroRecords: "Tidak ada event yang cocok",
-                        emptyTable: "Belum ada event"
-                    },
-                    dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"f>rtip',
-                    order: [
-                        [1, 'asc']
-                    ],
-                    columnDefs: [{
-                        orderable: false,
-                        targets: [2, 3, 5, 6]
-                    }]
-                });
-            });
-        </script>
-    @endpush
-
 @endsection
+
+@push('scripts')
+    <script>
+        function hapusEvent(url) {
+            if (!confirm('Hapus event ini?')) return;
+            const form = document.getElementById('form-hapus');
+            form.action = url;
+            form.submit();
+        }
+
+        $(document).ready(function() {
+            if ($.fn.DataTable.isDataTable('#tabel-event')) {
+                $('#tabel-event').DataTable().destroy();
+            }
+
+            $('#tabel-event').DataTable({
+                responsive: false,
+                scrollX: true,
+                pageLength: 10,
+                language: {
+                    search: "🔍",
+                    searchPlaceholder: "Cari event...",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_–_END_ dari _TOTAL_ event",
+                    infoEmpty: "Tidak ada data",
+                    paginate: {
+                        previous: "‹",
+                        next: "›"
+                    },
+                    zeroRecords: "Tidak ada event yang cocok",
+                    emptyTable: "Belum ada event"
+                },
+                dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"f>rtip',
+                order: [
+                    [0, 'asc']
+                ],
+                columnDefs: [{
+                    orderable: false,
+                    targets: [2, 3, 5, 6, 7]
+                }]
+            });
+        });
+    </script>
+@endpush
