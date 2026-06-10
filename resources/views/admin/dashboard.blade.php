@@ -103,8 +103,8 @@
                     style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)">
                     <span class="text-base lg:text-lg">✅</span>
                 </div>
-                <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: #fff7ed; color: #b45309">
-                    {{ $pctDititip }}%
+                <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: #f0fdf4; color: #15803d">
+                    {{ $pctDiambil }}%
                 </span>
             </div>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1" style="font-size: 9px">Sudah
