@@ -181,6 +181,10 @@ Route::prefix('kasir')
         Route::get('/pengambilan', [PengambilanController::class, 'index'])
             ->name('pengambilan.index');
 
+        Route::get('/pengambilan/cari', function () {
+            return redirect()->route('kasir.pengambilan.index');
+        });
+
         Route::post('/pengambilan/cari', [PengambilanController::class, 'cari'])
             ->name('pengambilan.cari');
 
