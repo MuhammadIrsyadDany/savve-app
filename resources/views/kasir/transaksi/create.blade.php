@@ -208,7 +208,7 @@
         </div>
 
         {{-- ═══ PANEL KANAN ═══ --}}
-        <div class="hidden lg:flex w-72 flex-shrink-0 flex-col space-y-4">
+        <div class="hidden lg:flex w-72 flex-shrink-0 flex-col space-y-4 anim-fade-up delay-2">
 
             {{-- Nomor Preview --}}
             <div class="rounded-2xl p-6 text-white relative overflow-hidden"
@@ -227,7 +227,8 @@
             </div>
 
             {{-- Tarif --}}
-            <div class="bg-white rounded-2xl border border-gray-100 p-5" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+            <div class="anim-fade-up delay-3 bg-white rounded-2xl border border-gray-100 p-5"
+                style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
                 <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: #94a3b8">
                     Tarif Event Ini
                 </p>
@@ -246,7 +247,8 @@
             </div>
 
             {{-- Summary Barang --}}
-            <div class="bg-white rounded-2xl border border-gray-100 p-5" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+            <div class="anim-fade-up delay-4 bg-white rounded-2xl border border-gray-100 p-5"
+                style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
                 <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: #94a3b8">
                     Summary
                 </p>
@@ -264,7 +266,8 @@
             </div>
 
             {{-- Tips --}}
-            <div class="rounded-2xl p-5" style="background: linear-gradient(135deg, #1e293b, #334155)">
+            <div class="anim-fade-up delay-5 rounded-2xl p-5"
+                style="background: linear-gradient(135deg, #1e293b, #334155)">
                 <p class="font-bold text-white text-sm mb-2">💡 Tips</p>
                 <ul class="space-y-1.5 text-xs" style="color: #94a3b8">
                     <li>• Satu transaksi bisa berisi banyak kategori barang</li>
