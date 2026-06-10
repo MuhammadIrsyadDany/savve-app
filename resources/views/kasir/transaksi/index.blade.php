@@ -712,13 +712,14 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
+            $.fn.dataTable.ext.errMode = 'none';
             $('#tabel-riwayat').DataTable({
                 responsive: false,
                 scrollX: true,
                 pageLength: 10,
                 language: {
                     search: "🔍",
-                    searchPlaceholder: "Cari transaksi...",
+                    searchPlaceholder: "Cari...",
                     lengthMenu: "Tampilkan _MENU_ data",
                     info: "Menampilkan _START_–_END_ dari _TOTAL_ transaksi",
                     infoEmpty: "Tidak ada data",
@@ -738,37 +739,6 @@
                     targets: [1, 2, 7]
                 }]
             });
-        });
-
-        // ── Auto-fill tanggal saat event dipilih ──
-        document.getElementById('event_id').addEventListener('change', function() {
-            const selected = this.options[this.selectedIndex];
-            const mulai = selected.dataset.mulai;
-            const selesai = selected.dataset.selesai;
-
-            if (mulai && selesai) {
-                document.getElementById('tanggal_mulai').value = mulai;
-                document.getElementById('tanggal_selesai').value = selesai;
-            } else {
-                document.getElementById('tanggal_mulai').value = '';
-                document.getElementById('tanggal_selesai').value = '';
-            }
-        });
-
-        // ── Set tanggal saat halaman load jika event sudah dipilih ──
-        window.addEventListener('DOMContentLoaded', function() {
-            const eventSelect = document.getElementById('event_id');
-            if (eventSelect.value) {
-                const selected = eventSelect.options[eventSelect.selectedIndex];
-                const mulai = selected.dataset.mulai;
-                const selesai = selected.dataset.selesai;
-                if (mulai && selesai &&
-                    !document.getElementById('tanggal_mulai').value &&
-                    !document.getElementById('tanggal_selesai').value) {
-                    document.getElementById('tanggal_mulai').value = mulai;
-                    document.getElementById('tanggal_selesai').value = selesai;
-                }
-            }
         });
     </script>
 @endpush

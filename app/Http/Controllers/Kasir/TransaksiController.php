@@ -19,24 +19,44 @@ class TransaksiController extends Controller
 
     public function index(Request $request)
     {
-        $eventId = session('kasir_event_id');
-        $events  = Event::orderBy('nama_event')->get();
-
-        // ← tambah ini
+        $eventId    = session('kasir_event_id');
+        $events     = Event::orderBy('nama_event')->get();
         $eventAktif = Event::find($eventId);
 
         $query = Transaksi::with(['event', 'details'])
             ->where('kasir_id', auth()->id())
             ->where('event_id', $eventId);
 
-        // ... sisa filter yang sudah ada ...
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_penitip', 'like', "%{$search}%")
+                    ->orWhere('nomor_transaksi', 'like', "%{$search}%")
+                    ->orWhere('no_whatsapp', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
+            $query->whereBetween('waktu_penitipan', [
+                $request->tanggal_mulai . ' 00:00:00',
+                $request->tanggal_selesai . ' 23:59:59',
+            ]);
+        } elseif ($request->filled('tanggal_mulai')) {
+            $query->whereDate('waktu_penitipan', '>=', $request->tanggal_mulai);
+        } elseif ($request->filled('tanggal_selesai')) {
+            $query->whereDate('waktu_penitipan', '<=', $request->tanggal_selesai);
+        }
 
         $transaksis = $query->latest('waktu_penitipan')->get();
 
         return view('kasir.transaksi.index', compact(
             'transaksis',
             'events',
-            'eventAktif'  // ← tambah ini
+            'eventAktif'
         ));
     }
 
