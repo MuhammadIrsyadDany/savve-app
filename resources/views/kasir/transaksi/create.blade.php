@@ -178,7 +178,7 @@
                     <button type="submit"
                         class="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
                         style="background: linear-gradient(135deg, #5b21b6, #7c3aed); box-shadow: 0 4px 12px rgba(91,33,182,0.25)">
-                        💾 Simpan & Cetak Nota
+                        💾 Simpan
                     </button>
                     <a href="{{ route('kasir.dashboard') }}" id="btn-batal"
                         class="text-sm flex items-center gap-2 font-semibold px-4 py-2 rounded-xl transition"

@@ -144,7 +144,7 @@ class TransaksiController extends Controller
             }
         });
 
-        return redirect()->route('kasir.transaksi.nota', $transaksi)
+        return redirect()->route('kasir.transaksi.show', $transaksi)
             ->with('success', 'Transaksi berhasil disimpan.');
     }
 

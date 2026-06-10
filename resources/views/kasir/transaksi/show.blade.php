@@ -209,13 +209,13 @@
                 style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
                 <p class="text-xs font-bold uppercase tracking-wider" style="color: #94a3b8">Aksi Cepat</p>
 
-                @if (in_array($transaksi->status, ['dititip', 'terlambat']))
+                {{-- @if (in_array($transaksi->status, ['dititip', 'terlambat']))
                     <a href="{{ route('kasir.transaksi.tambah-barang', $transaksi) }}"
                         class="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition"
                         style="background: #faf5ff; color: #7c3aed; border: 1.5px solid #ede9fe">
                         ➕ Tambah Barang
                     </a>
-                @endif
+                @endif --}}
 
                 <a href="{{ route('kasir.transaksi.nota', $transaksi) }}" target="_blank"
                     class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
