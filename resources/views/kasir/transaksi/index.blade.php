@@ -124,8 +124,10 @@
                                 <path d="M16 2v4M8 2v4M3 10h18" />
                             </svg>
                             <input type="date" name="tanggal_mulai" id="tanggal_mulai"
-                                value="{{ request('tanggal_mulai') }}" class="ft-input ft-input--date ft-input--with-icon"
-                                placeholder="Mulai">
+                                value="{{ request('tanggal_mulai', isset($eventAktif) ? $eventAktif->tanggal_mulai->format('Y-m-d') : '') }}"
+                                min="{{ isset($eventAktif) ? $eventAktif->tanggal_mulai->format('Y-m-d') : '' }}"
+                                max="{{ isset($eventAktif) ? $eventAktif->tanggal_selesai->format('Y-m-d') : '' }}"
+                                class="ft-input ft-input--date ft-input--with-icon" placeholder="Mulai">
                         </div>
                         <span class="ft-date-sep">
                             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -140,7 +142,9 @@
                                 <path d="M16 2v4M8 2v4M3 10h18" />
                             </svg>
                             <input type="date" name="tanggal_selesai" id="tanggal_selesai"
-                                value="{{ request('tanggal_selesai') }}"
+                                value="{{ request('tanggal_selesai', isset($eventAktif) ? $eventAktif->tanggal_selesai->format('Y-m-d') : '') }}"
+                                min="{{ isset($eventAktif) ? $eventAktif->tanggal_mulai->format('Y-m-d') : '' }}"
+                                max="{{ isset($eventAktif) ? $eventAktif->tanggal_selesai->format('Y-m-d') : '' }}"
                                 class="ft-input ft-input--date ft-input--with-icon" placeholder="Selesai">
                         </div>
                     </div>
@@ -162,7 +166,6 @@
                     Terapkan Filter
                 </button>
             </div>
-
         </form>
     </div>
 
@@ -246,7 +249,7 @@
 
         @media (min-width: 768px) {
             .ft-grid {
-                grid-template-columns: 2fr 1.2fr 1.2fr 2fr;
+                grid-template-columns: 1.5fr 1fr 1.8fr;
                 align-items: end;
             }
         }
