@@ -1,5 +1,6 @@
 @php
     use SimpleSoftwareIO\QrCode\Facades\QrCode;
+    $totalLembar = 1 + $transaksi->details->count();
 @endphp
 
 <!DOCTYPE html>
@@ -11,9 +12,6 @@
     <title>Nota {{ $transaksi->nomor_transaksi }}</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <style>
-        /* ════════════════════════════════
-           RESET & BASE
-        ════════════════════════════════ */
         * {
             margin: 0;
             padding: 0;
@@ -32,9 +30,6 @@
             min-height: 100vh;
         }
 
-        /* ════════════════════════════════
-           NOTA WRAPPER — lebar 80mm
-        ════════════════════════════════ */
         .nota-wrapper {
             width: 80mm;
             background: #fff;
@@ -42,9 +37,6 @@
             box-shadow: 0 3px 14px rgba(0, 0, 0, 0.18);
         }
 
-        /* ════════════════════════════════
-           PEMISAH LAYAR ANTAR RANGKAP
-        ════════════════════════════════ */
         .nota-separator {
             width: 80mm;
             display: flex;
@@ -66,9 +58,6 @@
             border-top: 1px dashed #bbb;
         }
 
-        /* ════════════════════════════════
-           JUDUL DOKUMEN (banner atas)
-        ════════════════════════════════ */
         .doc-title-bar {
             display: flex;
             justify-content: space-between;
@@ -95,9 +84,6 @@
             padding-left: 6px;
         }
 
-        /* ════════════════════════════════
-           HEADER — logo + brand
-        ════════════════════════════════ */
         .header {
             display: flex;
             align-items: center;
@@ -136,10 +122,6 @@
             margin-top: 2px;
         }
 
-        /* ════════════════════════════════
-           BLOK IDENTITAS (nama + kode + QR)
-           — satu baris, border penuh
-        ════════════════════════════════ */
         .identity-block {
             display: flex;
             align-items: stretch;
@@ -210,9 +192,20 @@
             line-height: 1.3;
         }
 
-        /* ════════════════════════════════
-           DIVIDERS
-        ════════════════════════════════ */
+        /* Label kategori — badge besar di label barang */
+        .ukuran-badge {
+            display: inline-block;
+            border: 2px solid #000;
+            font-size: 28px;
+            font-weight: 900;
+            width: 44px;
+            height: 44px;
+            line-height: 40px;
+            text-align: center;
+            letter-spacing: 0;
+            margin-bottom: 3px;
+        }
+
         .divider {
             border: none;
             border-top: 1px dashed #aaa;
@@ -225,9 +218,6 @@
             margin: 4px 0;
         }
 
-        /* ════════════════════════════════
-           INFO ROWS
-        ════════════════════════════════ */
         .info-section {
             margin-bottom: 4px;
         }
@@ -258,9 +248,6 @@
             text-align: right;
         }
 
-        /* ════════════════════════════════
-           SECTION TITLE
-        ════════════════════════════════ */
         .section-title {
             font-size: 7px;
             font-weight: 700;
@@ -271,9 +258,6 @@
             margin: 4px 0;
         }
 
-        /* ════════════════════════════════
-           TABEL BARANG
-        ════════════════════════════════ */
         .barang-table {
             width: 100%;
             border-collapse: collapse;
@@ -329,9 +313,6 @@
             text-align: right;
         }
 
-        /* ════════════════════════════════
-           TOTAL BOX
-        ════════════════════════════════ */
         .total-box {
             display: flex;
             justify-content: space-between;
@@ -354,10 +335,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* ════════════════════════════════
-           TANDA TANGAN / AREA VERIFIKASI
-          (Lembar 1 saja)
-        ════════════════════════════════ */
         .ttd-row {
             display: flex;
             gap: 8px;
@@ -383,9 +360,6 @@
             margin-top: 16px;
         }
 
-        /* ════════════════════════════════
-           FOOTER
-        ════════════════════════════════ */
         .footer {
             text-align: center;
             margin-top: 6px;
@@ -423,7 +397,6 @@
             text-transform: uppercase;
         }
 
-        /* Footer lembar barang */
         .footer-barang {
             text-align: center;
             margin-top: 6px;
@@ -445,9 +418,6 @@
             line-height: 1.55;
         }
 
-        /* ════════════════════════════════
-           TOMBOL AKSI
-        ════════════════════════════════ */
         .print-actions {
             margin-top: 20px;
             display: flex;
@@ -492,9 +462,6 @@
             background: #f0f0f0;
         }
 
-        /* ════════════════════════════════
-           PRINT — HITAM PUTIH MURNI
-        ════════════════════════════════ */
         @media print {
             body {
                 background: white !important;
@@ -537,18 +504,16 @@
 
 <body>
 
-    {{-- ══════════════════════════════════════════════
-         LEMBAR 1 — BUKTI TRANSAKSI (untuk Penitip)
-    ══════════════════════════════════════════════ --}}
+    {{-- ══════════════════════════════════════════
+         LEMBAR 1 — NOTA CUSTOMER (semua barang)
+    ══════════════════════════════════════════ --}}
     <div class="nota-wrapper">
 
-        {{-- Judul Dokumen --}}
         <div class="doc-title-bar">
             <span class="doc-title">Bukti Transaksi Penitipan</span>
-            <span class="doc-lembar">Lembar 1 / 2</span>
+            <span class="doc-lembar">Lembar 1 / {{ $totalLembar }}</span>
         </div>
 
-        {{-- Header --}}
         <div class="header">
             <img src="{{ asset('images/logo.png') }}" alt="Savve">
             <div class="header-right">
@@ -557,7 +522,6 @@
             </div>
         </div>
 
-        {{-- Identitas Utama --}}
         <div class="identity-block">
             <div class="identity-left">
                 <div class="lbl">Nama Penitip</div>
@@ -568,12 +532,11 @@
                 </div>
             </div>
             <div class="identity-right">
-                {!! QrCode::size(50)->margin(1)->errorCorrection('M')->style('square')->generate($transaksi->nama_penitip) !!}
+                {!! QrCode::size(50)->margin(1)->errorCorrection('H')->style('square')->generate($transaksi->nomor_transaksi) !!}
                 <div class="qr-label">Scan saat<br>pengambilan</div>
             </div>
         </div>
 
-        {{-- Info Transaksi --}}
         <div class="info-section">
             <div class="info-row">
                 <span class="lbl">Event</span><span class="sep">:</span>
@@ -588,6 +551,10 @@
                 <span class="val">{{ $transaksi->no_whatsapp }}</span>
             </div>
             <div class="info-row">
+                <span class="lbl">Metode Bayar</span><span class="sep">:</span>
+                <span class="val">{{ $transaksi->metode_bayar }}</span>
+            </div>
+            <div class="info-row">
                 <span class="lbl">Kasir</span><span class="sep">:</span>
                 <span class="val">{{ $transaksi->kasir->name }}</span>
             </div>
@@ -595,7 +562,6 @@
 
         <hr class="divider">
 
-        {{-- Daftar Barang --}}
         <div class="section-title">— Daftar Barang —</div>
         <table class="barang-table">
             <thead>
@@ -610,140 +576,9 @@
                 @foreach ($transaksi->details as $i => $detail)
                     <tr>
                         <td class="col-no">{{ $i + 1 }}</td>
-
-                        <td class="col-nama">
-                            {{ implode(', ', $detail->jenis_barang ?? []) }}
-
-                            <div style="font-size:8px; color:#666; margin-top:2px;">
-                                {{ implode(', ', $detail->jenis_barang ?? []) }}
-                            </div>
-                        </td>
-
-                        <td class="col-detail">
-                            {{ $detail->ukuran }}
-                        </td>
-
-                        <td class="col-harga">
-                            Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-
-            <hr class="divider-solid">
-
-            {{-- Total --}}
-            <div class="total-box">
-                <span class="total-label">Total Pembayaran</span>
-                <span class="total-value">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span>
-            </div>
-
-            {{-- Area Tanda Terima --}}
-            <div class="ttd-row">
-                <div class="ttd-box">
-                    <div class="ttd-label">Tanda Terima Penitip</div>
-                    <div class="ttd-line"></div>
-                </div>
-                <div class="ttd-box">
-                    <div class="ttd-label">Paraf Kasir</div>
-                    <div class="ttd-line"></div>
-                </div>
-            </div>
-
-            {{-- Footer --}}
-            <div class="footer">
-                <div class="f-warning">Simpan nota ini sebagai bukti transaksi</div>
-                <div class="f-note">
-                    Tunjukkan nota atau scan QR saat pengambilan barang.<br>
-                    Barang tidak akan diserahkan tanpa bukti transaksi ini.
-                </div>
-                <div class="f-thanks">Terima Kasih</div>
-                <div class="f-copy">© {{ date('Y') }} Vendor Savve</div>
-            </div>
-
-    </div>
-
-    {{-- Pemisah layar --}}
-    <div class="nota-separator">&#8212; potong di sini &nbsp;&middot;&nbsp; lembar 2 ditempel pada barang &#8212;</div>
-
-    {{-- ══════════════════════════════════════════════
-         LEMBAR 2 — LABEL BARANG (ditempel pada barang)
-    ══════════════════════════════════════════════ --}}
-    <div class="nota-wrapper">
-
-        {{-- Judul Dokumen --}}
-        <div class="doc-title-bar">
-            <span class="doc-title">Label Identifikasi Barang</span>
-            <span class="doc-lembar">Lembar 2 / 2</span>
-        </div>
-
-        {{-- Header --}}
-        <div class="header">
-            <img src="{{ asset('images/logo.png') }}" alt="Savve">
-            <div class="header-right">
-                <div class="brand">Savve</div>
-                <div class="tagline">Layanan Penitipan Barang</div>
-            </div>
-        </div>
-
-        {{-- Identitas Utama — QR lebih besar karena jadi focal point --}}
-        <div class="identity-block">
-            <div class="identity-left">
-                <div class="lbl">Nama Penitip</div>
-                <div class="nama">{{ $transaksi->nama_penitip }}</div>
-                <div class="kode-wrap">
-                    <div class="lbl">Kode Penitipan</div>
-                    <div class="kode">{{ $transaksi->nomor_transaksi }}</div>
-                </div>
-            </div>
-            <div class="identity-right">
-                {!! QrCode::size(50)->margin(1)->errorCorrection('M')->style('square')->generate($transaksi->nama_penitip) !!}
-                <div class="qr-label">Scan saat<br>pengambilan</div>
-            </div>
-        </div>
-
-        {{-- Info Ringkas --}}
-        <div class="info-section">
-            <div class="info-row">
-                <span class="lbl">Event</span><span class="sep">:</span>
-                <span class="val">{{ $transaksi->event->nama_event }}</span>
-            </div>
-            <div class="info-row">
-                <span class="lbl">Waktu Penitipan</span><span class="sep">:</span>
-                <span class="val">{{ $transaksi->waktu_penitipan->format('d/m/Y H:i') }}</span>
-            </div>
-            <div class="info-row">
-                <span class="lbl">No. WhatsApp</span><span class="sep">:</span>
-                <span class="val">{{ $transaksi->no_whatsapp }}</span>
-            </div>
-        </div>
-
-        <hr class="divider">
-
-        {{-- Daftar Barang ringkas --}}
-        <div class="section-title">— Isi Titipan —</div>
-        <table class="barang-table">
-            <thead>
-                <tr>
-                    <th class="col-no">#</th>
-                    <th style="width:60%">Nama Barang</th>
-                    <th style="width:30%; text-align:right">Ukuran</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($transaksi->details as $i => $detail)
-                    <tr>
-                        <td class="col-no">{{ $i + 1 }}</td>
-                        <td style="font-weight:700">
-                            {{ implode(', ', $detail->jenis_barang ?? []) }}
-
-                            <div style="font-size:8px; color:#666;">
-                                {{ implode(', ', $detail->jenis_barang ?? []) }}
-                            </div>
-                        </td>
-                        <td style="text-align:right; color:#555; font-size:8px">
-                            {{ $detail->ukuran }}
-                        </td>
+                        <td class="col-nama">{{ implode(', ', $detail->jenis_barang ?? []) }}</td>
+                        <td class="col-detail">{{ $detail->ukuran }}</td>
+                        <td class="col-harga">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -751,20 +586,153 @@
 
         <hr class="divider-solid">
 
-        {{-- Footer Barang --}}
-        <div class="footer-barang">
-            <div class="f-warning">Tempelkan pada barang titipan</div>
-            <div class="f-note">
-                Jangan lepaskan sebelum barang diambil oleh penitip.<br>
-                Lembar ini digunakan untuk identifikasi saat pengambilan.
+        <div class="total-box">
+            <span class="total-label">Total Pembayaran</span>
+            <span class="total-value">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span>
+        </div>
+
+        <div class="ttd-row">
+            <div class="ttd-box">
+                <div class="ttd-label">Tanda Terima Penitip</div>
+                <div class="ttd-line"></div>
             </div>
+            <div class="ttd-box">
+                <div class="ttd-label">Paraf Kasir</div>
+                <div class="ttd-line"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="f-warning">Simpan nota ini sebagai bukti transaksi</div>
+            <div class="f-note">
+                Tunjukkan nota atau scan QR saat pengambilan barang.<br>
+                Barang tidak akan diserahkan tanpa bukti transaksi ini.
+            </div>
+            <div class="f-thanks">Terima Kasih</div>
+            <div class="f-copy">© {{ date('Y') }} Vendor Savve</div>
         </div>
 
     </div>
 
+    {{-- ══════════════════════════════════════════
+         LEMBAR 2, 3, dst — LABEL PER KATEGORI
+    ══════════════════════════════════════════ --}}
+    @foreach ($transaksi->details as $i => $detail)
+        <div class="nota-separator">
+            &#8212; potong di sini &nbsp;&middot;&nbsp; lembar {{ $i + 2 }} ditempel pada barang &#8212;
+        </div>
+
+        <div class="nota-wrapper">
+
+            <div class="doc-title-bar">
+                <span class="doc-title">Label Identifikasi Barang</span>
+                <span class="doc-lembar">Lembar {{ $i + 2 }} / {{ $totalLembar }}</span>
+            </div>
+
+            <div class="header">
+                <img src="{{ asset('images/logo.png') }}" alt="Savve">
+                <div class="header-right">
+                    <div class="brand">Savve</div>
+                    <div class="tagline">Layanan Penitipan Barang</div>
+                </div>
+            </div>
+
+            {{-- Identitas + QR --}}
+            <div class="identity-block">
+                <div class="identity-left">
+                    <div class="lbl">Nama Penitip</div>
+                    <div class="nama">{{ $transaksi->nama_penitip }}</div>
+                    <div class="kode-wrap">
+                        <div class="lbl">Kode Penitipan</div>
+                        <div class="kode">{{ $transaksi->nomor_transaksi }}</div>
+                    </div>
+                </div>
+                <div class="identity-right">
+                    {!! QrCode::size(50)->margin(1)->errorCorrection('H')->style('square')->generate($transaksi->nomor_transaksi) !!}
+                    <div class="qr-label">Scan saat<br>pengambilan</div>
+                </div>
+            </div>
+
+            {{-- Info ringkas --}}
+            <div class="info-section">
+                <div class="info-row">
+                    <span class="lbl">Event</span><span class="sep">:</span>
+                    <span class="val">{{ $transaksi->event->nama_event }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="lbl">Waktu Penitipan</span><span class="sep">:</span>
+                    <span class="val">{{ $transaksi->waktu_penitipan->format('d/m/Y H:i') }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="lbl">No. WhatsApp</span><span class="sep">:</span>
+                    <span class="val">{{ $transaksi->no_whatsapp }}</span>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            {{-- Kategori barang ini — ditampilkan besar --}}
+            <div class="section-title">— Kategori Barang Ini —</div>
+            <div style="display:flex; align-items:center; gap:10px; padding: 6px 2px 8px;">
+                <div class="ukuran-badge">{{ $detail->ukuran }}</div>
+                <div>
+                    <div
+                        style="font-size:8px; color:#666; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px;">
+                        Jenis Barang
+                    </div>
+                    <div style="font-size:11px; font-weight:900; color:#000; line-height:1.3;">
+                        {{ implode(', ', $detail->jenis_barang ?? []) }}
+                    </div>
+                    <div style="font-size:8px; color:#555; margin-top:3px;">
+                        Tarif: Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider-solid">
+
+            {{-- Ringkasan semua barang dalam transaksi ini --}}
+            <div class="section-title">— Semua Titipan ({{ $transaksi->details->count() }} kategori) —</div>
+            <table class="barang-table">
+                <thead>
+                    <tr>
+                        <th class="col-no">#</th>
+                        <th style="width:60%">Nama Barang</th>
+                        <th style="width:30%; text-align:right">Ukuran</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($transaksi->details as $j => $d)
+                        <tr style="{{ $j === $i ? 'background:#f5f5f5;' : '' }}">
+                            <td class="col-no">{{ $j + 1 }}</td>
+                            <td style="font-weight: {{ $j === $i ? '900' : '400' }}">
+                                {{ implode(', ', $d->jenis_barang ?? []) }}
+                                @if ($j === $i)
+                                    <span style="font-size:7px; color:#555"> ← ini</span>
+                                @endif
+                            </td>
+                            <td style="text-align:right; color:#555; font-size:8px">{{ $d->ukuran }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <div class="footer-barang">
+                <div class="f-warning">Tempelkan pada barang titipan kategori {{ $detail->ukuran }}</div>
+                <div class="f-note">
+                    Jangan lepaskan sebelum barang diambil oleh penitip.<br>
+                    Lembar ini digunakan untuk identifikasi saat pengambilan.
+                </div>
+            </div>
+
+        </div>
+    @endforeach
+
     {{-- Tombol Aksi --}}
     <div class="print-actions">
-        <button class="btn-print" onclick="window.print()">&#128438; Cetak 2 Rangkap</button>
+        <button class="btn-print" onclick="window.print()">
+            &#128438; Cetak {{ $totalLembar }} Lembar
+        </button>
         <button class="btn-close" onclick="window.close()">&#x2715; Tutup</button>
     </div>
 

@@ -573,7 +573,6 @@
                 <p class="text-xs text-gray-400 mt-0.5">menunggu ambil</p>
             </div>
 
-            {{-- Tambah card terlambat --}}
             <div class="bg-white rounded-2xl p-4 border border-gray-100"
                 style="box-shadow: 0 2px 12px rgba(0,0,0,0.04); border-left: 3px solid #dc2626">
                 <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="font-size:9px; color: #dc2626">

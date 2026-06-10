@@ -198,7 +198,8 @@
                 <div id="modal-detail-{{ $transaksi->id }}"
                     class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.75)"
                     onclick="if(event.target===this) tutupDetail({{ $transaksi->id }})">
-                    <div class="bg-white rounded-2xl overflow-hidden overflow-y-auto" style="width:600px;max-width:95vw;max-height:80vh">
+                    <div class="bg-white rounded-2xl overflow-hidden overflow-y-auto"
+                        style="width:600px;max-width:95vw;max-height:80vh">
                         <div class="flex justify-between items-center px-5 py-4"
                             style="background: linear-gradient(135deg, #1e1035, #2d1b69)">
                             <div class="flex items-center gap-3">
@@ -445,13 +446,11 @@
 
         // ── QR Scanner ──
         let qrStream = null,
-            qrInterval = null,
             isScanning = false;
 
         function setQrStatus(text, color) {
             document.getElementById('qr-status').innerHTML =
-                `<span class="px-3 py-1.5 rounded-full text-xs font-bold"
-                style="background:rgba(0,0,0,0.75);color:${color};backdrop-filter:blur(6px)">${text}</span>`;
+                `<span class="px-3 py-1.5 rounded-full text-xs font-bold" style="background:rgba(0,0,0,0.75);color:${color};backdrop-filter:blur(6px)">${text}</span>`;
         }
 
         async function toggleKameraQr() {
@@ -487,23 +486,7 @@
                 },
                 {
                     video: {
-                        facingMode: 'environment',
-                        width: {
-                            ideal: 1280
-                        },
-                        height: {
-                            ideal: 720
-                        }
-                    }
-                },
-                {
-                    video: {
-                        width: {
-                            ideal: 1280
-                        },
-                        height: {
-                            ideal: 720
-                        }
+                        facingMode: 'environment'
                     }
                 },
                 {
@@ -522,37 +505,76 @@
                 alert('Tidak bisa mengakses kamera.');
                 return;
             }
+
             const video = document.getElementById('qr-video');
             video.srcObject = qrStream;
-            video.style.cssText =
-                'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(1) !important;display:block';
             await new Promise(resolve => {
                 video.onloadedmetadata = () => {
                     video.play();
                     resolve();
                 };
             });
+
             isScanning = true;
             setQrStatus('🔍 Scanning...', '#c4b5fd');
-            requestAnimationFrame(scanLoop);
+            scanLoop();
         }
 
         function stopQrScanner() {
             isScanning = false;
-            if (qrStream) {
-                qrStream.getTracks().forEach(t => t.stop());
-                qrStream = null;
-            }
-            clearInterval(qrInterval);
+            qrStream?.getTracks().forEach(t => t.stop());
+            qrStream = null;
         }
+
+        const _scanCanvas = document.createElement('canvas');
+        const _scanCtx = _scanCanvas.getContext('2d', {
+            willReadFrequently: true
+        });
 
         function scanLoop() {
             if (!isScanning) return;
-            try {
-                scanQrFrame();
-            } catch (e) {}
-            setTimeout(() => requestAnimationFrame(scanLoop), 100);
+            const video = document.getElementById('qr-video');
+
+            if (video && video.readyState >= 2 && video.videoWidth > 0) {
+                const w = video.videoWidth,
+                    h = video.videoHeight;
+                _scanCanvas.width = w;
+                _scanCanvas.height = h;
+                _scanCtx.drawImage(video, 0, 0, w, h);
+
+                // Coba full frame dulu
+                let code = jsQR(
+                    _scanCtx.getImageData(0, 0, w, h).data, w, h, {
+                        inversionAttempts: 'attemptBoth'
+                    }
+                );
+
+                // Kalau gagal, coba crop tengah 70% (area viewfinder)
+                if (!code) {
+                    const size = Math.min(w, h) * 0.7;
+                    const cx = (w - size) / 2;
+                    const cy = (h - size) / 2;
+                    _scanCtx.drawImage(video, cx, cy, size, size, 0, 0, size, size);
+                    code = jsQR(
+                        _scanCtx.getImageData(0, 0, size, size).data, size, size, {
+                            inversionAttempts: 'attemptBoth'
+                        }
+                    );
+                }
+
+                if (code?.data?.trim()) {
+                    isScanning = false;
+                    stopQrScanner();
+                    setQrStatus('✅ QR Terdeteksi!', '#4ade80');
+                    prosesQr(code.data.trim());
+                    return;
+                }
+            }
+
+            // Interval 150ms — cukup responsif tanpa membebani CPU
+            setTimeout(scanLoop, 150);
         }
+
 
         function scanQrFrame() {
             const video = document.getElementById('qr-video');
@@ -602,7 +624,7 @@
             prosesQr(value);
         }
 
-        async function prosesQr(namaPenitip) {
+        async function prosesQr(nomorTransaksi) {
             setQrStatus('⏳ Memproses...', '#fbbf24');
             try {
                 const res = await fetch('{{ route('kasir.pengambilan.scan-qr') }}', {
@@ -611,8 +633,9 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
+                    // Kirim nomor_transaksi, bukan nama_penitip
                     body: JSON.stringify({
-                        nama_penitip: namaPenitip
+                        nomor_transaksi: nomorTransaksi
                     })
                 });
                 if (!res.ok) throw new Error('Server error: ' + res.status);

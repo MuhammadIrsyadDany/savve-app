@@ -88,18 +88,16 @@ class PengambilanController extends Controller
 
     public function scanQr(Request $request)
     {
-        $request->validate(['nama_penitip' => 'required|string']);
+        $request->validate(['nomor_transaksi' => 'required|string']);
 
-        $transaksis = Transaksi::with(['event', 'details', 'kasir'])
-            ->where('nama_penitip', 'like', '%' . $request->nama_penitip . '%')
+        $transaksi = Transaksi::with(['event', 'details'])
+            ->where('nomor_transaksi', $request->nomor_transaksi)
             ->whereIn('status', ['dititip', 'terlambat'])
-            ->get();
+            ->first();
 
-        if ($transaksis->isEmpty()) {
+        if (!$transaksi) {
             return response()->json(['found' => false]);
         }
-
-        $transaksi = $transaksis->first();
 
         return response()->json([
             'found'     => true,
@@ -118,10 +116,9 @@ class PengambilanController extends Controller
                 'details'               => $transaksi->details->map(fn($d) => [
                     'nama'     => implode(', ', $d->jenis_barang ?? []),
                     'ukuran'   => $d->ukuran,
-                    'jumlah'   => $d->jumlah,
                     'subtotal' => 'Rp ' . number_format($d->subtotal, 0, ',', '.'),
                 ]),
-                'total_transaksi_aktif' => $transaksis->count(),
+                'total_transaksi_aktif' => 1,
             ],
         ]);
     }
