@@ -70,7 +70,7 @@
                             <p class="text-lg font-black text-gray-800">{{ $transaksi->event->nama_event }}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Kasir</p>
                             <p class="font-bold text-gray-700">{{ $transaksi->kasir->name }}</p>
@@ -82,10 +82,20 @@
                             </p>
                         </div>
                         <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Metode
+                                Bayar</p>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+                                style="background: {{ $transaksi->metode_bayar === 'Cash' ? '#f0fdf4' : ($transaksi->metode_bayar === 'QRIS' ? '#faf5ff' : '#eff6ff') }};
+                    color: {{ $transaksi->metode_bayar === 'Cash' ? '#15803d' : ($transaksi->metode_bayar === 'QRIS' ? '#7c3aed' : '#1d4ed8') }}">
+                                {{ $transaksi->metode_bayar === 'Cash' ? '💵' : ($transaksi->metode_bayar === 'QRIS' ? '📱' : '🌐') }}
+                                {{ $transaksi->metode_bayar }}
+                            </span>
+                        </div>
+                        <div>
                             <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: #94a3b8">Status</p>
                             <span class="px-3 py-1 rounded-full text-xs font-bold"
                                 style="background: {{ $transaksi->status === 'dititip' ? '#faf5ff' : ($transaksi->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
-       color: {{ $transaksi->status === 'dititip' ? '#7c3aed' : ($transaksi->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
+                    color: {{ $transaksi->status === 'dititip' ? '#7c3aed' : ($transaksi->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
                                 {{ $transaksi->status === 'dititip' ? 'DITITIPKAN' : ($transaksi->status === 'terlambat' ? 'TERLAMBAT' : 'SUDAH DIAMBIL') }}
                             </span>
                         </div>
