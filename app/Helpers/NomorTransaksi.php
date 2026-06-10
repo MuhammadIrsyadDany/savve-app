@@ -12,10 +12,12 @@ class NomorTransaksi
     {
         $kodeEvent = $event->kode_event ?? 'EVT';
 
-        // Hitung urutan transaksi di event ini
-        $count = static::where('event_id', $event->id)->count() + 1;
-        $urutan = str_pad($count, 4, '0', STR_PAD_LEFT);
+        do {
+            $count  = Transaksi::where('event_id', $event->id)->count() + 1;
+            $urutan = str_pad($count, 4, '0', STR_PAD_LEFT);
+            $nomor  = "SVV-{$kodeEvent}-{$urutan}";
+        } while (Transaksi::where('nomor_transaksi', $nomor)->exists());
 
-        return "SVV-{$kodeEvent}-{$urutan}";
+        return $nomor;
     }
 }

@@ -26,6 +26,23 @@
 
         {{-- ═══ FORM ═══ --}}
         <div class="flex-1 min-w-0">
+
+            {{-- Nomor Preview Mobile (hanya tampil di HP) --}}
+            <div class="lg:hidden rounded-2xl px-5 py-4 mb-4 text-white relative overflow-hidden"
+                style="background: linear-gradient(135deg, #1e1035, #4c1d95)">
+                <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #c4b5fd">
+                    Nomor Transaksi
+                </p>
+                <p id="nomor-preview-mobile" class="text-xl font-black tracking-tight font-mono">
+                    SVV-{{ $event->kode_event }}-????
+                </p>
+                <p class="text-xs mt-1" style="color: rgba(255,255,255,0.5)">
+                    Event: {{ $event->nama_event }}
+                </p>
+                <div class="absolute -bottom-4 -right-4 w-20 h-20 rounded-full" style="background: rgba(255,255,255,0.05)">
+                </div>
+            </div>
+
             <form action="{{ route('kasir.transaksi.store') }}" method="POST" id="form-transaksi">
                 @csrf
 
@@ -142,7 +159,8 @@
                     <div id="foto-preview-wrapper" class="hidden mb-3">
                         <div class="relative rounded-xl overflow-hidden" style="border: 1.5px solid #ddd6fe">
                             <img id="foto-preview" src="" alt="Preview" class="w-full max-h-52 object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none">
                             </div>
                             <button type="button" onclick="hapusFoto()"
                                 class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold"
@@ -599,8 +617,11 @@
                 const res = await fetch('{{ route('kasir.transaksi.count-today') }}');
                 const data = await res.json();
                 const urutan = String(data.count + 1).padStart(4, '0');
-                document.getElementById('nomor-preview').textContent =
-                    `SVV-{{ $event->kode_event }}-${urutan}`;
+                const nomor = `SVV-{{ $event->kode_event }}-${urutan}`;
+                document.getElementById('nomor-preview').textContent = nomor;
+                // ← tambah ini
+                const mobileEl = document.getElementById('nomor-preview-mobile');
+                if (mobileEl) mobileEl.textContent = nomor;
             } catch (e) {}
         }
         generatePreviewNomor();
