@@ -92,7 +92,7 @@
                 <div class="h-full rounded-full transition-all duration-700"
                     style="width: {{ $pctDititip }}%; background: linear-gradient(90deg, #ea580c, #fb923c)"></div>
             </div>
-            <p class="text-xs text-gray-400 mt-1">{{ $pctDititip }}% dari total transaksi</p>
+            <p class="text-xs text-gray-400 mt-1">{{ $pctDititip }}% dari total · termasuk terlambat</p>
         </div>
 
         {{-- Sudah Diambil --}}
@@ -103,8 +103,8 @@
                     style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)">
                     <span class="text-base lg:text-lg">✅</span>
                 </div>
-                <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: #f0fdf4; color: #15803d">
-                    {{ $pctDiambil }}%
+                <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: #fff7ed; color: #b45309">
+                    {{ $pctDititip }}%
                 </span>
             </div>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1" style="font-size: 9px">Sudah
@@ -336,4 +336,4 @@
         </div>
     </div>
 
-@endsection)
+@endsection
