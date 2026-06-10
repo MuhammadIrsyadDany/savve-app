@@ -131,7 +131,7 @@ class TransaksiExport
             $bgColor = $isEven ? 'F8FAFF' : 'FFFFFF';
 
             $barang = $t->details->map(function ($d) {
-                $nama = $d->nama_barang_custom ?? $d->kategori->nama_kategori;
+                $nama = ;
                 return "{$nama} (Ukuran {$d->ukuran}) x{$d->jumlah} = Rp " . number_format($d->subtotal, 0, ',', '.');
             })->implode("\n");
 
@@ -269,7 +269,7 @@ class TransaksiExport
 
     private function getData()
     {
-        $query = Transaksi::with(['event', 'kasir', 'details.kategori']);
+        $query = Transaksi::with(['event', 'kasir', 'details']);
 
         if ($this->event_id) {
             $query->where('event_id', $this->event_id);

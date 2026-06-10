@@ -232,7 +232,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse(\App\Models\Transaksi::with(['event','details.kategori'])->latest()->take(8)->get() as $t)
+                    @forelse($transaksiTerbaru as $t)
                         <tr class="table-row border-t border-gray-50">
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <a href="{{ route('admin.transaksis.show', $t) }}" class="font-bold hover:underline"
@@ -254,7 +254,7 @@
                                 @foreach ($t->details->take(1) as $d)
                                     <span class="px-2 py-0.5 rounded-md text-gray-600 font-medium whitespace-nowrap"
                                         style="background: #f1f5f9; font-size: 10px">
-                                        {{ Str::limit($d->nama_barang_custom ?? $d->kategori->nama_kategori, 10) }}
+                                        {{ Str::limit(implode(', ', $d->jenis_barang ?? []), 10) }}
                                     </span>
                                 @endforeach
                             </td>
@@ -268,7 +268,8 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-4 py-8 text-center text-gray-300">Belum ada transaksi.</td>
+                            <td colspan="4" class="px-4 py-8 text-center text-gray-300">Belum ada
+                                transaksi.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -282,7 +283,8 @@
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-5">
             <div>
                 <p class="font-black text-gray-800">Distribusi Barang per Ukuran</p>
-                <p class="text-xs text-gray-400 mt-0.5">Monitoring barang yang masih dititipkan saat ini</p>
+                <p class="text-xs text-gray-400 mt-0.5">Monitoring barang yang masih dititipkan saat
+                    ini</p>
             </div>
             <div class="flex items-center gap-4 text-xs text-gray-400 flex-shrink-0">
                 <span class="flex items-center gap-1.5">
@@ -334,4 +336,4 @@
         </div>
     </div>
 
-@endsection
+@endsection)

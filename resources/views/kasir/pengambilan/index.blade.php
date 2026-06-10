@@ -181,7 +181,7 @@
                                 <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
                                     <p class="text-xs font-semibold uppercase tracking-wider mb-1"
                                         style="color:#94a3b8;font-size:9px">Total Barang</p>
-                                    <p class="font-black text-gray-800 text-lg">{{ $transaksi->details->sum('jumlah') }} <span
+                                    <p class="font-black text-gray-800 text-lg">{{ $transaksi->details->count() }} <span
                                             class="text-xs font-normal text-gray-400">unit</span></p>
                                 </div>
                                 <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
@@ -218,7 +218,7 @@
                                         <div class="flex items-center justify-between px-3 py-2 rounded-lg"
                                             style="background:#f8faff;border:1px solid #ede9fe">
                                             <span class="text-sm font-semibold text-gray-700">
-                                                {{ $d->nama_barang_custom ?? $d->kategori->nama_kategori }}
+                                                {{ implode(', ', $d->jenis_barang ?? []) }}
                                             </span>
                                             <div class="flex items-center gap-2">
                                                 <span class="px-2 py-0.5 rounded-lg text-xs font-bold"
@@ -718,18 +718,18 @@
                 <div class="p-5">
 
                     ${t.total_transaksi_aktif > 1 ? `
-                                    <div class="flex items-start gap-3 px-4 py-3 rounded-xl mb-4"
-                                        style="background:#fffbeb;border:1.5px solid #fde68a">
-                                        <span style="flex-shrink:0">⚠️</span>
-                                        <div>
-                                            <p class="font-bold text-sm" style="color:#92400e">
-                                                ${t.total_transaksi_aktif} transaksi aktif ditemukan
-                                            </p>
-                                            <p class="text-xs mt-0.5" style="color:#b45309">
-                                                Menampilkan transaksi terbaru. Gunakan Cari Nama untuk melihat semua.
-                                            </p>
-                                        </div>
-                                    </div>` : ''}
+                                            <div class="flex items-start gap-3 px-4 py-3 rounded-xl mb-4"
+                                                style="background:#fffbeb;border:1.5px solid #fde68a">
+                                                <span style="flex-shrink:0">⚠️</span>
+                                                <div>
+                                                    <p class="font-bold text-sm" style="color:#92400e">
+                                                        ${t.total_transaksi_aktif} transaksi aktif ditemukan
+                                                    </p>
+                                                    <p class="text-xs mt-0.5" style="color:#b45309">
+                                                        Menampilkan transaksi terbaru. Gunakan Cari Nama untuk melihat semua.
+                                                    </p>
+                                                </div>
+                                            </div>` : ''}
 
                     <div class="grid grid-cols-2 gap-3 mb-4">
                         <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
@@ -764,12 +764,12 @@
                     </div>
 
                     ${t.details && t.details.length > 0 ? `
-                                    <div class="mb-4">
-                                        <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">
-                                            Daftar Barang
-                                        </p>
-                                        <div class="space-y-2">
-                                            ${t.details.map(d => `
+                                            <div class="mb-4">
+                                                <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">
+                                                    Daftar Barang
+                                                </p>
+                                                <div class="space-y-2">
+                                                    ${t.details.map(d => `
                             <div class="flex items-center justify-between px-3 py-2 rounded-lg"
                                 style="background:#f8faff;border:1px solid #ede9fe">
                                 <span class="text-sm font-semibold text-gray-700">${d.nama}</span>
@@ -780,29 +780,29 @@
                                     <span class="text-xs font-bold text-gray-700">${d.subtotal}</span>
                                 </div>
                             </div>`).join('')}
-                                        </div>
-                                    </div>` : ''}
+                                                </div>
+                                            </div>` : ''}
 
                     ${t.foto_penitipan ? `
-                                    <div class="mb-4">
-                                        <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">
-                                            📷 Foto Barang Saat Penitipan
-                                        </p>
-                                        <img src="${t.foto_penitipan}" alt="Foto"
-                                            class="w-full max-h-48 object-cover rounded-xl cursor-pointer"
-                                            style="border:1.5px solid #ede9fe"
-                                            onclick="bukaFotoModal(this.src)">
-                                    </div>` : ''}
+                                            <div class="mb-4">
+                                                <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">
+                                                    📷 Foto Barang Saat Penitipan
+                                                </p>
+                                                <img src="${t.foto_penitipan}" alt="Foto"
+                                                    class="w-full max-h-48 object-cover rounded-xl cursor-pointer"
+                                                    style="border:1.5px solid #ede9fe"
+                                                    onclick="bukaFotoModal(this.src)">
+                                            </div>` : ''}
 
                     ${isTerlambat ? `
-                                    <div class="flex items-start gap-3 px-4 py-3 rounded-xl mb-4"
-                                        style="background:#fff5f5;border:1.5px solid #fecaca">
-                                        <span style="color:#ef4444;flex-shrink:0">⚠️</span>
-                                        <div>
-                                            <p class="font-bold text-sm" style="color:#dc2626">Pengambilan Terlambat</p>
-                                            <p class="text-xs mt-0.5" style="color:#f87171">Event sudah berakhir.</p>
-                                        </div>
-                                    </div>` : ''}
+                                            <div class="flex items-start gap-3 px-4 py-3 rounded-xl mb-4"
+                                                style="background:#fff5f5;border:1.5px solid #fecaca">
+                                                <span style="color:#ef4444;flex-shrink:0">⚠️</span>
+                                                <div>
+                                                    <p class="font-bold text-sm" style="color:#dc2626">Pengambilan Terlambat</p>
+                                                    <p class="text-xs mt-0.5" style="color:#f87171">Event sudah berakhir.</p>
+                                                </div>
+                                            </div>` : ''}
 
                     <div class="mb-5">
                         <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">

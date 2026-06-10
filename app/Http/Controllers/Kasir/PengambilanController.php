@@ -26,7 +26,7 @@ class PengambilanController extends Controller
             'nama_penitip' => 'required|string|max:100',
         ]);
 
-        $transaksis = Transaksi::with(['event', 'details.kategori', 'kasir'])
+        $transaksis = Transaksi::with(['event', 'details', 'kasir'])
             ->where('nama_penitip', 'like', '%' . $request->nama_penitip . '%')
             ->whereIn('status', ['dititip', 'terlambat'])
             ->get();
@@ -86,7 +86,7 @@ class PengambilanController extends Controller
     {
         $request->validate(['nama_penitip' => 'required|string']);
 
-        $transaksis = Transaksi::with(['event', 'details.kategori', 'kasir'])
+        $transaksis = Transaksi::with(['event', 'details', 'kasir'])
             ->where('nama_penitip', 'like', '%' . $request->nama_penitip . '%')
             ->whereIn('status', ['dititip', 'terlambat'])
             ->get();
@@ -108,12 +108,12 @@ class PengambilanController extends Controller
                 'event'           => $transaksi->event->nama_event,
                 'status'          => $transaksi->status,
                 'waktu_penitipan' => $transaksi->waktu_penitipan->format('d M Y H:i'),
-                'total_barang'    => $transaksi->details->sum('jumlah'),
+                'total_barang'    => $transaksi->details->count(),
                 'foto_penitipan'  => $transaksi->foto_penitipan
                     ? asset('storage/' . $transaksi->foto_penitipan)
                     : null,
                 'details'         => $transaksi->details->map(fn($d) => [
-                    'nama'     => $d->nama_barang_custom ?? $d->kategori->nama_kategori,
+                    'nama'     => implode(', ', $d->jenis_barang ?? []),
                     'ukuran'   => $d->ukuran,
                     'jumlah'   => $d->jumlah,
                     'subtotal' => 'Rp ' . number_format($d->subtotal, 0, ',', '.'),

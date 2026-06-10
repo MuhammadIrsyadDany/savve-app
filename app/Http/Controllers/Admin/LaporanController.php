@@ -28,7 +28,7 @@ class LaporanController extends Controller
             || $request->filled('show');
 
         if ($hasFilter) {
-            $baseQuery = Transaksi::with(['event', 'kasir', 'details.kategori']);
+            $baseQuery = Transaksi::with(['event', 'kasir', 'details']);
 
             if ($request->filled('event_id')) {
                 $baseQuery->where('event_id', $request->event_id);

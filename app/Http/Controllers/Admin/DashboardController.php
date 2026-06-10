@@ -24,12 +24,14 @@ class DashboardController extends Controller
         $transaksiHariIni = Transaksi::whereDate('created_at', today())->count();
         $belumDiambil = Transaksi::where('status', 'dititip')->count();
         $sudahDiambil = Transaksi::where('status', 'sudah_diambil')->count();
+        $transaksiTerbaru = Transaksi::with('details')->latest()->take(10)->get();
 
         return view('admin.dashboard', compact(
             'totalEventAktif',
             'transaksiHariIni',
             'belumDiambil',
-            'sudahDiambil'
+            'sudahDiambil',
+            'transaksiTerbaru'
         ));
     }
 }

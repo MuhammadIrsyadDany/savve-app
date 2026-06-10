@@ -649,7 +649,7 @@
                         <td class="px-5 py-4">
                             @foreach ($t->details->take(1) as $d)
                                 <p class="font-medium text-gray-700 text-sm whitespace-nowrap">
-                                    {{ Str::limit($d->nama_barang_custom ?? $d->kategori->nama_kategori, 15) }}
+                                    {{ Str::limit(implode(', ', $d->jenis_barang ?? []), 15) }}
                                 </p>
                                 <span class="inline-block px-2 py-0.5 rounded-md text-xs font-bold mt-0.5"
                                     style="background: #faf5ff; color: #7c3aed">

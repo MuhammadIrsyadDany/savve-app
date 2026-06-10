@@ -18,7 +18,7 @@ class SearchController extends Controller
             ]);
         }
 
-        $transaksis = Transaksi::with(['event', 'details.kategori'])
+        $transaksis = Transaksi::with(['event', 'details'])
             ->where('kasir_id', auth()->id())
             ->where(function ($q) use ($query) {
                 $q->where('nama_penitip', 'like', "%{$query}%")

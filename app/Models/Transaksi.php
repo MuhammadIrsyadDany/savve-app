@@ -21,9 +21,11 @@ class Transaksi extends Model
     ];
 
     protected $casts = [
-        'waktu_penitipan'  => 'datetime',
+        'waktu_penitipan'   => 'datetime',
         'waktu_pengambilan' => 'datetime',
     ];
+
+    // ── Relationships ──
 
     public function event()
     {
@@ -40,9 +42,22 @@ class Transaksi extends Model
         return $this->hasMany(DetailTransaksi::class);
     }
 
-    // Total harga dari semua detail
+    // ── Accessors ──
+
     public function getTotalHargaAttribute(): float
     {
         return $this->details->sum('subtotal');
+    }
+
+    // ── Static Helpers ──
+
+    public static function generateNomor(Event $event): string
+    {
+        $kodeEvent = $event->kode_event ?? 'EVT';
+
+        $count  = static::where('event_id', $event->id)->count() + 1;
+        $urutan = str_pad($count, 4, '0', STR_PAD_LEFT);
+
+        return "SVV-{$kodeEvent}-{$urutan}";
     }
 }

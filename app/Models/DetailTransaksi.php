@@ -15,7 +15,7 @@ class DetailTransaksi extends Model
     ];
 
     protected $casts = [
-        'jenis_barang' => 'array', // otomatis encode/decode JSON
+        'jenis_barang' => 'array',
     ];
 
     public function transaksi()
@@ -23,9 +23,15 @@ class DetailTransaksi extends Model
         return $this->belongsTo(Transaksi::class);
     }
 
-    // Nama barang untuk ditampilkan
+    // Helper: tampilkan jenis barang sebagai string
     public function getJenisBarangStringAttribute(): string
     {
         return implode(', ', $this->jenis_barang ?? []);
+    }
+
+    // Helper: hitung jumlah jenis barang
+    public function getJumlahJenisAttribute(): int
+    {
+        return count($this->jenis_barang ?? []);
     }
 }

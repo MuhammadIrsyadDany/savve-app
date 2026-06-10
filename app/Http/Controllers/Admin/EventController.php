@@ -144,7 +144,7 @@ class EventController extends Controller
 
     public function rekap(Event $event)
     {
-        $event->load(['transaksis.details.kategori', 'transaksis.kasir', 'tarifs']);
+        $event->load(['transaksis.details', 'transaksis.kasir', 'tarifs']);
 
         $transaksis      = $event->transaksis;
         $totalTransaksi  = $transaksis->count();
@@ -189,7 +189,7 @@ class EventController extends Controller
         $rekapKategori = [];
         foreach ($transaksis as $t) {
             foreach ($t->details as $d) {
-                $nama = $d->nama_barang_custom ?? $d->kategori->nama_kategori;
+                $nama = implode(', ', $d->jenis_barang ?? []);
                 if (!isset($rekapKategori[$nama])) {
                     $rekapKategori[$nama] = ['jumlah' => 0, 'pendapatan' => 0];
                 }

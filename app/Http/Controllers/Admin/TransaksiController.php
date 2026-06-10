@@ -13,7 +13,7 @@ class TransaksiController extends Controller
     {
         $events = \App\Models\Event::orderBy('nama_event')->get();
 
-        $query = Transaksi::with(['event', 'kasir', 'details.kategori']);
+        $query = Transaksi::with(['event', 'kasir', 'details']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -53,7 +53,7 @@ class TransaksiController extends Controller
 
     public function show(Transaksi $transaksi)
     {
-        $transaksi->load(['event', 'details.kategori', 'kasir']);
+        $transaksi->load(['event', 'details', 'kasir']);
         return view('admin.transaksis.show', compact('transaksi'));
     }
 

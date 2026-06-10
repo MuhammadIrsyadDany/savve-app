@@ -23,7 +23,9 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
 
         @php
-            $totalTransaksiKasir = \App\Models\Transaksi::where('kasir_id', auth()->id())->count();
+            $totalTransaksiKasir = \App\Models\Transaksi::where('kasir_id', auth()->id())
+                ->where('event_id', session('kasir_event_id'))
+                ->count();
 
             $pctDititipKasir =
                 $totalTransaksiKasir > 0 ? min(round(($belumDiambil / $totalTransaksiKasir) * 100), 100) : 0;
@@ -32,6 +34,7 @@
                 $totalTransaksiKasir > 0 ? min(round(($sudahDiambil / $totalTransaksiKasir) * 100), 100) : 0;
 
             $transaksiKemarinKasir = \App\Models\Transaksi::where('kasir_id', auth()->id())
+                ->where('event_id', session('kasir_event_id'))
                 ->whereDate('created_at', today()->subDay())
                 ->count();
 
@@ -246,7 +249,7 @@
                         </td>
                         <td class="px-5 py-4 text-gray-500 text-sm whitespace-nowrap">
                             @foreach ($t->details->take(1) as $d)
-                                {{ Str::limit($d->nama_barang_custom ?? $d->kategori->nama_kategori, 12) }}
+                                {{ implode(', ', $d->jenis_barang ?? []) }}
                                 <span class="text-xs text-gray-400">({{ $d->ukuran }})</span>
                             @endforeach
                         </td>

@@ -22,7 +22,7 @@ class SearchController extends Controller
             ]);
         }
 
-        $transaksis = Transaksi::with(['event', 'kasir', 'details.kategori'])
+        $transaksis = Transaksi::with(['event', 'kasir', 'details'])
             ->where('nama_penitip', 'like', "%{$query}%")
             ->orWhere('nomor_transaksi', 'like', "%{$query}%")
             ->orWhere('no_whatsapp', 'like', "%{$query}%")

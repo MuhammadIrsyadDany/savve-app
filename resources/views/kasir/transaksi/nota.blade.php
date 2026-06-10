@@ -602,7 +602,7 @@
                 <tr>
                     <th class="col-no">#</th>
                     <th class="col-nama">Nama Barang</th>
-                    <th class="col-detail">Ukuran / Qty</th>
+                    <th class="col-detail">Ukuran</th>
                     <th class="col-harga">Subtotal</th>
                 </tr>
             </thead>
@@ -610,44 +610,56 @@
                 @foreach ($transaksi->details as $i => $detail)
                     <tr>
                         <td class="col-no">{{ $i + 1 }}</td>
-                        <td class="col-nama">{{ $detail->nama_barang_custom ?? $detail->kategori->nama_kategori }}</td>
-                        <td class="col-detail">{{ $detail->ukuran }} / {{ $detail->jumlah }}</td>
-                        <td class="col-harga">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+
+                        <td class="col-nama">
+                            {{ implode(', ', $detail->jenis_barang ?? []) }}
+
+                            <div style="font-size:8px; color:#666; margin-top:2px;">
+                                {{ implode(', ', $detail->jenis_barang ?? []) }}
+                            </div>
+                        </td>
+
+                        <td class="col-detail">
+                            {{ $detail->ukuran }}
+                        </td>
+
+                        <td class="col-harga">
+                            Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
-        </table>
 
-        <hr class="divider-solid">
+            <hr class="divider-solid">
 
-        {{-- Total --}}
-        <div class="total-box">
-            <span class="total-label">Total Pembayaran</span>
-            <span class="total-value">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span>
-        </div>
-
-        {{-- Area Tanda Terima --}}
-        <div class="ttd-row">
-            <div class="ttd-box">
-                <div class="ttd-label">Tanda Terima Penitip</div>
-                <div class="ttd-line"></div>
+            {{-- Total --}}
+            <div class="total-box">
+                <span class="total-label">Total Pembayaran</span>
+                <span class="total-value">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span>
             </div>
-            <div class="ttd-box">
-                <div class="ttd-label">Paraf Kasir</div>
-                <div class="ttd-line"></div>
-            </div>
-        </div>
 
-        {{-- Footer --}}
-        <div class="footer">
-            <div class="f-warning">Simpan nota ini sebagai bukti transaksi</div>
-            <div class="f-note">
-                Tunjukkan nota atau scan QR saat pengambilan barang.<br>
-                Barang tidak akan diserahkan tanpa bukti transaksi ini.
+            {{-- Area Tanda Terima --}}
+            <div class="ttd-row">
+                <div class="ttd-box">
+                    <div class="ttd-label">Tanda Terima Penitip</div>
+                    <div class="ttd-line"></div>
+                </div>
+                <div class="ttd-box">
+                    <div class="ttd-label">Paraf Kasir</div>
+                    <div class="ttd-line"></div>
+                </div>
             </div>
-            <div class="f-thanks">Terima Kasih</div>
-            <div class="f-copy">© {{ date('Y') }} Vendor Savve</div>
-        </div>
+
+            {{-- Footer --}}
+            <div class="footer">
+                <div class="f-warning">Simpan nota ini sebagai bukti transaksi</div>
+                <div class="f-note">
+                    Tunjukkan nota atau scan QR saat pengambilan barang.<br>
+                    Barang tidak akan diserahkan tanpa bukti transaksi ini.
+                </div>
+                <div class="f-thanks">Terima Kasih</div>
+                <div class="f-copy">© {{ date('Y') }} Vendor Savve</div>
+            </div>
 
     </div>
 
@@ -715,7 +727,7 @@
                 <tr>
                     <th class="col-no">#</th>
                     <th style="width:60%">Nama Barang</th>
-                    <th style="width:30%; text-align:right">Ukuran / Qty</th>
+                    <th style="width:30%; text-align:right">Ukuran</th>
                 </tr>
             </thead>
             <tbody>
@@ -723,9 +735,15 @@
                     <tr>
                         <td class="col-no">{{ $i + 1 }}</td>
                         <td style="font-weight:700">
-                            {{ $detail->nama_barang_custom ?? $detail->kategori->nama_kategori }}</td>
-                        <td style="text-align:right; color:#555; font-size:8px">{{ $detail->ukuran }} /
-                            {{ $detail->jumlah }}</td>
+                            {{ implode(', ', $detail->jenis_barang ?? []) }}
+
+                            <div style="font-size:8px; color:#666;">
+                                {{ implode(', ', $detail->jenis_barang ?? []) }}
+                            </div>
+                        </td>
+                        <td style="text-align:right; color:#555; font-size:8px">
+                            {{ $detail->ukuran }}
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

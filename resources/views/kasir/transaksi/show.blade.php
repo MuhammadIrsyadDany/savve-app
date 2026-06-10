@@ -123,7 +123,7 @@
                         @foreach ($transaksi->details as $detail)
                             <tr class="table-row" style="border-top: 1px solid #f5f3ff">
                                 <td class="px-5 py-4 font-medium text-gray-700">
-                                    {{ $detail->nama_barang_custom ?? $detail->kategori->nama_kategori }}
+                                    {{ implode(', ', $detail->jenis_barang ?? []) }}
                                 </td>
                                 <td class="px-5 py-4">
                                     <span class="px-3 py-1 rounded-lg text-xs font-bold"
@@ -131,7 +131,8 @@
                                         {{ $detail->ukuran }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4 font-semibold text-gray-700">{{ $detail->jumlah }}</td>
+                                <td class="px-5 py-4 font-semibold text-gray-700">{{ count($detail->jenis_barang ?? []) }}
+                                    jenis</td>
                                 <td class="px-5 py-4 text-right text-gray-500">Rp
                                     {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
                                 <td class="px-5 py-4 text-right font-bold text-gray-800">Rp
