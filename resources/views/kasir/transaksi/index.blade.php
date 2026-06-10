@@ -552,7 +552,7 @@
 
     {{-- Summary Cards --}}
     @if ($transaksis->count() > 0)
-        <div class="anim-fade-up delay-3 grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+        <div class="anim-fade-up delay-3 grid grid-cols-2 lg:grid-cols-5 gap-3 mb-5">
             @php
                 $totalAll = $transaksis->count();
                 $totalDititip = $transaksis->where('status', 'dititip')->count();
@@ -570,9 +570,16 @@
                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1" style="font-size:9px">
                     Dititipkan</p>
                 <p class="text-2xl font-black" style="color: #7c3aed">{{ $totalDititip }}</p>
-                @if ($totalTerlambat > 0)
-                    <p class="text-xs mt-0.5" style="color: #dc2626">+{{ $totalTerlambat }} terlambat</p>
-                @endif
+                <p class="text-xs text-gray-400 mt-0.5">menunggu ambil</p>
+            </div>
+
+            {{-- Tambah card terlambat --}}
+            <div class="bg-white rounded-2xl p-4 border border-gray-100"
+                style="box-shadow: 0 2px 12px rgba(0,0,0,0.04); border-left: 3px solid #dc2626">
+                <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="font-size:9px; color: #dc2626">
+                    Terlambat</p>
+                <p class="text-2xl font-black" style="color: #dc2626">{{ $totalTerlambat }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">belum diambil</p>
             </div>
             <div class="bg-white rounded-2xl p-4 border border-gray-100" style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1" style="font-size:9px">Sudah
