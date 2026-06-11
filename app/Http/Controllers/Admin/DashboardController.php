@@ -10,15 +10,15 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Auto nonaktifkan event expired & tandai transaksi terlambat
-        Event::where('status', 'aktif')
-            ->where('tanggal_selesai', '<', today())
-            ->each(function ($event) {
-                $event->update(['status' => 'nonaktif']);
-                Transaksi::where('event_id', $event->id)
-                    ->where('status', 'dititip')
-                    ->update(['status' => 'terlambat']);
-            });
+        // // Auto nonaktifkan event expired & tandai transaksi terlambat
+        // Event::where('status', 'aktif')
+        //     ->where('tanggal_selesai', '<', today())
+        //     ->each(function ($event) {
+        //         $event->update(['status' => 'nonaktif']);
+        //         Transaksi::where('event_id', $event->id)
+        //             ->where('status', 'dititip')
+        //             ->update(['status' => 'terlambat']);
+        //     });
 
         $totalEventAktif  = Event::where('status', 'aktif')->count();
         $transaksiHariIni = Transaksi::whereDate('created_at', today())->count();

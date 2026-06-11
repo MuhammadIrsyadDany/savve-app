@@ -11,14 +11,14 @@ class EventSessionController extends Controller
     public function index()
     {
         // Auto nonaktifkan event expired
-        Event::where('status', 'aktif')
-            ->where('tanggal_selesai', '<', today())
-            ->each(function ($event) {
-                $event->update(['status' => 'nonaktif']);
-                \App\Models\Transaksi::where('event_id', $event->id)
-                    ->where('status', 'dititip')
-                    ->update(['status' => 'terlambat']);
-            });
+        // Event::where('status', 'aktif')
+        //     ->where('tanggal_selesai', '<', today())
+        //     ->each(function ($event) {
+        //         $event->update(['status' => 'nonaktif']);
+        //         \App\Models\Transaksi::where('event_id', $event->id)
+        //             ->where('status', 'dititip')
+        //             ->update(['status' => 'terlambat']);
+        //     });
 
         $events = Event::where('status', 'aktif')
             ->orderBy('tanggal_mulai')
