@@ -249,7 +249,9 @@ class TransaksiController extends Controller
     public function countToday()
     {
         $eventId = session('kasir_event_id');
-        $count   = Transaksi::where('event_id', $eventId)->count();
+        $count   = Transaksi::where('event_id', $eventId)
+            ->where('kasir_id', auth()->id())
+            ->count();
         return response()->json(['count' => $count]);
     }
 
