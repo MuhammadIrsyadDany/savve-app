@@ -97,43 +97,25 @@
                     </div>
 
                     <div id="barang-container" class="space-y-4">
-                        {{-- Item pertama --}}
                         <div class="barang-item rounded-xl p-4" style="background: #faf5ff; border: 1.5px solid #ede9fe">
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5"
-                                        style="color: #64748b">Kategori Barang</label>
-                                    <select name="barang[0][kategori_id]"
-                                        class="kategori-select w-full rounded-xl px-3 py-2.5 text-sm transition"
-                                        style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
-                                        @foreach ($kategoris as $k)
-                                            <option value="{{ $k->id }}" data-custom="{{ $k->is_custom }}">
-                                                {{ $k->nama_kategori }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5"
-                                        style="color: #64748b">Jumlah</label>
-                                    <div class="flex items-center gap-2">
-                                        <button type="button" onclick="changeQty(this, -1)"
-                                            class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 transition"
-                                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed">−</button>
-                                        <input type="number" name="barang[0][jumlah]" value="1" min="1"
-                                            class="flex-1 text-center rounded-xl py-2 text-sm font-bold transition"
-                                            style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
-                                        <button type="button" onclick="changeQty(this, 1)"
-                                            class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 transition"
-                                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed">+</button>
-                                    </div>
-                                </div>
+                            <div class="mb-3">
+                                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5"
+                                    style="color: #64748b">Jenis Barang</label>
+                                <select name="items[0][jenis_barang_id]"
+                                    class="kategori-select w-full rounded-xl px-3 py-2.5 text-sm transition"
+                                    style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
+                                    @foreach ($kategoris as $k)
+                                        <option value="{{ $k->id }}" data-custom="{{ $k->is_custom ? '1' : '0' }}">
+                                            {{ $k->nama_kategori }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="nama-custom-wrapper mb-3" style="display:none">
                                 <label class="block text-xs font-bold uppercase tracking-wider mb-1.5"
                                     style="color: #64748b">Nama Barang</label>
-                                <input type="text" name="barang[0][nama_custom]"
+                                <input type="text" name="items[0][nama_custom]"
                                     class="w-full rounded-xl px-3 py-2.5 text-sm transition"
                                     style="background: white; border: 1.5px solid #ddd6fe; color: #374151"
                                     placeholder="Tulis nama barang...">
@@ -145,7 +127,7 @@
                                 <div class="grid grid-cols-4 gap-2">
                                     @foreach (['S', 'M', 'L', 'XL'] as $u)
                                         <label class="ukuran-label cursor-pointer">
-                                            <input type="radio" name="barang[0][ukuran]" value="{{ $u }}"
+                                            <input type="radio" name="items[0][ukuran]" value="{{ $u }}"
                                                 class="hidden ukuran-radio" {{ $u === 'S' ? 'checked' : '' }}>
                                             <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
                                                 style="{{ $u === 'S' ? 'border-color: #7c3aed; color: #7c3aed; background: white;' : 'border-color: #ddd6fe; color: #94a3b8; background: white;' }}">
@@ -208,12 +190,6 @@
         const kategoris = @json($kategoris);
         let index = 1;
 
-        function changeQty(btn, delta) {
-            const input = btn.parentElement.querySelector('input[type=number]');
-            const val = parseInt(input.value) + delta;
-            if (val >= 1) input.value = val;
-        }
-
         function bindKategoriChange(select) {
             select.addEventListener('change', function() {
                 const wrapper = this.closest('.barang-item').querySelector('.nama-custom-wrapper');
@@ -250,43 +226,30 @@
             <button type="button" onclick="this.closest('.barang-item').remove()"
                 class="absolute top-3 right-3 text-xs font-bold"
                 style="color: #ef4444">✕ Hapus</button>
-            <div class="grid grid-cols-2 gap-3 mb-3">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Kategori Barang</label>
-                    <select name="barang[${index}][kategori_id]"
-                        class="kategori-select w-full rounded-xl px-3 py-2.5 text-sm"
-                        style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
-                        ${kategoris.map(k => `<option value="${k.id}" data-custom="${k.is_custom}">${k.nama_kategori}</option>`).join('')}
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Jumlah</label>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="changeQty(this, -1)"
-                            class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0"
-                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed">−</button>
-                        <input type="number" name="barang[${index}][jumlah]" value="1" min="1"
-                            class="flex-1 text-center rounded-xl py-2 text-sm font-bold"
-                            style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
-                        <button type="button" onclick="changeQty(this, 1)"
-                            class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0"
-                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed">+</button>
-                    </div>
-                </div>
+
+            <div class="mb-3">
+                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Jenis Barang</label>
+                <select name="items[${index}][jenis_barang_id]"
+                    class="kategori-select w-full rounded-xl px-3 py-2.5 text-sm"
+                    style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
+                    ${kategoris.map(k => `<option value="${k.id}" data-custom="${k.is_custom ? '1' : '0'}">${k.nama_kategori}</option>`).join('')}
+                </select>
             </div>
+
             <div class="nama-custom-wrapper mb-3" style="display:none">
                 <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Nama Barang</label>
-                <input type="text" name="barang[${index}][nama_custom]"
+                <input type="text" name="items[${index}][nama_custom]"
                     class="w-full rounded-xl px-3 py-2.5 text-sm"
                     style="background: white; border: 1.5px solid #ddd6fe; color: #374151"
                     placeholder="Tulis nama barang...">
             </div>
+
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Ukuran</label>
                 <div class="grid grid-cols-4 gap-2">
                     ${['S','M','L','XL'].map((u, i) => `
                             <label class="ukuran-label cursor-pointer">
-                                <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
+                                <input type="radio" name="items[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0 ? 'checked' : ''}>
                                 <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
                                     style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: white;' : 'border-color: #ddd6fe; color: #94a3b8; background: white;'}">
                                     ${u}

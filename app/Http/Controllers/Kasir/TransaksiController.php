@@ -165,6 +165,79 @@ class TransaksiController extends Controller
         return view('kasir.transaksi.nota', compact('transaksi'));
     }
 
+    public function tambahBarang(Transaksi $transaksi)
+    {
+        // Hanya kasir pemilik transaksi yang boleh akses
+        if ($transaksi->kasir_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Hanya transaksi yang masih aktif (bukan sudah_diambil)
+        if ($transaksi->status === 'sudah_diambil') {
+            return redirect()->route('kasir.transaksi.show', $transaksi)
+                ->with('error', 'Tidak bisa menambah barang ke transaksi yang sudah diambil.');
+        }
+
+        $transaksi->load(['event', 'details']);
+
+        $kategoris = \App\Models\KategoriBarang::orderBy('nama_kategori')->get();
+
+        $tarifs = Tarif::where('event_id', $transaksi->event_id)
+            ->get()
+            ->keyBy('ukuran');
+
+        return view('kasir.transaksi.tambah-barang', compact('transaksi', 'kategoris', 'tarifs'));
+    }
+
+    public function simpanBarang(Request $request, Transaksi $transaksi)
+    {
+        // Hanya kasir pemilik transaksi yang boleh akses
+        if ($transaksi->kasir_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($transaksi->status === 'sudah_diambil') {
+            return redirect()->route('kasir.transaksi.show', $transaksi)
+                ->with('error', 'Tidak bisa menambah barang ke transaksi yang sudah diambil.');
+        }
+
+        $request->validate([
+            'items'                  => 'required|array|min:1',
+            'items.*.ukuran'         => 'required|in:S,M,L,XL',
+            'items.*.jenis_barang_id' => 'required|exists:kategori_barangs,id',
+            'items.*.nama_custom'    => 'nullable|string|max:100',
+        ]);
+
+        $tarifs = Tarif::where('event_id', $transaksi->event_id)
+            ->get()
+            ->keyBy('ukuran');
+
+        DB::transaction(function () use ($request, $transaksi, $tarifs) {
+            foreach ($request->items as $item) {
+                $ukuran  = $item['ukuran'];
+                $tarif   = $tarifs[$ukuran] ?? null;
+                $harga   = $tarif ? $tarif->harga : 0;
+
+                // Resolusi nama barang: pakai nama_custom jika kategori is_custom, else nama_kategori
+                $kategori    = \App\Models\KategoriBarang::find($item['jenis_barang_id']);
+                $namaBarang  = ($kategori->is_custom && !empty($item['nama_custom']))
+                    ? $item['nama_custom']
+                    : $kategori->nama_kategori;
+
+                DetailTransaksi::create([
+                    'transaksi_id' => $transaksi->id,
+                    'ukuran'       => $ukuran,
+                    'jenis_barang' => [$namaBarang],
+                    'harga_satuan' => $harga,
+                    'subtotal'     => $harga,
+                ]);
+            }
+        });
+
+        return redirect()->route('kasir.transaksi.show', $transaksi)
+            ->with('success', 'Barang berhasil ditambahkan ke transaksi.');
+    }
+
     public function countToday()
     {
         $eventId = session('kasir_event_id');
