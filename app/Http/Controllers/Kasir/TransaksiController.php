@@ -155,12 +155,20 @@ class TransaksiController extends Controller
 
     public function show(Transaksi $transaksi)
     {
+        if ($transaksi->kasir_id !== auth()->id()) {
+            abort(403);
+        }
+
         $transaksi->load(['event', 'kasir', 'details']);
         return view('kasir.transaksi.show', compact('transaksi'));
     }
 
     public function nota(Transaksi $transaksi)
     {
+        if ($transaksi->kasir_id !== auth()->id()) {
+            abort(403);
+        }
+
         $transaksi->load(['event', 'kasir', 'details']);
         return view('kasir.transaksi.nota', compact('transaksi'));
     }
