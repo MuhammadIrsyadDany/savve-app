@@ -109,7 +109,7 @@ class TransaksiController extends Controller
 
         DB::transaction(function () use ($request, $event, $tarifs, &$transaksi) {
             // Generate nomor transaksi
-            $nomor = Transaksi::generateNomor($event);
+            $nomor = \App\Helpers\NomorTransaksi::generate($event);
 
             // Simpan foto penitipan jika ada
             $fotoPath = null;
