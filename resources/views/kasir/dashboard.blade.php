@@ -23,20 +23,10 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
 
         @php
-            $totalTransaksiKasir = \App\Models\Transaksi::where('kasir_id', auth()->id())
-                ->where('event_id', session('kasir_event_id'))
-                ->count();
-
             $pctDititipKasir =
                 $totalTransaksiKasir > 0 ? min(round(($belumDiambil / $totalTransaksiKasir) * 100), 100) : 0;
-
             $pctDiambilKasir =
                 $totalTransaksiKasir > 0 ? min(round(($sudahDiambil / $totalTransaksiKasir) * 100), 100) : 0;
-
-            $transaksiKemarinKasir = \App\Models\Transaksi::where('kasir_id', auth()->id())
-                ->where('event_id', session('kasir_event_id'))
-                ->whereDate('created_at', today()->subDay())
-                ->count();
 
             $pctTransaksiKasir =
                 $transaksiKemarinKasir > 0

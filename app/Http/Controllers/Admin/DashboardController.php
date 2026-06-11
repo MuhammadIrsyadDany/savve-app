@@ -32,12 +32,29 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
+        // Dipindahkan dari view
+        $transaksiKemarin = Transaksi::whereDate('created_at', today()->subDay())->count();
+
+        $totalTransaksi = Transaksi::count();
+        $totalEvent = \App\Models\Event::count();
+
+        $totalPerUkuran = [];
+        foreach (['S', 'M', 'L', 'XL'] as $u) {
+            $totalPerUkuran[$u] = \App\Models\DetailTransaksi::whereHas(
+                'transaksi',
+                fn($q) => $q->whereIn('status', ['dititip', 'terlambat'])
+            )->where('ukuran', $u)->count();
+        }
+
         return view('admin.dashboard', compact(
             'totalEventAktif',
             'transaksiHariIni',
             'belumDiambil',
             'sudahDiambil',
-            'transaksiTerbaru'
+            'transaksiTerbaru',
+            'transaksiKemarin',
+            'totalTransaksi',
+            'totalPerUkuran'
         ));
     }
 }
