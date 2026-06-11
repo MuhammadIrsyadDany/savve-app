@@ -188,13 +188,17 @@ class TransaksiController extends Controller
 
         $transaksi->load(['event', 'details']);
 
-        $kategoris = \App\Models\KategoriBarang::orderBy('nama_kategori')->get();
+        $jenisBarangs = JenisBarang::where('is_active', true)
+            ->orderBy('ukuran')
+            ->orderBy('urutan')
+            ->get()
+            ->groupBy('ukuran');
 
         $tarifs = Tarif::where('event_id', $transaksi->event_id)
             ->get()
             ->keyBy('ukuran');
 
-        return view('kasir.transaksi.tambah-barang', compact('transaksi', 'kategoris', 'tarifs'));
+        return view('kasir.transaksi.tambah-barang', compact('transaksi', 'jenisBarangs', 'tarifs'));
     }
 
     public function simpanBarang(Request $request, Transaksi $transaksi)
@@ -210,10 +214,9 @@ class TransaksiController extends Controller
         }
 
         $request->validate([
-            'items'                  => 'required|array|min:1',
-            'items.*.ukuran'         => 'required|in:S,M,L,XL',
-            'items.*.jenis_barang_id' => 'required|exists:kategori_barangs,id',
-            'items.*.nama_custom'    => 'nullable|string|max:100',
+            'items'                   => 'required|array|min:1',
+            'items.*.ukuran'          => 'required|in:S,M,L,XL',
+            'items.*.jenis_barang_id' => 'required|exists:jenis_barangs,id',
         ]);
 
         $tarifs = Tarif::where('event_id', $transaksi->event_id)
@@ -222,15 +225,12 @@ class TransaksiController extends Controller
 
         DB::transaction(function () use ($request, $transaksi, $tarifs) {
             foreach ($request->items as $item) {
-                $ukuran  = $item['ukuran'];
-                $tarif   = $tarifs[$ukuran] ?? null;
-                $harga   = $tarif ? $tarif->harga : 0;
+                $ukuran      = $item['ukuran'];
+                $tarif       = $tarifs[$ukuran] ?? null;
+                $harga       = $tarif ? $tarif->harga : 0;
 
-                // Resolusi nama barang: pakai nama_custom jika kategori is_custom, else nama_kategori
-                $kategori    = \App\Models\KategoriBarang::find($item['jenis_barang_id']);
-                $namaBarang  = ($kategori->is_custom && !empty($item['nama_custom']))
-                    ? $item['nama_custom']
-                    : $kategori->nama_kategori;
+                $jenisBarang = JenisBarang::find($item['jenis_barang_id']);
+                $namaBarang  = $jenisBarang->nama;
 
                 DetailTransaksi::create([
                     'transaksi_id' => $transaksi->id,
