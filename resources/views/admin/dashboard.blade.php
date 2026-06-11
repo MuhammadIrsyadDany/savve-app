@@ -23,9 +23,14 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
 
         @php
-            $pctDititip = $totalTransaksi > 0 ? min(round(($belumDiambil / $totalTransaksi) * 100), 100) : 0;
-            $pctDiambil = $totalTransaksi > 0 ? min(round(($sudahDiambil / $totalTransaksi) * 100), 100) : 0;
-            $pctEvent = $totalEvent > 0 ? min(round(($totalEventAktif / $totalEvent) * 100), 100) : 0;
+            $transaksiKemarin = \App\Models\Transaksi::whereDate('created_at', today()->subDay())->count();
+
+            $pctTransaksi =
+                $transaksiKemarin > 0
+                    ? min(round(($transaksiHariIni / $transaksiKemarin) * 100), 100)
+                    : ($transaksiHariIni > 0
+                        ? 100
+                        : 0);
 
             $diffTransaksi =
                 $transaksiKemarin > 0
@@ -34,12 +39,12 @@
                         ? 100
                         : 0);
 
-            $pctTransaksi =
-                $transaksiKemarin > 0
-                    ? min(round(($transaksiHariIni / $transaksiKemarin) * 100), 100)
-                    : ($transaksiHariIni > 0
-                        ? 100
-                        : 0);
+            $totalTransaksi = \App\Models\Transaksi::count();
+            $pctDititip = $totalTransaksi > 0 ? min(round(($belumDiambil / $totalTransaksi) * 100), 100) : 0;
+            $pctDiambil = $totalTransaksi > 0 ? min(round(($sudahDiambil / $totalTransaksi) * 100), 100) : 0;
+
+            $totalEvent = \App\Models\Event::count();
+            $pctEvent = $totalEvent > 0 ? min(round(($totalEventAktif / $totalEvent) * 100), 100) : 0;
         @endphp
 
         {{-- Transaksi Hari Ini --}}
@@ -298,6 +303,15 @@
             $ukurans = ['S', 'M', 'L', 'XL'];
             $labels = ['S — Loker Kecil', 'M — Area Sedang', 'L — Area Besar', 'XL — Area Koper'];
             $colors = [['#1a3a6b', '#4a9eff'], ['#ea580c', '#fb923c'], ['#15803d', '#4ade80'], ['#7c3aed', '#a78bfa']];
+            $totalPerUkuran = [];
+            foreach ($ukurans as $u) {
+                $totalPerUkuran[$u] = \App\Models\DetailTransaksi::whereHas(
+                    'transaksi',
+                    fn($q) => $q->where('status', 'dititip'),
+                )
+                    ->where('ukuran', $u)
+                    ->count();
+            }
             $maxUkuran = max($totalPerUkuran) ?: 1;
         @endphp
 

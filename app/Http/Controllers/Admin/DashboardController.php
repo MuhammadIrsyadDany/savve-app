@@ -10,15 +10,15 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // // Auto nonaktifkan event expired & tandai transaksi terlambat
-        // Event::where('status', 'aktif')
-        //     ->where('tanggal_selesai', '<', today())
-        //     ->each(function ($event) {
-        //         $event->update(['status' => 'nonaktif']);
-        //         Transaksi::where('event_id', $event->id)
-        //             ->where('status', 'dititip')
-        //             ->update(['status' => 'terlambat']);
-        //     });
+        // Auto nonaktifkan event expired & tandai transaksi terlambat
+        Event::where('status', 'aktif')
+            ->where('tanggal_selesai', '<', today())
+            ->each(function ($event) {
+                $event->update(['status' => 'nonaktif']);
+                Transaksi::where('event_id', $event->id)
+                    ->where('status', 'dititip')
+                    ->update(['status' => 'terlambat']);
+            });
 
         $totalEventAktif  = Event::where('status', 'aktif')->count();
         $transaksiHariIni = Transaksi::whereDate('created_at', today())->count();
@@ -32,29 +32,12 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Dipindahkan dari view
-        $transaksiKemarin = Transaksi::whereDate('created_at', today()->subDay())->count();
-
-        $totalTransaksi = Transaksi::count();
-        $totalEvent = \App\Models\Event::count();
-
-        $totalPerUkuran = [];
-        foreach (['S', 'M', 'L', 'XL'] as $u) {
-            $totalPerUkuran[$u] = \App\Models\DetailTransaksi::whereHas(
-                'transaksi',
-                fn($q) => $q->whereIn('status', ['dititip', 'terlambat'])
-            )->where('ukuran', $u)->count();
-        }
-
         return view('admin.dashboard', compact(
             'totalEventAktif',
             'transaksiHariIni',
             'belumDiambil',
             'sudahDiambil',
-            'transaksiTerbaru',
-            'transaksiKemarin',
-            'totalTransaksi',
-            'totalPerUkuran'
+            'transaksiTerbaru'
         ));
     }
 }

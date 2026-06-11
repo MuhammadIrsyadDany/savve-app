@@ -97,44 +97,61 @@
                     </div>
 
                     <div id="barang-container" class="space-y-4">
+                        {{-- Item pertama --}}
                         <div class="barang-item rounded-xl p-4" style="background: #faf5ff; border: 1.5px solid #ede9fe">
-                            <div class="mb-3">
-                                <label class="block text-xs font-bold uppercase tracking-wider mb-2"
-                                    style="color: #64748b">Ukuran</label>
-                                <div class="grid grid-cols-4 gap-2 ukuran-selector">
-                                    @foreach (['S', 'M', 'L', 'XL'] as $u)
-                                        <label class="ukuran-label cursor-pointer">
-                                            <input type="radio" name="items[0][ukuran]" value="{{ $u }}"
-                                                class="hidden ukuran-radio" {{ $u === 'S' ? 'checked' : '' }}>
-                                            <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
-                                                style="{{ $u === 'S' ? 'border-color:#7c3aed;color:#7c3aed;background:white;' : 'border-color:#ddd6fe;color:#94a3b8;background:white;' }}">
-                                                {{ $u }}
-                                            </div>
-                                        </label>
-                                    @endforeach
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5"
+                                        style="color: #64748b">Kategori Barang</label>
+                                    <select name="barang[0][kategori_id]"
+                                        class="kategori-select w-full rounded-xl px-3 py-2.5 text-sm transition"
+                                        style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
+                                        @foreach ($kategoris as $k)
+                                            <option value="{{ $k->id }}" data-custom="{{ $k->is_custom }}">
+                                                {{ $k->nama_kategori }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5"
+                                        style="color: #64748b">Jumlah</label>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" onclick="changeQty(this, -1)"
+                                            class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 transition"
+                                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed">−</button>
+                                        <input type="number" name="barang[0][jumlah]" value="1" min="1"
+                                            class="flex-1 text-center rounded-xl py-2 text-sm font-bold transition"
+                                            style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
+                                        <button type="button" onclick="changeQty(this, 1)"
+                                            class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 transition"
+                                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="nama-custom-wrapper mb-3" style="display:none">
+                                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5"
+                                    style="color: #64748b">Nama Barang</label>
+                                <input type="text" name="barang[0][nama_custom]"
+                                    class="w-full rounded-xl px-3 py-2.5 text-sm transition"
+                                    style="background: white; border: 1.5px solid #ddd6fe; color: #374151"
+                                    placeholder="Tulis nama barang...">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider mb-2"
-                                    style="color: #64748b">Jenis Barang</label>
-                                <div class="jenis-barang-wrapper space-y-3">
-                                    @foreach ($jenisBarangs as $ukuran => $jenis)
-                                        <div class="jenis-group" data-ukuran="{{ $ukuran }}"
-                                            style="{{ $ukuran === 'S' ? '' : 'display:none' }}">
-                                            <div class="grid grid-cols-2 gap-2">
-                                                @foreach ($jenis as $j)
-                                                    <label
-                                                        class="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition"
-                                                        style="background: white; border: 1.5px solid #ddd6fe">
-                                                        <input type="checkbox" name="items[0][jenis_barang][]"
-                                                            value="{{ $j['nama'] }}" class="rounded text-purple-600">
-                                                        <span
-                                                            class="text-sm font-medium text-gray-700">{{ $j['nama'] }}</span>
-                                                    </label>
-                                                @endforeach
+                                    style="color: #64748b">Ukuran</label>
+                                <div class="grid grid-cols-4 gap-2">
+                                    @foreach (['S', 'M', 'L', 'XL'] as $u)
+                                        <label class="ukuran-label cursor-pointer">
+                                            <input type="radio" name="barang[0][ukuran]" value="{{ $u }}"
+                                                class="hidden ukuran-radio" {{ $u === 'S' ? 'checked' : '' }}>
+                                            <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
+                                                style="{{ $u === 'S' ? 'border-color: #7c3aed; color: #7c3aed; background: white;' : 'border-color: #ddd6fe; color: #94a3b8; background: white;' }}">
+                                                {{ $u }}
                                             </div>
-                                        </div>
+                                        </label>
                                     @endforeach
                                 </div>
                             </div>
@@ -188,30 +205,28 @@
     </div>
 
     <script>
-        const jenisBarangs = @json($jenisBarangs);
+        const kategoris = @json($kategoris);
         let index = 1;
 
-        function buildJenisOptions(idx, selectedUkuran) {
-            return Object.entries(jenisBarangs).map(([ukuran, items]) => `
-            <div class="jenis-group" data-ukuran="${ukuran}" style="${ukuran === selectedUkuran ? '' : 'display:none'}">
-                <div class="grid grid-cols-2 gap-2">
-                    ${items.map(j => `
-                            <label class="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer"
-                                style="background:white;border:1.5px solid #ddd6fe">
-                                <input type="checkbox" name="items[${idx}][jenis_barang][]" value="${j.nama}"
-                                    class="rounded text-purple-600">
-                                <span class="text-sm font-medium text-gray-700">${j.nama}</span>
-                            </label>`).join('')}
-                </div>
-            </div>`).join('');
+        function changeQty(btn, delta) {
+            const input = btn.parentElement.querySelector('input[type=number]');
+            const val = parseInt(input.value) + delta;
+            if (val >= 1) input.value = val;
+        }
+
+        function bindKategoriChange(select) {
+            select.addEventListener('change', function() {
+                const wrapper = this.closest('.barang-item').querySelector('.nama-custom-wrapper');
+                const selected = this.options[this.selectedIndex];
+                wrapper.style.display = selected.dataset.custom == '1' ? 'block' : 'none';
+            });
         }
 
         function bindUkuranChange(container) {
             container.querySelectorAll('.ukuran-radio').forEach(radio => {
                 radio.addEventListener('change', function() {
-                    const item = this.closest('.barang-item');
-                    // Update ukuran box style
-                    item.querySelectorAll('.ukuran-box').forEach(box => {
+                    const parentItem = this.closest('.barang-item');
+                    parentItem.querySelectorAll('.ukuran-box').forEach(box => {
                         box.style.borderColor = '#ddd6fe';
                         box.style.color = '#94a3b8';
                         box.style.background = 'white';
@@ -219,57 +234,69 @@
                     this.nextElementSibling.style.borderColor = '#7c3aed';
                     this.nextElementSibling.style.color = '#7c3aed';
                     this.nextElementSibling.style.background = '#faf5ff';
-
-                    // Tampilkan jenis barang sesuai ukuran
-                    const ukuran = this.value;
-                    item.querySelectorAll('.jenis-group').forEach(g => {
-                        g.style.display = g.dataset.ukuran === ukuran ? '' : 'none';
-                    });
-
-                    // Uncheck semua checkbox yang tersembunyi
-                    item.querySelectorAll('.jenis-group[style*="display:none"] input[type=checkbox]')
-                        .forEach(cb => cb.checked = false);
                 });
             });
         }
 
-        // Bind item pertama
+        document.querySelectorAll('.kategori-select').forEach(bindKategoriChange);
         document.querySelectorAll('.barang-item').forEach(item => bindUkuranChange(item));
 
         document.getElementById('tambah-barang').addEventListener('click', function() {
             const container = document.getElementById('barang-container');
             const div = document.createElement('div');
             div.className = 'barang-item rounded-xl p-4 relative';
-            div.style.cssText = 'background:#faf5ff;border:1.5px solid #ede9fe;';
+            div.style.cssText = 'background: #faf5ff; border: 1.5px solid #ede9fe;';
             div.innerHTML = `
             <button type="button" onclick="this.closest('.barang-item').remove()"
-                class="absolute top-3 right-3 text-xs font-bold" style="color:#ef4444">✕ Hapus</button>
-
-            <div class="mb-3">
-                <label class="block text-xs font-bold uppercase tracking-wider mb-2"
-                    style="color:#64748b">Ukuran</label>
-                <div class="grid grid-cols-4 gap-2">
-                    ${['S','M','L','XL'].map((u, i) => `
-                            <label class="ukuran-label cursor-pointer">
-                                <input type="radio" name="items[${index}][ukuran]" value="${u}"
-                                    class="hidden ukuran-radio" ${i===0?'checked':''}>
-                                <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
-                                    style="${i===0?'border-color:#7c3aed;color:#7c3aed;background:white;':'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
-                                    ${u}
-                                </div>
-                            </label>`).join('')}
+                class="absolute top-3 right-3 text-xs font-bold"
+                style="color: #ef4444">✕ Hapus</button>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Kategori Barang</label>
+                    <select name="barang[${index}][kategori_id]"
+                        class="kategori-select w-full rounded-xl px-3 py-2.5 text-sm"
+                        style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
+                        ${kategoris.map(k => `<option value="${k.id}" data-custom="${k.is_custom}">${k.nama_kategori}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Jumlah</label>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="changeQty(this, -1)"
+                            class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0"
+                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed">−</button>
+                        <input type="number" name="barang[${index}][jumlah]" value="1" min="1"
+                            class="flex-1 text-center rounded-xl py-2 text-sm font-bold"
+                            style="background: white; border: 1.5px solid #ddd6fe; color: #374151">
+                        <button type="button" onclick="changeQty(this, 1)"
+                            class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0"
+                            style="background: white; border: 1.5px solid #ddd6fe; color: #7c3aed">+</button>
+                    </div>
                 </div>
             </div>
-
+            <div class="nama-custom-wrapper mb-3" style="display:none">
+                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: #64748b">Nama Barang</label>
+                <input type="text" name="barang[${index}][nama_custom]"
+                    class="w-full rounded-xl px-3 py-2.5 text-sm"
+                    style="background: white; border: 1.5px solid #ddd6fe; color: #374151"
+                    placeholder="Tulis nama barang...">
+            </div>
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider mb-2"
-                    style="color:#64748b">Jenis Barang</label>
-                <div class="jenis-barang-wrapper space-y-3">
-                    ${buildJenisOptions(index, 'S')}
+                <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Ukuran</label>
+                <div class="grid grid-cols-4 gap-2">
+                    ${['S','M','L','XL'].map((u, i) => `
+                                <label class="ukuran-label cursor-pointer">
+                                    <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
+                                    <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
+                                        style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: white;' : 'border-color: #ddd6fe; color: #94a3b8; background: white;'}">
+                                        ${u}
+                                    </div>
+                                </label>`).join('')}
                 </div>
             </div>
         `;
             container.appendChild(div);
+            bindKategoriChange(div.querySelector('.kategori-select'));
             bindUkuranChange(div);
             index++;
         });

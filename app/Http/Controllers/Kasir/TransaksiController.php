@@ -109,7 +109,7 @@ class TransaksiController extends Controller
 
         DB::transaction(function () use ($request, $event, $tarifs, &$transaksi) {
             // Generate nomor transaksi
-            $nomor = \App\Helpers\NomorTransaksi::generate($event);
+            $nomor = Transaksi::generateNomor($event);
 
             // Simpan foto penitipan jika ada
             $fotoPath = null;
@@ -155,103 +155,20 @@ class TransaksiController extends Controller
 
     public function show(Transaksi $transaksi)
     {
-        if ($transaksi->kasir_id !== auth()->id()) {
-            abort(403);
-        }
-
         $transaksi->load(['event', 'kasir', 'details']);
         return view('kasir.transaksi.show', compact('transaksi'));
     }
 
     public function nota(Transaksi $transaksi)
     {
-        if ($transaksi->kasir_id !== auth()->id()) {
-            abort(403);
-        }
-
         $transaksi->load(['event', 'kasir', 'details']);
         return view('kasir.transaksi.nota', compact('transaksi'));
-    }
-
-    public function tambahBarang(Transaksi $transaksi)
-    {
-        // Hanya kasir pemilik transaksi yang boleh akses
-        if ($transaksi->kasir_id !== auth()->id()) {
-            abort(403);
-        }
-
-        // Hanya transaksi yang masih aktif (bukan sudah_diambil)
-        if ($transaksi->status === 'sudah_diambil') {
-            return redirect()->route('kasir.transaksi.show', $transaksi)
-                ->with('error', 'Tidak bisa menambah barang ke transaksi yang sudah diambil.');
-        }
-
-        $transaksi->load(['event', 'details']);
-
-        $jenisBarangs = JenisBarang::where('is_active', true)
-            ->orderBy('ukuran')
-            ->orderBy('urutan')
-            ->get()
-            ->groupBy('ukuran');
-
-        $tarifs = Tarif::where('event_id', $transaksi->event_id)
-            ->get()
-            ->keyBy('ukuran');
-
-        return view('kasir.transaksi.tambah-barang', compact('transaksi', 'jenisBarangs', 'tarifs'));
-    }
-
-    public function simpanBarang(Request $request, Transaksi $transaksi)
-    {
-        // Hanya kasir pemilik transaksi yang boleh akses
-        if ($transaksi->kasir_id !== auth()->id()) {
-            abort(403);
-        }
-
-        if ($transaksi->status === 'sudah_diambil') {
-            return redirect()->route('kasir.transaksi.show', $transaksi)
-                ->with('error', 'Tidak bisa menambah barang ke transaksi yang sudah diambil.');
-        }
-
-        $request->validate([
-            'items'                   => 'required|array|min:1',
-            'items.*.ukuran'          => 'required|in:S,M,L,XL',
-            'items.*.jenis_barang_id' => 'required|exists:jenis_barangs,id',
-        ]);
-
-        $tarifs = Tarif::where('event_id', $transaksi->event_id)
-            ->get()
-            ->keyBy('ukuran');
-
-        DB::transaction(function () use ($request, $transaksi, $tarifs) {
-            foreach ($request->items as $item) {
-                $ukuran      = $item['ukuran'];
-                $tarif       = $tarifs[$ukuran] ?? null;
-                $harga       = $tarif ? $tarif->harga : 0;
-
-                $jenisBarang = JenisBarang::find($item['jenis_barang_id']);
-                $namaBarang  = $jenisBarang->nama;
-
-                DetailTransaksi::create([
-                    'transaksi_id' => $transaksi->id,
-                    'ukuran'       => $ukuran,
-                    'jenis_barang' => [$namaBarang],
-                    'harga_satuan' => $harga,
-                    'subtotal'     => $harga,
-                ]);
-            }
-        });
-
-        return redirect()->route('kasir.transaksi.show', $transaksi)
-            ->with('success', 'Barang berhasil ditambahkan ke transaksi.');
     }
 
     public function countToday()
     {
         $eventId = session('kasir_event_id');
-        $count   = Transaksi::where('event_id', $eventId)
-            ->where('kasir_id', auth()->id())
-            ->count();
+        $count   = Transaksi::where('event_id', $eventId)->count();
         return response()->json(['count' => $count]);
     }
 

@@ -90,16 +90,8 @@ class PengambilanController extends Controller
     {
         $request->validate(['nomor_transaksi' => 'required|string']);
 
-        $eventId = session('kasir_event_id');
-
-        if (!$eventId) {
-            return response()->json(['found' => false, 'error' => 'Event belum dipilih.']);
-        }
-
         $transaksi = Transaksi::with(['event', 'details'])
             ->where('nomor_transaksi', $request->nomor_transaksi)
-            ->where('event_id', $eventId)
-            ->where('kasir_id', auth()->id())
             ->whereIn('status', ['dititip', 'terlambat'])
             ->first();
 

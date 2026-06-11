@@ -14,14 +14,14 @@ class EventController extends Controller
     public function index(Request $request)
     {
         // Auto nonaktifkan event expired
-        // Event::where('status', 'aktif')
-        //     ->where('tanggal_selesai', '<', today())
-        //     ->each(function ($event) {
-        //         $event->update(['status' => 'nonaktif']);
-        //         Transaksi::where('event_id', $event->id)
-        //             ->where('status', 'dititip')
-        //             ->update(['status' => 'terlambat']);
-        //     });
+        Event::where('status', 'aktif')
+            ->where('tanggal_selesai', '<', today())
+            ->each(function ($event) {
+                $event->update(['status' => 'nonaktif']);
+                Transaksi::where('event_id', $event->id)
+                    ->where('status', 'dititip')
+                    ->update(['status' => 'terlambat']);
+            });
 
         // menerapkan filter dari tab
         $query = Event::withCount('transaksis')
