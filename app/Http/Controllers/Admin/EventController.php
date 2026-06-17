@@ -72,6 +72,7 @@ class EventController extends Controller
             'tarif.M'         => 'required|integer|min:0',
             'tarif.L'         => 'required|integer|min:0',
             'tarif.XL'        => 'required|integer|min:0',
+            'tarif.Gadget'    => 'required|integer|min:0',
         ]);
 
         $event = Event::create([
@@ -82,7 +83,7 @@ class EventController extends Controller
             'status'          => 'aktif',
         ]);
 
-        foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
+        foreach (['S', 'M', 'L', 'XL', 'Gadget'] as $ukuran) {
             Tarif::create([
                 'event_id' => $event->id,
                 'ukuran'   => $ukuran,
@@ -111,6 +112,7 @@ class EventController extends Controller
             'tarif.M'         => 'required|integer|min:0',
             'tarif.L'         => 'required|integer|min:0',
             'tarif.XL'        => 'required|integer|min:0',
+            'tarif.Gadget'    => 'required|integer|min:0',
             'status'          => 'required|in:aktif,nonaktif',
         ]);
 
@@ -122,7 +124,7 @@ class EventController extends Controller
             'status'          => $request->status,
         ]);
 
-        foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
+        foreach (['S', 'M', 'L', 'XL', 'Gadget'] as $ukuran) {
             Tarif::updateOrCreate(
                 ['event_id' => $event->id, 'ukuran' => $ukuran],
                 ['harga' => $request->tarif[$ukuran]]
@@ -166,7 +168,7 @@ class EventController extends Controller
 
         // Rekap per ukuran
         $rekapUkuran = [];
-        foreach (['S', 'M', 'L', 'XL'] as $ukuran) {
+        foreach (['S', 'M', 'L', 'XL', 'Gadget'] as $ukuran) {
 
             $jumlah = $transaksis->sum(
                 fn($t) => $t->details->where('ukuran', $ukuran)->count()

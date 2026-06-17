@@ -22,7 +22,7 @@
                     </svg>
                     <span class="ft-filter-header__label">Filter</span>
                 </div>
-                <a href="{{ route('kasir.transaksi.index') }}" class="ft-reset-link" title="Reset semua filter">
+                <a href="{{ route('admin.transaksis.index') }}" class="ft-reset-link" title="Reset semua filter">
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                         stroke-width="2.5">
                         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -473,6 +473,29 @@
         .ft-submit-btn:active {
             transform: scale(.97);
         }
+
+        /* Aksi buttons */
+        .ft-aksi-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            transition: opacity .15s, transform .12s;
+        }
+
+        .ft-aksi-btn:hover {
+            opacity: .8;
+        }
+
+        .ft-aksi-btn:active {
+            transform: scale(.94);
+        }
     </style>
 
     {{-- ─── Script ────────────────────────────────────────────────────────── --}}
@@ -550,49 +573,52 @@
         style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
         <table id="tabel-transaksi" class="w-full text-sm" style="width:100%">
             <thead>
-                <tr style="background: #f8faff; border-bottom: 2px solid #e2e8f0">
+                <tr style="background: #f8faff; border-bottom: 2px solid var(--ft-slate-200)">
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
                         No. Transaksi
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
                         Penitip
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
                         Barang
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
                         Event
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
                         Kasir
                     </th>
                     <th class="px-5 py-4 text-right whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
                         Total
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
                         Metode Bayar
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
                         Status
                     </th>
                     <th class="px-5 py-4 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
                         Waktu
                     </th>
-                    <th class="px-5 py-4"></th>
+                    <th class="px-5 py-4 text-center whitespace-nowrap"
+                        style="font-size:10px;font-weight:700;color:var(--ft-slate-400);text-transform:uppercase;letter-spacing:0.06em">
+                        Aksi
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($transaksis as $t)
-                    <tr class="table-row" style="border-top: 1px solid #f1f5f9">
+                    <tr class="table-row" style="border-top: 1px solid var(--ft-slate-100)">
                         <td class="px-5 py-4 whitespace-nowrap">
                             <a href="{{ route('admin.transaksis.show', $t) }}" class="font-bold hover:underline"
                                 style="color: #1a3a6b; font-family: monospace; font-size: 12px">
@@ -608,24 +634,19 @@
                                 <div>
                                     <p class="font-semibold text-gray-800 text-sm whitespace-nowrap">
                                         {{ $t->nama_penitip }}</p>
-                                    <p class="text-gray-400" style="font-size: 11px">{{ $t->no_whatsapp }}</p>
                                 </div>
                             </div>
                         </td>
                         <td class="px-5 py-4">
-                            @foreach ($t->details->take(1) as $d)
-                                <p class="font-medium text-gray-700 text-sm whitespace-nowrap">
-                                    {{ Str::limit(implode(', ', $d->jenis_barang ?? []), 15) }}
-                                </p>
-                                <span class="inline-block px-2 py-0.5 rounded-md text-xs font-bold mt-0.5"
-                                    style="background: #eff6ff; color: #1d4ed8">
-                                    Ukuran {{ $d->ukuran }}
-                                </span>
-                            @endforeach
-                            @if ($t->details->count() > 1)
-                                <p class="text-xs mt-0.5" style="color: #1a3a6b">+{{ $t->details->count() - 1 }} lainnya
-                                </p>
-                            @endif
+                            <div class="flex flex-wrap gap-1">
+                                @foreach ($t->details as $d)
+                                    <span
+                                        class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold"
+                                        style="background: var(--ft-blue-50); color: #1d4ed8">
+                                        {{ $d->ukuran }}
+                                    </span>
+                                @endforeach
+                            </div>
                         </td>
                         <td class="px-5 py-4 text-gray-500 text-xs whitespace-nowrap">
                             {{ Str::limit($t->event->nama_event, 15) }}
@@ -644,38 +665,66 @@
                         <td class="px-5 py-4 text-right whitespace-nowrap">
                             <span class="font-black text-gray-900 text-sm">
                                 Rp {{ number_format($t->total_harga, 0, ',', '.') }}
+                            </span>
+                        </td>
                         <td class="px-5 py-4 whitespace-nowrap">
                             @php
                                 $metodeBadge = [
-                                    'tunai' => ['label' => 'Tunai', 'bg' => '#f0fdf4', 'color' => '#15803d'],
-                                    'transfer' => ['label' => 'Transfer', 'bg' => '#eff6ff', 'color' => '#1d4ed8'],
-                                    'qris' => ['label' => 'QRIS', 'bg' => '#faf5ff', 'color' => '#7c3aed'],
+                                    'Cash' => [
+                                        'label' => 'Cash',
+                                        'icon' => '💵',
+                                        'bg' => '#f0fdf4',
+                                        'color' => '#15803d',
+                                    ],
+                                    'QRIS' => [
+                                        'label' => 'QRIS',
+                                        'icon' => '📱',
+                                        'bg' => '#faf5ff',
+                                        'color' => '#7c3aed',
+                                    ],
+                                    'Online' => [
+                                        'label' => 'Online',
+                                        'icon' => '🌐',
+                                        'bg' => 'var(--ft-blue-50)',
+                                        'color' => '#1d4ed8',
+                                    ],
                                 ];
                                 $m = $metodeBadge[$t->metode_bayar] ?? [
-                                    'label' => ucfirst($t->metode_bayar ?? '-'),
-                                    'bg' => '#f1f5f9',
-                                    'color' => '#64748b',
+                                    'label' => $t->metode_bayar ?? '-',
+                                    'icon' => '',
+                                    'bg' => 'var(--ft-slate-100)',
+                                    'color' => 'var(--ft-slate-500)',
                                 ];
                             @endphp
                             <span class="px-3 py-1 rounded-full text-xs font-bold"
                                 style="background: {{ $m['bg'] }}; color: {{ $m['color'] }}">
-                                {{ $m['label'] }}
+                                {{ $m['icon'] }} {{ $m['label'] }}
                             </span>
                         </td>
                         <td class="px-5 py-4 whitespace-nowrap">
                             <span class="px-3 py-1 rounded-full text-xs font-bold"
-                                style="background: {{ $t->status === 'dititip' ? '#eff6ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
+                                style="background: {{ $t->status === 'dititip' ? 'var(--ft-blue-50)' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
                                color: {{ $t->status === 'dititip' ? '#1d4ed8' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
-                                {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
+                                {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'SUDAH DIAMBIL') }}
                             </span>
                         </td>
                         <td class="px-5 py-4 whitespace-nowrap text-gray-400 text-xs">
                             {{ $t->waktu_penitipan->format('d M Y') }}<br>
                             {{ $t->waktu_penitipan->format('H:i') }} WIB
                         </td>
-                        <td class="px-5 py-4">
-                            <a href="{{ route('admin.transaksis.show', $t) }}"
-                                class="text-gray-300 hover:text-indigo-500 text-lg transition">⋯</a>
+                        <td class="px-5 py-4 whitespace-nowrap text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{{ route('admin.transaksis.show', $t) }}" class="ft-aksi-btn"
+                                    style="background: var(--ft-blue-50); color: var(--ft-blue-600)" title="Lihat Detail">
+                                    👁️
+                                </a>
+                                <button type="button" class="ft-aksi-btn btn-hapus-transaksi"
+                                    style="background: #fff5f5; color: #dc2626" title="Hapus Transaksi"
+                                    data-url="{{ route('admin.transaksis.destroy', $t) }}"
+                                    data-nomor="{{ $t->nomor_transaksi }}" data-nama="{{ $t->nama_penitip }}">
+                                    🗑️
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 @empty
@@ -691,6 +740,45 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- Modal Konfirmasi Hapus Transaksi --}}
+    <div id="modal-hapus-transaksi" class="hidden fixed inset-0 z-50"
+        style="background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px);">
+
+        <div class="anim-scale-in"
+            style="background: white; border-radius: 20px; width: 100%; max-width: 380px; margin: 0 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+
+            <div class="px-6 pt-6 pb-4 text-center">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
+                    style="background: #fff5f5">
+                    🗑️
+                </div>
+                <h3 class="font-black text-gray-900 text-lg mb-1">Hapus Transaksi Ini?</h3>
+                <p class="text-sm text-gray-400">
+                    Transaksi <span id="modal-hapus-nomor" class="font-bold font-mono text-gray-700"></span>
+                    milik <span id="modal-hapus-nama" class="font-bold text-gray-700"></span>
+                    akan dihapus permanen beserta semua detail barangnya. Aksi ini tidak dapat dibatalkan.
+                </p>
+            </div>
+
+            <div class="px-6 pb-6 flex gap-3">
+                <button type="button" onclick="tutupModalHapusTransaksi()"
+                    class="flex-1 py-3 rounded-xl font-bold text-sm transition"
+                    style="background: #f1f5f9; color: #64748b">
+                    Batal
+                </button>
+                <form id="form-hapus-transaksi" method="POST" class="flex-1" action="">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="w-full py-3 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
+                        style="background: linear-gradient(135deg, #dc2626, #ef4444)">
+                        Ya, Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 
 @endsection
@@ -717,44 +805,37 @@
                 },
                 dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"f>rtip',
                 order: [
-                    [7, 'desc']
+                    [8, 'desc']
                 ],
                 columnDefs: [{
                     orderable: false,
                     targets: [2, 9]
                 }]
             });
+
+            // ── Modal konfirmasi hapus (delegated, aman untuk pagination DataTables) ──
+            $(document).on('click', '.btn-hapus-transaksi', function() {
+                $('#form-hapus-transaksi').attr('action', $(this).data('url'));
+                $('#modal-hapus-nomor').text($(this).data('nomor'));
+                $('#modal-hapus-nama').text($(this).data('nama'));
+                bukaModalHapusTransaksi();
+            });
         });
 
-        // ── Auto-fill tanggal saat event dipilih ──
-        document.getElementById('event_id').addEventListener('change', function() {
-            const selected = this.options[this.selectedIndex];
-            const mulai = selected.dataset.mulai;
-            const selesai = selected.dataset.selesai;
+        function bukaModalHapusTransaksi() {
+            const modal = document.getElementById('modal-hapus-transaksi');
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
+        }
 
-            if (mulai && selesai) {
-                document.getElementById('tanggal_mulai').value = mulai;
-                document.getElementById('tanggal_selesai').value = selesai;
-            } else {
-                document.getElementById('tanggal_mulai').value = '';
-                document.getElementById('tanggal_selesai').value = '';
-            }
-        });
+        function tutupModalHapusTransaksi() {
+            const modal = document.getElementById('modal-hapus-transaksi');
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+        }
 
-        // ── Set tanggal saat halaman load jika event sudah dipilih ──
-        window.addEventListener('DOMContentLoaded', function() {
-            const eventSelect = document.getElementById('event_id');
-            if (eventSelect.value) {
-                const selected = eventSelect.options[eventSelect.selectedIndex];
-                const mulai = selected.dataset.mulai;
-                const selesai = selected.dataset.selesai;
-                if (mulai && selesai &&
-                    !document.getElementById('tanggal_mulai').value &&
-                    !document.getElementById('tanggal_selesai').value) {
-                    document.getElementById('tanggal_mulai').value = mulai;
-                    document.getElementById('tanggal_selesai').value = selesai;
-                }
-            }
+        document.getElementById('modal-hapus-transaksi').addEventListener('click', function(e) {
+            if (e.target === this) tutupModalHapusTransaksi();
         });
     </script>
 @endpush

@@ -121,7 +121,9 @@
                         zeroRecords: "Tidak ada kasir yang cocok",
                         emptyTable: "Belum ada kasir"
                     },
-                    dom: '<"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-5 py-4"f>rtip',
+                    dom: '<"flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4"f>' +
+                        'rt' +
+                        '<"flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4 border-t border-gray-50"ip>',
                     order: [
                         [4, 'desc']
                     ],

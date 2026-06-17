@@ -185,21 +185,22 @@
             display: block;
         }
 
-        /* Mobile sidebar */
         @media (max-width: 1023px) {
-            #sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                z-index: 50;
-                transform: translateX(-100%);
-            }
+    #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh; /* fallback untuk browser lama yang belum support dvh */
+        height: 100dvh; /* tinggi viewport asli, ikut menyesuaikan toolbar browser HP */
+        z-index: 50;
+        transform: translateX(-100%);
+        overflow-y: auto; /* jaring pengaman: kalau konten tetap lebih tinggi dari layar, bisa di-scroll */
+    }
 
-            #sidebar.open {
-                transform: translateX(0);
-            }
-        }
+    #sidebar.open {
+        transform: translateX(0);
+    }
+}
 
         .sidebar-link {
             display: flex;

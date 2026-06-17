@@ -82,15 +82,15 @@
                 <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">
                     Nama Penitip
                 </label>
-                <div class="flex gap-3">
+                <div class="flex gap-2 items-stretch">
                     <input type="text" name="nama_penitip" value="{{ isset($namaDicari) ? $namaDicari : '' }}" autofocus
-                        class="flex-1 rounded-xl px-4 py-3 text-sm transition"
+                        class="flex-1 min-w-0 rounded-xl px-4 py-3 text-sm transition"
                         style="background:#faf5ff;border:1.5px solid #ede9fe;color:#374151"
                         placeholder="Contoh: Budi Santoso"
                         onfocus="this.style.borderColor='#a78bfa';this.style.boxShadow='0 0 0 3px rgba(167,139,250,0.1)'"
                         onblur="this.style.borderColor='#ede9fe';this.style.boxShadow='none'">
                     <button type="submit"
-                        class="flex items-center gap-2 px-5 py-3 rounded-xl text-white font-bold text-sm transition hover:opacity-90 flex-shrink-0"
+                        class="flex items-center gap-2 px-5 py-3 rounded-xl text-white font-bold text-sm transition hover:opacity-90 flex-shrink-0 whitespace-nowrap"
                         style="background:linear-gradient(135deg,#5b21b6,#7c3aed);box-shadow:0 4px 12px rgba(91,33,182,0.2)">
                         🔍 Cari
                     </button>
@@ -119,227 +119,243 @@
                 </p>
             </div>
 
-            <div class="anim-fade-up delay-4 bg-white rounded-2xl border border-gray-100 overflow-hidden mb-4"
+            <div class="anim-fade-up delay-4 bg-white rounded-2xl border border-gray-100 mb-4"
                 style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
-                <table class="w-full text-xs">
-                    <thead>
-                        <tr style="background: #fdfbff; border-bottom: 1px solid #ede9fe">
-                            <th class="px-4 py-3 text-left"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                No. Transaksi</th>
-                            <th class="px-4 py-3 text-left"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Customer</th>
-                            <th class="px-4 py-3 text-left"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Ukuran</th>
-                            <th class="px-4 py-3 text-left"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Status</th>
-                            <th class="px-4 py-3"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($transaksis as $transaksi)
-                            <tr class="border-t border-gray-50 hover:bg-purple-50 transition cursor-pointer"
-                                onclick="bukaDetail({{ $transaksi->id }})">
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <span class="font-bold" style="color:#7c3aed;font-family:monospace">
-                                        #{{ substr($transaksi->nomor_transaksi, -4) }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
-                                            style="background: linear-gradient(135deg, #5b21b6, #a78bfa); font-size: 10px">
-                                            {{ strtoupper(substr($transaksi->nama_penitip, 0, 1)) }}
-                                        </div>
-                                        <span
-                                            class="font-semibold text-gray-700">{{ Str::limit($transaksi->nama_penitip, 14) }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <div class="flex flex-wrap gap-1">
-                                        @foreach ($transaksi->details as $d)
-                                            <span class="px-2 py-0.5 rounded-lg text-xs font-bold"
-                                                style="background:#ede9fe;color:#7c3aed">{{ $d->ukuran }}</span>
-                                        @endforeach
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <span class="px-2 py-1 rounded-full text-xs font-bold"
-                                        style="background: {{ $transaksi->status === 'terlambat' ? '#fff5f5' : '#faf5ff' }};
-                                               color: {{ $transaksi->status === 'terlambat' ? '#dc2626' : '#7c3aed' }}">
-                                        {{ $transaksi->status === 'terlambat' ? 'TERLAMBAT' : 'DITITIPKAN' }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap" onclick="event.stopPropagation()">
-                                    <button type="button"
-                                        onclick="konfirmasiDariTabel({{ $transaksi->id }}, '{{ addslashes($transaksi->nama_penitip) }}', {{ $transaksi->status === 'terlambat' ? 'true' : 'false' }})"
-                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white font-bold text-xs transition hover:opacity-90"
-                                        style="background: {{ $transaksi->status === 'terlambat' ? 'linear-gradient(135deg,#dc2626,#ef4444)' : 'linear-gradient(135deg,#5b21b6,#7c3aed)' }}">
-                                        🛡️ Konfirmasi
-                                    </button>
-                                </td>
+
+                {{-- indikator mobile --}}
+                <div class="px-4 py-3 text-xs text-gray-400 lg:hidden" style="background:#faf5ff">
+                    ← Geser tabel ke samping untuk melihat semua data →
+                </div>
+
+                {{-- wrapper scroll --}}
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-xs" style="min-width: 600px">
+                        <thead>
+                            <tr style="background: #fdfbff; border-bottom: 1px solid #ede9fe">
+                                <th class="px-4 py-3 text-left"
+                                    style="width:28%;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    No. Transaksi</th>
+                                <th class="px-4 py-3 text-left"
+                                    style="width:24%;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    Customer</th>
+                                <th class="px-4 py-3 text-left"
+                                    style="width:18%;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    Ukuran</th>
+                                <th class="px-4 py-3 text-left"
+                                    style="width:18%;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    Status</th>
+                                <th class="px-4 py-3 text-right"
+                                    style="width:12%;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    Aksi</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <button onclick="window.location.href='{{ route('kasir.pengambilan.index') }}'"
-                class="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-sm transition mb-4"
-                style="background:white;border:1.5px solid #ede9fe;color:#7c3aed">
-                ← Cari Ulang
-            </button>
-
-            {{-- Modal Detail --}}
-            @foreach ($transaksis as $transaksi)
-                <div id="modal-detail-{{ $transaksi->id }}"
-                    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.75)"
-                    onclick="if(event.target===this) tutupDetail({{ $transaksi->id }})">
-                    <div class="bg-white rounded-2xl overflow-hidden overflow-y-auto"
-                        style="width:600px;max-width:95vw;max-height:80vh">
-                        <div class="flex justify-between items-center px-5 py-4"
-                            style="background: linear-gradient(135deg, #1e1035, #2d1b69)">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm text-white"
-                                    style="background: rgba(167,139,250,0.3)">
-                                    {{ strtoupper(substr($transaksi->nama_penitip, 0, 1)) }}
-                                </div>
-                                <div>
-                                    <p class="text-white font-black text-sm leading-none">{{ $transaksi->nama_penitip }}</p>
-                                    <p class="text-xs mt-0.5" style="color:#c4b5fd">{{ $transaksi->nomor_transaksi }}</p>
-                                </div>
-                            </div>
-                            <button onclick="tutupDetail({{ $transaksi->id }})"
-                                class="w-8 h-8 flex items-center justify-center rounded-xl text-white font-bold"
-                                style="background:rgba(255,255,255,0.15)">✕</button>
-                        </div>
-                        <div class="p-5">
-                            <div class="grid grid-cols-2 gap-3 mb-4">
-                                <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
-                                    <p class="text-xs font-semibold uppercase tracking-wider mb-1"
-                                        style="color:#94a3b8;font-size:9px">Event</p>
-                                    <p class="font-bold text-gray-800 text-sm">
-                                        {{ Str::limit($transaksi->event->nama_event, 20) }}</p>
-                                </div>
-                                <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
-                                    <p class="text-xs font-semibold uppercase tracking-wider mb-1"
-                                        style="color:#94a3b8;font-size:9px">Waktu Titip</p>
-                                    <p class="font-bold text-gray-700 text-xs">
-                                        {{ $transaksi->waktu_penitipan->format('d M Y') }}</p>
-                                    <p class="text-xs text-gray-400">{{ $transaksi->waktu_penitipan->format('H:i') }} WIB</p>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">Daftar Barang
-                                </p>
-                                <div class="space-y-2">
-                                    @foreach ($transaksi->details as $d)
-                                        <div class="flex items-center justify-between px-3 py-2 rounded-lg"
-                                            style="background:#f8faff;border:1px solid #ede9fe">
-                                            <span class="text-sm font-semibold text-gray-700">
-                                                {{ implode(', ', $d->jenis_barang ?? []) }}
-                                            </span>
-                                            <div class="flex items-center gap-2">
+                        </thead>
+                        <tbody>
+                            @foreach ($transaksis as $transaksi)
+                                <tr class="border-t border-gray-50 hover:bg-purple-50 transition cursor-pointer"
+                                    onclick="bukaDetail({{ $transaksi->id }})">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="font-bold" style="color:#7c3aed;font-family:monospace">
+                                            {{ $transaksi->nomor_transaksi }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
+                                                style="background: linear-gradient(135deg, #5b21b6, #a78bfa); font-size: 10px">
+                                                {{ strtoupper(substr($transaksi->nama_penitip, 0, 1)) }}
+                                            </div>
+                                            <span
+                                                class="font-semibold text-gray-700">{{ Str::limit($transaksi->nama_penitip, 14) }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach ($transaksi->details as $d)
                                                 <span class="px-2 py-0.5 rounded-lg text-xs font-bold"
                                                     style="background:#ede9fe;color:#7c3aed">{{ $d->ukuran }}</span>
-                                                <span class="text-xs font-bold text-gray-700">
-                                                    Rp {{ number_format($d->subtotal, 0, ',', '.') }}
-                                                </span>
-                                            </div>
+                                            @endforeach
                                         </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            @if ($transaksi->foto_penitipan)
-                                <div class="mb-4">
-                                    <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">📷 Foto
-                                        Saat Penitipan</p>
-                                    <img src="{{ asset('storage/' . $transaksi->foto_penitipan) }}" alt="Foto"
-                                        class="w-full max-h-40 object-cover rounded-xl cursor-pointer"
-                                        style="border:1.5px solid #ede9fe" onclick="bukaFotoModal(this.src)">
-                                </div>
-                            @endif
-                            @if ($transaksi->status === 'terlambat')
-                                <div class="flex items-start gap-3 px-4 py-3 rounded-xl mb-4"
-                                    style="background:#fff5f5;border:1.5px solid #fecaca">
-                                    <span class="text-red-500 flex-shrink-0">⚠️</span>
-                                    <div>
-                                        <p class="text-red-700 font-bold text-sm">Pengambilan Terlambat</p>
-                                        <p class="text-red-400 text-xs mt-0.5">Event sudah berakhir.</p>
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="mb-5">
-                                <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
-                                    Foto Pengambilan
-                                    <span class="font-normal normal-case" style="color:#94a3b8">(opsional)</span>
-                                </p>
-                                <div id="foto-detail-preview-{{ $transaksi->id }}" class="hidden mb-3">
-                                    <div class="relative">
-                                        <img id="foto-detail-img-{{ $transaksi->id }}" src="" alt="Preview"
-                                            class="w-full max-h-36 object-cover rounded-xl"
-                                            style="border:1.5px solid #ddd6fe">
-                                        <button type="button" onclick="hapusFotoDetail({{ $transaksi->id }})"
-                                            class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full text-white text-xs font-bold"
-                                            style="background:rgba(0,0,0,0.6)">✕</button>
-                                    </div>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button type="button" onclick="bukaKameraDetail({{ $transaksi->id }})"
-                                        class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm"
-                                        style="background:#faf5ff;color:#7c3aed;border:1.5px solid #ede9fe">
-                                        📷 Ambil Foto
-                                    </button>
-                                    <label
-                                        class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm cursor-pointer"
-                                        style="background:#f8faff;color:#1a3a6b;border:1.5px solid #e2e8f0">
-                                        🖼️ Galeri
-                                        <input type="file" accept="image/*" class="hidden"
-                                            onchange="pilihFotoDetail(this, {{ $transaksi->id }})">
-                                    </label>
-                                </div>
-                                <input type="hidden" id="foto-detail-input-{{ $transaksi->id }}">
-                            </div>
-                            <button type="button"
-                                onclick="konfirmasiDariDetail({{ $transaksi->id }}, '{{ addslashes($transaksi->nama_penitip) }}', {{ $transaksi->status === 'terlambat' ? 'true' : 'false' }})"
-                                class="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-white font-black text-sm hover:opacity-90"
-                                style="background: {{ $transaksi->status === 'terlambat' ? 'linear-gradient(135deg,#dc2626,#ef4444)' : 'linear-gradient(135deg,#5b21b6,#7c3aed)' }};
-                                       box-shadow: {{ $transaksi->status === 'terlambat' ? '0 4px 12px rgba(220,38,38,0.25)' : '0 4px 12px rgba(91,33,182,0.25)' }}">
-                                {{ $transaksi->status === 'terlambat' ? '⚠️ Konfirmasi (Terlambat)' : '🛡️ Konfirmasi Pengambilan' }}
-                            </button>
-                        </div>
-                    </div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-1 rounded-full text-xs font-bold"
+                                            style="background: {{ $transaksi->status === 'terlambat' ? '#fff5f5' : '#faf5ff' }};
+                                   color: {{ $transaksi->status === 'terlambat' ? '#dc2626' : '#7c3aed' }}">
+                                            {{ $transaksi->status === 'terlambat' ? 'TERLAMBAT' : 'DITITIPKAN' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-right" onclick="event.stopPropagation()">
+                                        <button type="button"
+                                            onclick="konfirmasiDariTabel({{ $transaksi->id }}, '{{ addslashes($transaksi->nama_penitip) }}', {{ $transaksi->status === 'terlambat' ? 'true' : 'false' }})"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white font-bold text-xs transition hover:opacity-90"
+                                            style="background: {{ $transaksi->status === 'terlambat' ? 'linear-gradient(135deg,#dc2626,#ef4444)' : 'linear-gradient(135deg,#5b21b6,#7c3aed)' }}">
+                                            🛡️ Konfirmasi
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
 
-                {{-- Modal Kamera Detail --}}
-                <div id="modal-kamera-detail-{{ $transaksi->id }}"
-                    class="hidden fixed inset-0 z-[60] flex items-center justify-center" style="background:rgba(0,0,0,0.85)">
-                    <div class="bg-white rounded-2xl overflow-hidden w-full max-w-sm mx-4">
-                        <div class="flex justify-between items-center px-4 py-3" style="border-bottom:1px solid #f1f5f9">
-                            <p class="font-black text-gray-800 text-sm">📷 Foto Pengambilan</p>
-                            <button onclick="tutupKameraDetail({{ $transaksi->id }})"
-                                class="w-8 h-8 flex items-center justify-center rounded-lg"
-                                style="background:#f1f5f9;color:#6b7280">✕</button>
-                        </div>
-                        <div class="p-4">
-                            <div class="rounded-xl overflow-hidden mb-3"
-                                style="background:#0f0f1a;width:100%;height:260px;position:relative">
-                                <video id="video-detail-{{ $transaksi->id }}" autoplay playsinline
-                                    style="width:100%;height:100%;object-fit:cover;display:block"></video>
+                <button onclick="window.location.href='{{ route('kasir.pengambilan.index') }}'"
+                    class="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-sm transition mb-4"
+                    style="background:white;border:1.5px solid #ede9fe;color:#7c3aed">
+                    ← Cari Ulang
+                </button>
+
+                {{-- Modal Detail --}}
+                @foreach ($transaksis as $transaksi)
+                    <div id="modal-detail-{{ $transaksi->id }}"
+                        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
+                        style="background:rgba(0,0,0,0.75)"
+                        onclick="if(event.target===this) tutupDetail({{ $transaksi->id }})">
+                        <div class="bg-white rounded-2xl overflow-hidden overflow-y-auto"
+                            style="width:600px;max-width:95vw;max-height:80vh">
+                            <div class="flex justify-between items-center px-5 py-4"
+                                style="background: linear-gradient(135deg, #1e1035, #2d1b69)">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm text-white"
+                                        style="background: rgba(167,139,250,0.3)">
+                                        {{ strtoupper(substr($transaksi->nama_penitip, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-black text-sm leading-none">{{ $transaksi->nama_penitip }}
+                                        </p>
+                                        <p class="text-xs mt-0.5" style="color:#c4b5fd">{{ $transaksi->nomor_transaksi }}</p>
+                                    </div>
+                                </div>
+                                <button onclick="tutupDetail({{ $transaksi->id }})"
+                                    class="w-8 h-8 flex items-center justify-center rounded-xl text-white font-bold"
+                                    style="background:rgba(255,255,255,0.15)">✕</button>
                             </div>
-                            <canvas id="canvas-detail-{{ $transaksi->id }}" class="hidden"></canvas>
-                            <button type="button" onclick="jepretFotoDetail({{ $transaksi->id }})"
-                                class="w-full py-3 rounded-xl text-white font-bold text-sm"
-                                style="background:linear-gradient(135deg,#5b21b6,#7c3aed)">
-                                📸 Jepret Foto
-                            </button>
+                            <div class="p-5">
+                                <div class="grid grid-cols-2 gap-3 mb-4">
+                                    <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
+                                        <p class="text-xs font-semibold uppercase tracking-wider mb-1"
+                                            style="color:#94a3b8;font-size:9px">Event</p>
+                                        <p class="font-bold text-gray-800 text-sm">
+                                            {{ Str::limit($transaksi->event->nama_event, 20) }}</p>
+                                    </div>
+                                    <div class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #ede9fe">
+                                        <p class="text-xs font-semibold uppercase tracking-wider mb-1"
+                                            style="color:#94a3b8;font-size:9px">Waktu Titip</p>
+                                        <p class="font-bold text-gray-700 text-xs">
+                                            {{ $transaksi->waktu_penitipan->format('d M Y') }}</p>
+                                        <p class="text-xs text-gray-400">{{ $transaksi->waktu_penitipan->format('H:i') }} WIB
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">Daftar
+                                        Barang
+                                    </p>
+                                    <div class="space-y-2">
+                                        @foreach ($transaksi->details as $d)
+                                            <div class="flex items-center justify-between px-3 py-2 rounded-lg"
+                                                style="background:#f8faff;border:1px solid #ede9fe">
+                                                <span class="text-sm font-semibold text-gray-700">
+                                                    {{ implode(', ', $d->jenis_barang ?? []) }}
+                                                </span>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="px-2 py-0.5 rounded-lg text-xs font-bold"
+                                                        style="background:#ede9fe;color:#7c3aed">{{ $d->ukuran }}</span>
+                                                    <span class="text-xs font-bold text-gray-700">
+                                                        Rp {{ number_format($d->subtotal, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @if ($transaksi->foto_penitipan)
+                                    <div class="mb-4">
+                                        <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#94a3b8">📷
+                                            Foto
+                                            Saat Penitipan</p>
+                                        <img src="{{ asset('storage/' . $transaksi->foto_penitipan) }}" alt="Foto"
+                                            class="w-full max-h-40 object-cover rounded-xl cursor-pointer"
+                                            style="border:1.5px solid #ede9fe" onclick="bukaFotoModal(this.src)">
+                                    </div>
+                                @endif
+                                @if ($transaksi->status === 'terlambat')
+                                    <div class="flex items-start gap-3 px-4 py-3 rounded-xl mb-4"
+                                        style="background:#fff5f5;border:1.5px solid #fecaca">
+                                        <span class="text-red-500 flex-shrink-0">⚠️</span>
+                                        <div>
+                                            <p class="text-red-700 font-bold text-sm">Pengambilan Terlambat</p>
+                                            <p class="text-red-400 text-xs mt-0.5">Event sudah berakhir.</p>
+                                        </div>
+                                    </div>
+                                @endif
+                                <div class="mb-5">
+                                    <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
+                                        Foto Pengambilan
+                                        <span class="font-normal normal-case" style="color:#94a3b8">(opsional)</span>
+                                    </p>
+                                    <div id="foto-detail-preview-{{ $transaksi->id }}" class="hidden mb-3">
+                                        <div class="relative">
+                                            <img id="foto-detail-img-{{ $transaksi->id }}" src="" alt="Preview"
+                                                class="w-full max-h-36 object-cover rounded-xl"
+                                                style="border:1.5px solid #ddd6fe">
+                                            <button type="button" onclick="hapusFotoDetail({{ $transaksi->id }})"
+                                                class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full text-white text-xs font-bold"
+                                                style="background:rgba(0,0,0,0.6)">✕</button>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button type="button" onclick="bukaKameraDetail({{ $transaksi->id }})"
+                                            class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm"
+                                            style="background:#faf5ff;color:#7c3aed;border:1.5px solid #ede9fe">
+                                            📷 Ambil Foto
+                                        </button>
+                                        <label
+                                            class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm cursor-pointer"
+                                            style="background:#f8faff;color:#1a3a6b;border:1.5px solid #e2e8f0">
+                                            🖼️ Galeri
+                                            <input type="file" accept="image/*" class="hidden"
+                                                onchange="pilihFotoDetail(this, {{ $transaksi->id }})">
+                                        </label>
+                                    </div>
+                                    <input type="hidden" id="foto-detail-input-{{ $transaksi->id }}">
+                                </div>
+                                <button type="button"
+                                    onclick="konfirmasiDariDetail({{ $transaksi->id }}, '{{ addslashes($transaksi->nama_penitip) }}', {{ $transaksi->status === 'terlambat' ? 'true' : 'false' }})"
+                                    class="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-white font-black text-sm hover:opacity-90"
+                                    style="background: {{ $transaksi->status === 'terlambat' ? 'linear-gradient(135deg,#dc2626,#ef4444)' : 'linear-gradient(135deg,#5b21b6,#7c3aed)' }};
+                                       box-shadow: {{ $transaksi->status === 'terlambat' ? '0 4px 12px rgba(220,38,38,0.25)' : '0 4px 12px rgba(91,33,182,0.25)' }}">
+                                    {{ $transaksi->status === 'terlambat' ? '⚠️ Konfirmasi (Terlambat)' : '🛡️ Konfirmasi Pengambilan' }}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+
+                    {{-- Modal Kamera Detail --}}
+                    <div id="modal-kamera-detail-{{ $transaksi->id }}"
+                        class="hidden fixed inset-0 z-[60] flex items-center justify-center"
+                        style="background:rgba(0,0,0,0.85)">
+                        <div class="bg-white rounded-2xl overflow-hidden w-full max-w-sm mx-4">
+                            <div class="flex justify-between items-center px-4 py-3" style="border-bottom:1px solid #f1f5f9">
+                                <p class="font-black text-gray-800 text-sm">📷 Foto Pengambilan</p>
+                                <button onclick="tutupKameraDetail({{ $transaksi->id }})"
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg"
+                                    style="background:#f1f5f9;color:#6b7280">✕</button>
+                            </div>
+                            <div class="p-4">
+                                <div class="rounded-xl overflow-hidden mb-3"
+                                    style="background:#0f0f1a;width:100%;height:260px;position:relative">
+                                    <video id="video-detail-{{ $transaksi->id }}" autoplay playsinline
+                                        style="width:100%;height:100%;object-fit:cover;display:block"></video>
+                                </div>
+                                <canvas id="canvas-detail-{{ $transaksi->id }}" class="hidden"></canvas>
+                                <button type="button" onclick="jepretFotoDetail({{ $transaksi->id }})"
+                                    class="w-full py-3 rounded-xl text-white font-bold text-sm"
+                                    style="background:linear-gradient(135deg,#5b21b6,#7c3aed)">
+                                    📸 Jepret Foto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
         @endif
     @endisset
 
@@ -423,7 +439,7 @@
         }
     </style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+    <script src="{{ asset('js/jsqr.min.js') }}"></script>
     <script>
         // ── Tab Switch ──
         function switchMode(mode) {

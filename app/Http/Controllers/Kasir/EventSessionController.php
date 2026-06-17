@@ -51,7 +51,7 @@ class EventSessionController extends Controller
         ]);
 
         return redirect()->route('kasir.dashboard')
-            ->with('success', "Event {$event->nama_event} berhasil dipilih.");
+            ->with('success', "Event {$event->nama_event} Berhasil dipilih.");
     }
 
     public function ganti(Request $request)

@@ -57,10 +57,10 @@ Route::prefix('admin')
         Route::resource('users', UserController::class);
 
         /*
-        |--------------------------------------------------------------------------
-        | Transaksi
-        |--------------------------------------------------------------------------
-        */
+|--------------------------------------------------------------------------
+| Transaksi
+|--------------------------------------------------------------------------
+*/
 
         Route::get('/transaksis', [AdminTransaksiController::class, 'index'])
             ->name('transaksis.index');
@@ -68,7 +68,7 @@ Route::prefix('admin')
         Route::get('/transaksis/{transaksi}', [AdminTransaksiController::class, 'show'])
             ->name('transaksis.show');
 
-        Route::delete('/transaksis/{transaksi}/destroy', [AdminTransaksiController::class, 'destroy'])
+        Route::delete('/transaksis/{transaksi}', [AdminTransaksiController::class, 'destroy'])
             ->name('transaksis.destroy');
 
         /*
@@ -193,6 +193,7 @@ Route::prefix('kasir')
 
         Route::post('/pengambilan/konfirmasi/{transaksi}', [PengambilanController::class, 'konfirmasi'])
             ->name('pengambilan.konfirmasi');
+
 
         /*
         |--------------------------------------------------------------------------

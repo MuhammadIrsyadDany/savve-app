@@ -300,9 +300,21 @@
         </div>
 
         @php
-            $ukurans = ['S', 'M', 'L', 'XL'];
-            $labels = ['S — Loker Kecil', 'M — Area Sedang', 'L — Area Besar', 'XL — Area Koper'];
-            $colors = [['#1a3a6b', '#4a9eff'], ['#ea580c', '#fb923c'], ['#15803d', '#4ade80'], ['#7c3aed', '#a78bfa']];
+            $ukurans = ['S', 'M', 'L', 'XL', 'Gadget'];
+            $labels = [
+                'S — Loker Kecil',
+                'M — Area Sedang',
+                'L — Area Besar',
+                'XL — Area Koper',
+                'Gadget — Loker Elektronik',
+            ];
+            $colors = [
+                ['#1a3a6b', '#4a9eff'],
+                ['#ea580c', '#fb923c'],
+                ['#15803d', '#4ade80'],
+                ['#7c3aed', '#a78bfa'],
+                ['#0e7490', '#22d3ee'],
+            ];
             $totalPerUkuran = [];
             foreach ($ukurans as $u) {
                 $totalPerUkuran[$u] = \App\Models\DetailTransaksi::whereHas(

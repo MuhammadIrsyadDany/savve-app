@@ -197,94 +197,137 @@
     {{-- Aktivitas Terakhir --}}
     <div class="anim-fade-up delay-7 bg-white rounded-2xl border border-gray-100 overflow-hidden"
         style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+
+        {{-- Header --}}
         <div class="flex justify-between items-center px-5 py-4" style="border-bottom: 1px solid #f5f3ff">
             <div>
                 <p class="font-black text-gray-800">Aktivitas Terakhir</p>
-                <p class="text-xs text-gray-400 mt-0.5">Transaksi terbaru yang kamu proses</p>
+                <p class="text-xs text-gray-400 mt-0.5">
+                    Transaksi terbaru yang kamu proses
+                </p>
             </div>
+
             <a href="{{ route('kasir.transaksi.index') }}" class="text-xs font-bold hover:underline flex-shrink-0"
                 style="color: #7c3aed">
                 Lihat Semua →
             </a>
         </div>
-        <table class="w-full text-xs" style="width:100%">
-            <thead>
-                <tr style="background: #fdfbff; border-bottom: 1px solid #ede9fe">
-                    <th class="px-5 py-3 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                        ID</th>
-                    <th class="px-5 py-3 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                        Customer</th>
-                    <th class="px-5 py-3 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                        Barang</th>
-                    <th class="px-5 py-3 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                        Waktu</th>
-                    <th class="px-5 py-3 text-left whitespace-nowrap"
-                        style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                        Status</th>
-                    <th class="px-5 py-3"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($transaksiTerbaru as $t)
-                    <tr class="table-row" style="border-top: 1px solid #f5f3ff">
-                        <td class="px-5 py-4 whitespace-nowrap">
-                            <a href="{{ route('kasir.transaksi.show', $t) }}" class="font-bold hover:underline"
-                                style="color: #7c3aed; font-family: monospace; font-size: 12px">
-                                #{{ substr($t->nomor_transaksi, -4) }}
-                            </a>
-                        </td>
-                        <td class="px-5 py-4">
-                            <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
-                                    style="background: linear-gradient(135deg, #5b21b6, #a78bfa); font-size: 10px">
-                                    {{ strtoupper(substr($t->nama_penitip, 0, 1)) }}
-                                </div>
-                                <span
-                                    class="font-semibold text-gray-700 whitespace-nowrap">{{ Str::limit($t->nama_penitip, 12) }}</span>
-                            </div>
-                        </td>
-                        <td class="px-5 py-4 text-gray-500 text-sm whitespace-nowrap">
-                            @foreach ($t->details->take(1) as $d)
-                                {{ implode(', ', $d->jenis_barang ?? []) }}
-                                <span class="text-xs text-gray-400">({{ $d->ukuran }})</span>
-                            @endforeach
-                        </td>
-                        <td class="px-5 py-4 text-gray-400 text-xs whitespace-nowrap">
-                            {{ $t->waktu_penitipan->format('H:i') }} WIB
-                        </td>
-                        <td class="px-5 py-4 whitespace-nowrap">
-                            <span class="px-3 py-1 rounded-full text-xs font-bold"
-                                style="background: {{ $t->status === 'dititip' ? '#faf5ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
-                                    color: {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }}">
-                                {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-4">
-                            <a href="{{ route('kasir.transaksi.show', $t) }}"
-                                class="text-gray-300 hover:text-purple-400 text-lg transition">⋯</a>
-                        </td>
+
+        {{-- Table Wrapper Responsive --}}
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[750px] text-xs">
+                <thead>
+                    <tr style="background: #fdfbff; border-bottom: 1px solid #ede9fe">
+                        <th class="px-5 py-3 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            ID
+                        </th>
+
+                        <th class="px-5 py-3 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Customer
+                        </th>
+
+                        <th class="px-5 py-3 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Barang
+                        </th>
+
+                        <th class="px-5 py-3 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Waktu
+                        </th>
+
+                        <th class="px-5 py-3 text-left whitespace-nowrap"
+                            style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                            Status
+                        </th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="px-5 py-12 text-center">
-                            <div class="flex flex-col items-center gap-2">
-                                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl"
-                                    style="background: #faf5ff">📋</div>
-                                <p class="text-gray-400 font-medium text-sm">Belum ada transaksi hari ini.</p>
-                                <a href="{{ route('kasir.transaksi.create') }}" class="text-xs font-bold hover:underline"
-                                    style="color: #7c3aed">
-                                    Buat transaksi pertama →
+                </thead>
+
+                <tbody>
+                    @forelse($transaksiTerbaru as $t)
+                        <tr class="table-row hover:bg-purple-50 transition" style="border-top: 1px solid #f5f3ff">
+
+                            {{-- ID --}}
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <a href="{{ route('kasir.transaksi.show', $t) }}" class="font-bold hover:underline"
+                                    style="color: #7c3aed; font-family: monospace; font-size: 12px">
+                                    {{ $t->nomor_transaksi }}
                                 </a>
-                            </div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                            </td>
+
+                            {{-- Customer --}}
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
+                                        style="background: linear-gradient(135deg, #5b21b6, #a78bfa); font-size: 10px">
+                                        {{ strtoupper(substr($t->nama_penitip, 0, 1)) }}
+                                    </div>
+
+                                    <span class="font-semibold text-gray-700">
+                                        {{ Str::limit($t->nama_penitip, 12) }}
+                                    </span>
+                                </div>
+                            </td>
+
+                            {{-- Barang --}}
+                            <td class="px-5 py-4 text-gray-500 text-sm whitespace-nowrap">
+                                @foreach ($t->details->take(1) as $d)
+                                    {{ implode(', ', $d->jenis_barang ?? []) }}
+                                    <span class="text-xs text-gray-400">
+                                        ({{ $d->ukuran }})
+                                    </span>
+                                @endforeach
+                            </td>
+
+                            {{-- Waktu --}}
+                            <td class="px-5 py-4 text-gray-400 text-xs whitespace-nowrap">
+                                {{ $t->waktu_penitipan->format('H:i') }} WIB
+                            </td>
+
+                            {{-- Status --}}
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold"
+                                    style="
+                                    background:
+                                    {{ $t->status === 'dititip' ? '#faf5ff' : ($t->status === 'terlambat' ? '#fff5f5' : '#f0fdf4') }};
+
+                                    color:
+                                    {{ $t->status === 'dititip' ? '#7c3aed' : ($t->status === 'terlambat' ? '#dc2626' : '#15803d') }};
+                                ">
+                                    {{ $t->status === 'dititip' ? 'DITITIPKAN' : ($t->status === 'terlambat' ? 'TERLAMBAT' : 'DIAMBIL') }}
+                                </span>
+                            </td>
+
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-5 py-12 text-center">
+                                <div class="flex flex-col items-center gap-2">
+
+                                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl"
+                                        style="background: #faf5ff">
+                                        📋
+                                    </div>
+
+                                    <p class="text-gray-400 font-medium text-sm">
+                                        Belum ada transaksi hari ini.
+                                    </p>
+
+                                    <a href="{{ route('kasir.transaksi.create') }}"
+                                        class="text-xs font-bold hover:underline" style="color: #7c3aed">
+                                        Buat transaksi pertama →
+                                    </a>
+
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
     </div>
 
 @endsection

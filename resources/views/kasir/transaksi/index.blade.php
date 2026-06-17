@@ -585,8 +585,7 @@
                     Diambil</p>
                 <p class="text-2xl font-black" style="color: #15803d">{{ $totalDiambil }}</p>
             </div>
-            <div class="rounded-2xl p-4 text-white"
-                style="background: linear-gradient(135deg, #1e1035, #2d1b69); box-shadow: 0 4px 16px rgba(91,33,182,0.2)">
+            <div class="rounded-2xl p-4 text-white" style="background: linear-gradient(135deg, #1e1035, #2d1b69);">
                 <p class="text-xs font-semibold uppercase tracking-wider mb-1"
                     style="color:rgba(255,255,255,0.6);font-size:9px">Total Nominal</p>
                 <p class="text-base font-black leading-tight">
@@ -630,7 +629,6 @@
                         style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
                         Waktu
                     </th>
-                    <th class="px-5 py-4"></th>
                 </tr>
             </thead>
             <tbody>
@@ -639,7 +637,7 @@
                         <td class="px-5 py-4 whitespace-nowrap">
                             <a href="{{ route('kasir.transaksi.show', $t) }}" class="font-bold hover:underline"
                                 style="color: #7c3aed; font-family: monospace; font-size: 12px">
-                                #{{ substr($t->nomor_transaksi, -4) }}
+                                {{ $t->nomor_transaksi }}
                             </a>
                         </td>
                         <td class="px-5 py-4">
@@ -651,24 +649,25 @@
                                 <div>
                                     <p class="font-semibold text-gray-800 text-sm whitespace-nowrap">
                                         {{ $t->nama_penitip }}</p>
-                                    <p class="text-gray-400" style="font-size: 11px">{{ $t->no_whatsapp }}</p>
                                 </div>
                             </div>
                         </td>
                         <td class="px-5 py-4">
-                            @foreach ($t->details->take(1) as $d)
-                                <p class="font-medium text-gray-700 text-sm whitespace-nowrap">
-                                    {{ Str::limit(implode(', ', $d->jenis_barang ?? []), 15) }}
-                                </p>
-                                <span class="inline-block px-2 py-0.5 rounded-md text-xs font-bold mt-0.5"
-                                    style="background: #faf5ff; color: #7c3aed">
-                                    Ukuran {{ $d->ukuran }}
-                                </span>
-                            @endforeach
-                            @if ($t->details->count() > 1)
-                                <p class="text-xs mt-0.5" style="color: #7c3aed">+{{ $t->details->count() - 1 }} lainnya
-                                </p>
-                            @endif
+                            @php
+                                $kategoris = $t->details->pluck('ukuran')->filter()->unique()->values();
+                            @endphp
+                            <div class="flex flex-wrap gap-1">
+                                @foreach ($kategoris->take(2) as $kat)
+                                    <span class="inline-block px-2 py-0.5 rounded-md text-xs font-bold whitespace-nowrap"
+                                        style="background: #faf5ff; color: #7c3aed">
+                                        {{ $kat }}
+                                    </span>
+                                @endforeach
+                                @if ($kategoris->count() > 2)
+                                    <span class="text-xs" style="color: #7c3aed">+{{ $kategoris->count() - 2 }}
+                                        lagi</span>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-5 py-4 text-gray-500 text-xs whitespace-nowrap">
                             {{ Str::limit($t->event->nama_event, 18) }}
@@ -689,14 +688,10 @@
                             {{ $t->waktu_penitipan->format('d M Y') }}<br>
                             {{ $t->waktu_penitipan->format('H:i') }} WIB
                         </td>
-                        <td class="px-5 py-4">
-                            <a href="{{ route('kasir.transaksi.show', $t) }}"
-                                class="text-gray-300 hover:text-purple-400 text-lg transition">⋯</a>
-                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-5 py-16 text-center">
+                        <td colspan="7" class="px-5 py-16 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
                                     style="background: #faf5ff">📋</div>
@@ -742,7 +737,7 @@
                 ],
                 columnDefs: [{
                     orderable: false,
-                    targets: [1, 2, 7]
+                    targets: [1, 2]
                 }]
             });
         });

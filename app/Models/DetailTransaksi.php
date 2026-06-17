@@ -23,13 +23,18 @@ class DetailTransaksi extends Model
         return $this->belongsTo(Transaksi::class);
     }
 
-    // Helper: tampilkan jenis barang sebagai string
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriBarang::class, 'kategori_id');
+    }
+
+    // Helper: menampilkan jenis barang sebagai string
     public function getJenisBarangStringAttribute(): string
     {
         return implode(', ', $this->jenis_barang ?? []);
     }
 
-    // Helper: hitung jumlah jenis barang
+    // Helper: menghitung jumlah jenis barang
     public function getJumlahJenisAttribute(): int
     {
         return count($this->jenis_barang ?? []);

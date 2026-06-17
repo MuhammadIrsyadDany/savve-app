@@ -472,6 +472,48 @@
                 transform: scale(1);
             }
         }
+
+        /* ── Mobile responsive ────────────────────── */
+        @media (max-width: 767px) {
+            .lp-input-wrap--flex .lp-input-icon {
+                display: none;
+            }
+
+            .lp-input--icon {
+                padding-left: 12px;
+                padding-right: 6px;
+                font-size: 0.74rem;
+            }
+
+            .lp-input--date::-webkit-calendar-picker-indicator {
+                margin-left: 2px;
+                padding: 0;
+                width: 16px;
+                height: 16px;
+            }
+
+            .lp-card {
+                padding: 16px 14px 14px;
+            }
+
+            .lp-label--spacer {
+                display: none;
+            }
+
+            .lp-field--action {
+                justify-content: stretch;
+            }
+
+            .lp-field--action .lp-submit {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .lp-input-wrap--flex {
+                flex: 1 1 0%;
+                min-width: 0;
+            }
+        }
     </style>
 
     {{-- ─── Script ─────────────────────────────────────────────────────── --}}
@@ -773,37 +815,6 @@
                     }]
                 });
             @endif
-        });
-
-        // ── Auto-fill tanggal saat event dipilih ──
-        document.getElementById('event_id').addEventListener('change', function() {
-            const selected = this.options[this.selectedIndex];
-            const mulai = selected.dataset.mulai;
-            const selesai = selected.dataset.selesai;
-
-            if (mulai && selesai) {
-                document.getElementById('tanggal_mulai').value = mulai;
-                document.getElementById('tanggal_selesai').value = selesai;
-            } else {
-                document.getElementById('tanggal_mulai').value = '';
-                document.getElementById('tanggal_selesai').value = '';
-            }
-        });
-
-        // ── Set tanggal saat halaman load jika event sudah dipilih ──
-        window.addEventListener('DOMContentLoaded', function() {
-            const eventSelect = document.getElementById('event_id');
-            if (eventSelect.value) {
-                const selected = eventSelect.options[eventSelect.selectedIndex];
-                const mulai = selected.dataset.mulai;
-                const selesai = selected.dataset.selesai;
-                if (mulai && selesai &&
-                    !document.getElementById('tanggal_mulai').value &&
-                    !document.getElementById('tanggal_selesai').value) {
-                    document.getElementById('tanggal_mulai').value = mulai;
-                    document.getElementById('tanggal_selesai').value = selesai;
-                }
-            }
         });
     </script>
 @endpush

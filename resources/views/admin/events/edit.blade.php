@@ -3,14 +3,14 @@
 
 @section('content')
 
-    <div class="anim-fade-up delay-1 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
+    <div class="anim-fade-up delay-1 flex flex-row justify-between items-start gap-3 mb-6">
         <div>
             <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #1a3a6b">Management</p>
             <h1 class="text-xl lg:text-2xl font-black text-gray-900">Edit Event</h1>
             <p class="text-gray-400 text-sm mt-1">Ubah informasi event dan tarif penitipan.</p>
         </div>
         <a href="{{ route('admin.events.index') }}"
-            class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition self-start flex-shrink-0"
+            class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition self-start flex-shrink-0"
             style="background: white; border: 1.5px solid #e2e8f0; color: #374151">
             ← Kembali
         </a>
@@ -116,17 +116,27 @@
                         Perubahan tarif tidak mempengaruhi transaksi yang sudah tersimpan.
                     </p>
 
-                    <div class="grid grid-cols-2 gap-3 lg:gap-4">
-                        @foreach (['S' => 'Small', 'M' => 'Medium', 'L' => 'Large', 'XL' => 'Extra Large'] as $kode => $label)
-                            <div class="rounded-xl p-3 lg:p-4" style="background: #f8faff; border: 1.5px solid #e2e8f0">
-                                <div class="flex items-center justify-between mb-2 lg:mb-3">
-                                    <span class="px-2 lg:px-3 py-1 rounded-lg text-xs font-black text-white"
+                    <style>
+                        @media (max-width: 639px) {
+                            .tarif-gadget-card {
+                                grid-column: 1 / -1;
+                            }
+                        }
+                    </style>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                        @foreach (['S' => 'Small', 'M' => 'Medium', 'L' => 'Large', 'XL' => 'Extra Large', 'Gadget' => 'Gadget'] as $kode => $label)
+                            <div class="rounded-xl p-3 flex flex-col gap-2.5 {{ $kode === 'Gadget' ? 'tarif-gadget-card' : '' }}"
+                                style="background:#f8faff;border:1.5px solid #e2e8f0">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="px-2 py-1 rounded-lg text-xs font-black text-white flex-shrink-0"
                                         style="background: linear-gradient(135deg, #0f2044, #1e4d8c)">{{ $kode }}</span>
-                                    <span class="text-xs font-medium hidden sm:block"
+                                    <span class="text-xs font-medium truncate"
                                         style="color: #64748b">{{ $label }}</span>
                                 </div>
                                 <div class="relative">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold"
+                                    <span
+                                        class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold pointer-events-none"
                                         style="color: #94a3b8">Rp</span>
                                     <input type="number" name="tarif[{{ $kode }}]"
                                         value="{{ old('tarif.' . $kode, $tarifs[$kode]->harga ?? 0) }}"

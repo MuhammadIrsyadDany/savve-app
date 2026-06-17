@@ -23,7 +23,7 @@ class TransaksiController extends Controller
         $events     = Event::orderBy('nama_event')->get();
         $eventAktif = Event::find($eventId);
 
-        $query = Transaksi::with(['event', 'details'])
+        $query = Transaksi::with(['event', 'details.kategori'])
             ->where('kasir_id', auth()->id())
             ->where('event_id', $eventId);
 
@@ -91,10 +91,26 @@ class TransaksiController extends Controller
             'no_whatsapp'             => 'required|string|max:20',
             'metode_bayar'            => 'required|in:QRIS,Cash,Web',
             'items'                   => 'required|array|min:1',
-            'items.*.ukuran'          => 'required|in:S,M,L,XL',
+            'items.*.ukuran'          => 'required|in:S,M,L,XL,Gadget',
             'items.*.jenis_barang'    => 'required|array|min:1',
             'items.*.jenis_barang.*'  => 'required|string|max:100',
         ]);
+
+        $items = $request->input('items');
+
+        foreach ($items as $idx => &$item) {
+            $jenis = $item['jenis_barang'] ?? [];
+
+            if (!empty($item['jenis_barang_lainnya'])) {
+                $extras = array_map('trim', explode(',', $item['jenis_barang_lainnya']));
+                $extras = array_filter($extras);
+                $jenis = array_merge($jenis, $extras);
+            }
+
+            $item['jenis_barang'] = $jenis;
+            unset($item['jenis_barang_lainnya']);
+        }
+        unset($item);
 
         $event = Event::find(session('kasir_event_id'));
 

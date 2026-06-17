@@ -142,9 +142,10 @@
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider mb-2"
                                     style="color: #64748b">Ukuran</label>
-                                <div class="grid grid-cols-4 gap-2">
-                                    @foreach (['S', 'M', 'L', 'XL'] as $u)
-                                        <label class="ukuran-label cursor-pointer">
+                                <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                                    @foreach (['S', 'M', 'L', 'XL', 'Gadget'] as $u)
+                                        <label class="ukuran-label cursor-pointer"
+                                            style="${u === 'Gadget' ? 'grid-column:1 / span 2;' : ''}">
                                             <input type="radio" name="barang[0][ukuran]" value="{{ $u }}"
                                                 class="hidden ukuran-radio" {{ $u === 'S' ? 'checked' : '' }}>
                                             <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
@@ -283,15 +284,15 @@
             </div>
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Ukuran</label>
-                <div class="grid grid-cols-4 gap-2">
-                    ${['S','M','L','XL'].map((u, i) => `
-                                <label class="ukuran-label cursor-pointer">
-                                    <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
-                                    <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
-                                        style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: white;' : 'border-color: #ddd6fe; color: #94a3b8; background: white;'}">
-                                        ${u}
-                                    </div>
-                                </label>`).join('')}
+                <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                    ${['S','M','L','XL','Gadget'].map((u, i) => `
+                                                <label class="ukuran-label cursor-pointer">
+                                                    <input type="radio" name="barang[${index}][ukuran]" value="${u}" class="hidden ukuran-radio" ${i===0?'checked':''}>
+                                                    <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
+                                                        style="${i===0 ? 'border-color: #7c3aed; color: #7c3aed; background: white;' : 'border-color: #ddd6fe; color: #94a3b8; background: white;'}">
+                                                        ${u}
+                                                    </div>
+                                                </label>`).join('')}
                 </div>
             </div>
         `;

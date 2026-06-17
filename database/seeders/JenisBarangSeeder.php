@@ -45,6 +45,13 @@ class JenisBarangSeeder extends Seeder
             ['ukuran' => 'XL', 'nama' => 'Koper',    'urutan' => 2],
             ['ukuran' => 'XL', 'nama' => 'Carrier',      'urutan' => 3],
             ['ukuran' => 'XL', 'nama' => 'Lainnya',     'urutan' => 99],
+
+            // Kategori Gadget
+            ['ukuran' => 'Gadget', 'nama' => 'Tas',           'urutan' => 1],
+            ['ukuran' => 'Gadget', 'nama' => 'Kamera Laptop', 'urutan' => 2],
+            ['ukuran' => 'Gadget', 'nama' => 'Smartphone',    'urutan' => 3],
+            ['ukuran' => 'Gadget', 'nama' => 'Kamera',        'urutan' => 4],
+            ['ukuran' => 'Gadget', 'nama' => 'Lainnya',       'urutan' => 99],
         ];
 
         foreach ($data as $item) {

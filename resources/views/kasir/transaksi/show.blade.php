@@ -106,59 +106,82 @@
             {{-- Tabel Barang --}}
             <div class="anim-fade-up delay-3 bg-white rounded-2xl border border-gray-100 overflow-hidden"
                 style="box-shadow: 0 2px 12px rgba(0,0,0,0.04)">
+
                 <div class="px-6 py-4" style="border-bottom: 1px solid #f5f3ff">
                     <p class="font-black text-gray-800">Daftar Barang</p>
                 </div>
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr style="background: #fdfbff; border-bottom: 1px solid #ede9fe">
-                            <th class="px-5 py-3 text-left"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Barang</th>
-                            <th class="px-5 py-3 text-left"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Ukuran</th>
-                            <th class="px-5 py-3 text-left"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Qty</th>
-                            <th class="px-5 py-3 text-right"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Harga</th>
-                            <th class="px-5 py-3 text-right"
-                                style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                                Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($transaksi->details as $detail)
-                            <tr class="table-row" style="border-top: 1px solid #f5f3ff">
-                                <td class="px-5 py-4 font-medium text-gray-700">
-                                    {{ implode(', ', $detail->jenis_barang ?? []) }}
-                                </td>
-                                <td class="px-5 py-4">
-                                    <span class="px-3 py-1 rounded-lg text-xs font-bold"
-                                        style="background: #faf5ff; color: #7c3aed">
-                                        {{ $detail->ukuran }}
-                                    </span>
-                                </td>
-                                <td class="px-5 py-4 font-semibold text-gray-700">{{ count($detail->jenis_barang ?? []) }}
-                                    jenis</td>
-                                <td class="px-5 py-4 text-right text-gray-500">Rp
-                                    {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
-                                <td class="px-5 py-4 text-right font-bold text-gray-800">Rp
-                                    {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+
+                <div class="overflow-x-auto" style="-webkit-overflow-scrolling: touch">
+                    <table class="w-full text-sm" style="min-width: 560px">
+                        <thead>
+                            <tr style="background: #fdfbff; border-bottom: 1px solid #ede9fe">
+                                <th class="px-5 py-3 text-left whitespace-nowrap"
+                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    Barang
+                                </th>
+                                <th class="px-5 py-3 text-left whitespace-nowrap"
+                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    Ukuran
+                                </th>
+                                <th class="px-5 py-3 text-left whitespace-nowrap"
+                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    Qty
+                                </th>
+                                <th class="px-5 py-3 text-right whitespace-nowrap"
+                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    Harga
+                                </th>
+                                <th class="px-5 py-3 text-right whitespace-nowrap"
+                                    style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
+                                    Subtotal
+                                </th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr style="border-top: 2px solid #ede9fe">
-                            <td colspan="4" class="px-5 py-4 text-right font-black text-gray-700">Total</td>
-                            <td class="px-5 py-4 text-right font-black text-xl" style="color: #7c3aed">
-                                Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                        </thead>
+
+                        <tbody>
+                            @foreach ($transaksi->details as $detail)
+                                <tr class="table-row" style="border-top: 1px solid #f5f3ff">
+                                    <td class="px-5 py-4 font-medium text-gray-700 whitespace-nowrap">
+                                        {{ implode(', ', $detail->jenis_barang ?? []) }}
+                                    </td>
+
+                                    <td class="px-5 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 rounded-lg text-xs font-bold"
+                                            style="background: #faf5ff; color: #7c3aed">
+                                            {{ $detail->ukuran }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-5 py-4 font-semibold text-gray-700 whitespace-nowrap">
+                                        {{ count($detail->jenis_barang ?? []) }} jenis
+                                    </td>
+
+                                    <td class="px-5 py-4 text-right text-gray-500 whitespace-nowrap">
+                                        Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}
+                                    </td>
+
+                                    <td class="px-5 py-4 text-right font-bold text-gray-800 whitespace-nowrap">
+                                        Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+
+                        <tfoot>
+                            <tr style="border-top: 2px solid #ede9fe">
+                                <td colspan="4" class="px-5 py-4 text-right font-black text-gray-700 whitespace-nowrap">
+                                    Total
+                                </td>
+
+                                <td class="px-5 py-4 text-right font-black text-xl whitespace-nowrap"
+                                    style="color: #7c3aed">
+                                    Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
             </div>
             {{-- Foto Penitipan --}}
             @if ($transaksi->foto_penitipan)
@@ -199,7 +222,8 @@
             {{-- Nomor Transaksi --}}
             <div class="hidden lg:block anim-fade-up delay-2 rounded-2xl p-6 text-white relative overflow-hidden"
                 style="background: linear-gradient(135deg, #1e1035, #2d1b69, #4c1d95); box-shadow: 0 8px 24px rgba(91,33,182,0.25)">
-                <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color: #c4b5fd">Nomor Transaksi</p>
+                <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color: #c4b5fd">Nomor Transaksi
+                </p>
                 <p class="text-2xl font-black tracking-tight leading-tight mb-4 font-mono">
                     {{ $transaksi->nomor_transaksi }}
                 </p>
@@ -257,7 +281,8 @@
                         <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background: #a78bfa"></div>
                         <div>
                             <p class="text-xs font-semibold text-gray-600">Barang Dititipkan</p>
-                            <p class="text-xs text-gray-400">{{ $transaksi->waktu_penitipan->format('d M Y, H:i') }} WIB
+                            <p class="text-xs text-gray-400">{{ $transaksi->waktu_penitipan->format('d M Y, H:i') }}
+                                WIB
                             </p>
                         </div>
                     </div>
@@ -266,7 +291,8 @@
                             <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background: #22c55e"></div>
                             <div>
                                 <p class="text-xs font-semibold text-gray-600">Barang Diambil</p>
-                                <p class="text-xs text-gray-400">{{ $transaksi->waktu_pengambilan->format('d M Y, H:i') }}
+                                <p class="text-xs text-gray-400">
+                                    {{ $transaksi->waktu_pengambilan->format('d M Y, H:i') }}
                                     WIB</p>
                             </div>
                         </div>

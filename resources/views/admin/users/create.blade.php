@@ -3,14 +3,14 @@
 
 @section('content')
 
-    <div class="anim-fade-up delay-1 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
+    <div class="anim-fade-up delay-1 flex flex-row justify-between items-start gap-3 mb-6">
         <div>
             <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color: #1a3a6b">Management</p>
             <h1 class="text-xl lg:text-2xl font-black text-gray-900">Tambah Kasir</h1>
             <p class="text-gray-400 text-sm mt-1">Buat akun baru untuk kasir.</p>
         </div>
-        <a href="{{ route('admin.users.index') }}"
-            class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition self-start flex-shrink-0"
+        <a href="{{ route('admin.events.index') }}"
+            class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition self-start flex-shrink-0"
             style="background: white; border: 1.5px solid #e2e8f0; color: #374151">
             ← Kembali
         </a>

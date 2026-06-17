@@ -233,10 +233,10 @@
                     Tarif Event Ini
                 </p>
                 <div class="space-y-2">
-                    @foreach (['S', 'M', 'L', 'XL'] as $u)
+                    @foreach (['S', 'M', 'L', 'XL', 'Gadget'] as $u)
                         <div class="flex justify-between items-center">
                             <span
-                                class="w-8 h-8 flex items-center justify-center rounded-full text-xs font-black text-white"
+                                class="min-w-8 h-8 px-2 flex items-center justify-center rounded-full text-xs font-black text-white"
                                 style="background: linear-gradient(135deg, #5b21b6, #7c3aed)"> {{ $u }} </span>
                             <span class="font-bold text-gray-700 text-sm">
                                 Rp {{ number_format($tarifs[$u]->harga ?? 0, 0, ',', '.') }}
@@ -272,7 +272,7 @@
                 <ul class="space-y-1.5 text-xs" style="color: #94a3b8">
                     <li>• Satu transaksi bisa berisi banyak kategori barang</li>
                     <li>• Centang semua jenis barang yang dititipkan</li>
-                    <li>• Tarif dihitung per kategori (S/M/L/XL)</li>
+                    <li>• Tarif dihitung per kategori (S/M/L/XL/Gadget)</li>
                 </ul>
             </div>
         </div>
@@ -369,55 +369,64 @@
         });
 
         function buildItemHTML(idx) {
-            const ukurans = ['S', 'M', 'L', 'XL'];
+            const ukurans = ['S', 'M', 'L', 'XL', 'Gadget'];
 
             const ukuranButtons = ukurans.map((u, i) => `
-        <label class="ukuran-label-${idx} cursor-pointer">
-            <input type="radio" name="items[${idx}][ukuran]" value="${u}"
-                class="hidden ukuran-radio" ${i === 0 ? 'checked' : ''}>
-            <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
-                style="${i === 0
-                    ? 'border-color:#7c3aed;color:#7c3aed;background:white;'
-                    : 'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
-                ${u}
-                <div class="text-xs font-normal mt-0.5" style="color:${i===0?'#a78bfa':'#cbd5e1'}">
-                    Rp ${(tarifData[u] || 0).toLocaleString('id-ID')}
-                </div>
-            </div>
-        </label>`).join('');
+<label class="ukuran-label-${idx} cursor-pointer ${u === 'Gadget' ? 'col-span-2' : ''}">
+    <input type="radio" name="items[${idx}][ukuran]" value="${u}"
+        class="hidden ukuran-radio" ${i === 0 ? 'checked' : ''}>
+    <div class="ukuran-box border-2 rounded-xl py-2.5 text-center font-bold text-sm transition"
+        style="${i === 0
+            ? 'border-color:#7c3aed;color:#7c3aed;background:white;'
+            : 'border-color:#ddd6fe;color:#94a3b8;background:white;'}">
+        ${u}
+        <div class="text-xs font-normal mt-0.5"
+            style="color:${i===0?'#a78bfa':'#cbd5e1'}">
+            Rp ${(tarifData[u] || 0).toLocaleString('id-ID')}
+        </div>
+    </div>
+</label>`).join('');
 
             // Default tampilkan jenis barang ukuran S
             const firstUkuran = 'S';
             const jenisRows = buildJenisBarangCheckboxes(idx, firstUkuran);
 
             return `
-        <button type="button" onclick="hapusItem(this)"
-            class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full text-white text-xs font-bold"
-            style="background: rgba(220,38,38,0.8)">✕</button>
+    <button type="button" onclick="hapusItem(this)"
+        class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full text-white text-xs font-bold"
+        style="background: rgba(220,38,38,0.8)">✕</button>
 
-        <div class="mb-3">
-            <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
-                Kategori (Ukuran)
-            </label>
-            <div class="grid grid-cols-4 gap-2">
-                ${ukuranButtons}
-            </div>
+    <div class="mb-3">
+        <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
+            Kategori (Ukuran)
+        </label>
+        <div class="grid grid-cols-2 gap-2">
+${ukuranButtons}
+</div>
+    </div>
+
+    <div class="jenis-barang-wrapper">
+        <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
+            Jenis Barang
+            <span class="font-normal normal-case ml-1" style="color:#94a3b8">(pilih satu atau lebih)</span>
+        </label>
+        <div class="jenis-container grid grid-cols-2 gap-2">
+            ${jenisRows}
         </div>
-
-        <div class="jenis-barang-wrapper">
-            <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color:#64748b">
-                Jenis Barang
-                <span class="font-normal normal-case ml-1" style="color:#94a3b8">(pilih satu atau lebih)</span>
-            </label>
-            <div class="jenis-container grid grid-cols-2 gap-2">
-                ${jenisRows}
-            </div>
-        </div>`;
+        <div class="lainnya-wrapper hidden mt-2">
+            <input type="text" name="items[${idx}][jenis_barang_lainnya]"
+                class="lainnya-input w-full rounded-xl px-3 py-2.5 text-sm transition"
+                style="background:white;border:1.5px solid #ddd6fe;color:#374151"
+                placeholder="Tulis nama barang, pisahkan dengan koma jika lebih dari satu">
+        </div>
+    </div>`;
         }
 
         function buildJenisBarangCheckboxes(idx, ukuran) {
-            const items = jenisBarangData[ukuran] || [];
-            return items.map(item => `
+            const items = (jenisBarangData[ukuran] || [])
+                .filter(item => item.nama.toLowerCase() !== 'lainnya');
+
+            const checkboxes = items.map(item => `
         <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition jenis-item"
             style="background:white;border:1.5px solid #ddd6fe">
             <input type="checkbox" name="items[${idx}][jenis_barang][]"
@@ -425,6 +434,16 @@
                 style="accent-color:#7c3aed;width:14px;height:14px;flex-shrink:0">
             <span class="text-xs font-semibold text-gray-700">${item.nama}</span>
         </label>`).join('');
+
+            const lainnyaCheckbox = `
+        <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition jenis-item-lainnya col-span-2"
+            style="background:white;border:1.5px solid #ddd6fe">
+            <input type="checkbox" class="jenis-checkbox-lainnya"
+                style="accent-color:#7c3aed;width:14px;height:14px;flex-shrink:0">
+            <span class="text-xs font-semibold text-gray-700">Lainnya (tulis manual)</span>
+        </label>`;
+
+            return checkboxes + lainnyaCheckbox;
         }
 
         function bindItemEvents(container, idx) {
@@ -433,7 +452,6 @@
                 radio.addEventListener('change', function() {
                     const parentItem = this.closest('.item-barang');
 
-                    // Reset styling
                     parentItem.querySelectorAll('.ukuran-box').forEach(box => {
                         box.style.borderColor = '#ddd6fe';
                         box.style.color = '#94a3b8';
@@ -441,20 +459,22 @@
                         box.querySelector('div').style.color = '#cbd5e1';
                     });
 
-                    // Aktifkan yang dipilih
                     const box = this.nextElementSibling;
                     box.style.borderColor = '#7c3aed';
                     box.style.color = '#7c3aed';
                     box.style.background = 'white';
                     box.querySelector('div').style.color = '#a78bfa';
 
-                    // Update jenis barang sesuai ukuran
                     const ukuran = this.value;
                     const jenisContainer = parentItem.querySelector('.jenis-container');
                     jenisContainer.innerHTML = buildJenisBarangCheckboxes(idx, ukuran);
-
-                    // Bind checkbox events
                     bindCheckboxEvents(jenisContainer);
+
+                    // reset input manual saat ukuran berubah
+                    const lainnyaWrapper = parentItem.querySelector('.lainnya-wrapper');
+                    lainnyaWrapper.classList.add('hidden');
+                    lainnyaWrapper.querySelector('.lainnya-input').value = '';
+
                     updateSummary();
                 });
             });
@@ -476,6 +496,29 @@
                     }
                     updateSummary();
                 });
+            });
+
+            container.querySelectorAll('.jenis-checkbox-lainnya').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const label = this.closest('label');
+                    const wrapper = this.closest('.jenis-barang-wrapper').querySelector('.lainnya-wrapper');
+                    if (this.checked) {
+                        label.style.borderColor = '#7c3aed';
+                        label.style.background = '#faf5ff';
+                        wrapper.classList.remove('hidden');
+                        wrapper.querySelector('.lainnya-input').focus();
+                    } else {
+                        label.style.borderColor = '#ddd6fe';
+                        label.style.background = 'white';
+                        wrapper.classList.add('hidden');
+                        wrapper.querySelector('.lainnya-input').value = '';
+                    }
+                    updateSummary();
+                });
+            });
+
+            container.querySelectorAll('.lainnya-input').forEach(inp => {
+                inp.addEventListener('input', updateSummary);
             });
         }
 
@@ -502,21 +545,29 @@
 
                 const ukuran = ukuranChecked.value;
                 const harga = tarifData[ukuran] || 0;
-                const checked = [...item.querySelectorAll('.jenis-checkbox:checked')];
-                const namaBarang = checked.map(c => c.value).join(', ');
 
-                if (checked.length > 0) {
+                let namaList = [...item.querySelectorAll('.jenis-checkbox:checked')].map(c => c.value);
+
+                const lainnyaCb = item.querySelector('.jenis-checkbox-lainnya');
+                const lainnyaInput = item.querySelector('.lainnya-input');
+                if (lainnyaCb && lainnyaCb.checked && lainnyaInput.value.trim() !== '') {
+                    const extras = lainnyaInput.value.split(',').map(s => s.trim()).filter(Boolean);
+                    namaList = namaList.concat(extras);
+                }
+
+                if (namaList.length > 0) {
+                    const namaBarang = namaList.join(', ');
                     html += `
-                <div class="flex justify-between items-start gap-2">
-                    <div>
-                        <span class="px-1.5 py-0.5 rounded text-xs font-black text-white"
-                            style="background:#5b21b6">${ukuran}</span>
-                        <p class="text-xs text-gray-500 mt-0.5">${namaBarang}</p>
-                    </div>
-                    <span class="text-xs font-bold text-gray-700 flex-shrink-0">
-                        Rp ${harga.toLocaleString('id-ID')}
-                    </span>
-                </div>`;
+            <div class="flex justify-between items-start gap-2">
+                <div>
+                    <span class="px-1.5 py-0.5 rounded text-xs font-black text-white"
+                        style="background:#5b21b6">${ukuran}</span>
+                    <p class="text-xs text-gray-500 mt-0.5">${namaBarang}</p>
+                </div>
+                <span class="text-xs font-bold text-gray-700 flex-shrink-0">
+                    Rp ${harga.toLocaleString('id-ID')}
+                </span>
+            </div>`;
                     total += harga;
                 }
             });

@@ -209,7 +209,10 @@
                             @if ($event->tarifs && $event->tarifs->count() > 0)
                                 <div class="px-5 pb-4 flex gap-2 flex-wrap"
                                     style="border-top: 1px solid #f5f3ff; padding-top: 12px">
-                                    @foreach ($event->tarifs->sortBy('ukuran') as $tarif)
+                                    @php
+                                        $urutanUkuran = ['S' => 1, 'M' => 2, 'L' => 3, 'XL' => 4, 'Gadget' => 5];
+                                    @endphp
+                                    @foreach ($event->tarifs->sortBy(fn($tarif) => $urutanUkuran[$tarif->ukuran] ?? 99) as $tarif)
                                         <span class="text-xs px-2.5 py-1 rounded-lg font-semibold"
                                             style="background: #f8faff; color: #64748b; border: 1px solid #e2e8f0">
                                             {{ $tarif->ukuran }}: Rp {{ number_format($tarif->harga, 0, ',', '.') }}
