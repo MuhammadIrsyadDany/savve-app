@@ -87,28 +87,54 @@ class TransaksiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_penitip'            => 'required|string|max:255',
-            'no_whatsapp'             => 'required|string|max:20',
-            'metode_bayar'            => 'required|in:QRIS,Cash,Web',
-            'items'                   => 'required|array|min:1',
-            'items.*.ukuran'          => 'required|in:S,M,L,XL,Gadget',
-            'items.*.jenis_barang'    => 'required|array|min:1',
-            'items.*.jenis_barang.*'  => 'required|string|max:100',
+            'nama_penitip'                        => 'required|string|max:255',
+            'no_whatsapp'                         => 'required|string|max:20',
+            'metode_bayar'                        => 'required|in:QRIS,Cash,Web',
+            'items'                               => 'required|array|min:1',
+            'items.*.ukuran'                      => 'required|in:S,M,L,XL,Gadget',
+            'items.*.barang'                      => 'nullable|array',
+            'items.*.barang.*.nama'               => 'required_with:items.*.barang|string|max:100',
+            'items.*.barang.*.selected'           => 'nullable|in:0,1',
+            'items.*.barang.*.keterangan'         => 'nullable|string|max:255',
+            'items.*.barang.*.nomor_label'        => 'nullable|string|max:50',
+            'items.*.jenis_barang_lainnya'        => 'nullable|string|max:500',
         ]);
 
         $items = $request->input('items');
 
         foreach ($items as $idx => &$item) {
-            $jenis = $item['jenis_barang'] ?? [];
+            $jenis = [];
 
+            // Barang dari checkbox terpilih, lengkap dengan keterangan & nomor label (opsional)
+            foreach (($item['barang'] ?? []) as $row) {
+                if (($row['selected'] ?? '0') === '1') {
+                    $jenis[] = [
+                        'nama'        => $row['nama'] ?? '-',
+                        'keterangan'  => !empty($row['keterangan']) ? trim($row['keterangan']) : null,
+                        'nomor_label' => !empty($row['nomor_label']) ? trim($row['nomor_label']) : null,
+                    ];
+                }
+            }
+
+            // Barang dari input manual "Lainnya" (tanpa keterangan/nomor, dipisah koma)
             if (!empty($item['jenis_barang_lainnya'])) {
                 $extras = array_map('trim', explode(',', $item['jenis_barang_lainnya']));
                 $extras = array_filter($extras);
-                $jenis = array_merge($jenis, $extras);
+                foreach ($extras as $extra) {
+                    $jenis[] = ['nama' => $extra, 'keterangan' => null, 'nomor_label' => null];
+                }
             }
 
-            $item['jenis_barang'] = $jenis;
-            unset($item['jenis_barang_lainnya']);
+            // Validasi manual: setiap item minimal harus punya 1 jenis barang
+            if (empty($jenis)) {
+                return back()->withInput()
+                    ->withErrors([
+                        "items.{$idx}.jenis_barang" => 'Pilih minimal satu jenis barang atau isi kolom "Lainnya".',
+                    ]);
+            }
+
+            $item['jenis_barang'] = array_values($jenis);
+            unset($item['barang'], $item['jenis_barang_lainnya']);
         }
         unset($item);
 
@@ -122,48 +148,56 @@ class TransaksiController extends Controller
         $tarifs = Tarif::where('event_id', $event->id)->get()->keyBy('ukuran');
 
         $transaksi = null;
+        $maxAttempts = 3;
 
-        DB::transaction(function () use ($request, $event, $tarifs, &$transaksi) {
-            // Generate nomor transaksi
-            $nomor = Transaksi::generateNomor($event);
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                DB::transaction(function () use ($request, $event, $tarifs, $items, &$transaksi) {
+                    $nomor = Transaksi::generateNomor($event);
 
-            // Simpan foto penitipan jika ada
-            $fotoPath = null;
-            if ($request->filled('foto_penitipan')) {
-                $fotoPath = $this->simpanFotoBase64(
-                    $request->foto_penitipan,
-                    'foto-penitipan'
-                );
+                    $fotoPath = null;
+                    if ($request->filled('foto_penitipan')) {
+                        $fotoPath = $this->simpanFotoBase64($request->foto_penitipan, 'foto-penitipan');
+                    }
+
+                    $transaksi = Transaksi::create([
+                        'nomor_transaksi'  => $nomor,
+                        'event_id'         => $event->id,
+                        'kasir_id'         => auth()->id(),
+                        'nama_penitip'     => $request->nama_penitip,
+                        'no_whatsapp'      => $request->no_whatsapp,
+                        'metode_bayar'     => $request->metode_bayar,
+                        'status'           => 'dititip',
+                        'waktu_penitipan'  => now(),
+                        'foto_penitipan'   => $fotoPath,
+                    ]);
+
+                    foreach ($items as $item) {
+                        $ukuran      = $item['ukuran'];
+                        $jenisBarang = $item['jenis_barang'];
+                        $tarif       = $tarifs[$ukuran] ?? null;
+                        $harga       = $tarif ? $tarif->harga : 0;
+
+                        DetailTransaksi::create([
+                            'transaksi_id' => $transaksi->id,
+                            'ukuran'       => $ukuran,
+                            'jenis_barang' => $jenisBarang,
+                            'harga_satuan' => $harga,
+                            'subtotal'     => $harga,
+                        ]);
+                    }
+                });
+
+                break; // sukses, keluar loop
+
+            } catch (\Illuminate\Database\QueryException $e) {
+                // 1062 = duplicate entry
+                if ($e->errorInfo[1] == 1062 && $attempt < $maxAttempts) {
+                    continue; // coba lagi dengan nomor baru
+                }
+                throw $e;
             }
-
-            $transaksi = Transaksi::create([
-                'nomor_transaksi'  => $nomor,
-                'event_id'         => $event->id,
-                'kasir_id'         => auth()->id(),
-                'nama_penitip'     => $request->nama_penitip,
-                'no_whatsapp'      => $request->no_whatsapp,
-                'metode_bayar'     => $request->metode_bayar,
-                'status'           => 'dititip',
-                'waktu_penitipan'  => now(),
-                'foto_penitipan'   => $fotoPath,
-            ]);
-
-            // Simpan setiap item (per kategori/ukuran)
-            foreach ($request->items as $item) {
-                $ukuran      = $item['ukuran'];
-                $jenisBarang = $item['jenis_barang'];
-                $tarif       = $tarifs[$ukuran] ?? null;
-                $harga       = $tarif ? $tarif->harga : 0;
-
-                DetailTransaksi::create([
-                    'transaksi_id' => $transaksi->id,
-                    'ukuran'       => $ukuran,
-                    'jenis_barang' => $jenisBarang,
-                    'harga_satuan' => $harga,
-                    'subtotal'     => $harga, // 1 item = 1 tarif
-                ]);
-            }
-        });
+        }
 
         return redirect()->route('kasir.transaksi.show', $transaksi)
             ->with('success', 'Transaksi berhasil disimpan.');

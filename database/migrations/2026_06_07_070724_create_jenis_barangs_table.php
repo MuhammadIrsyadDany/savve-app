@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('jenis_barangs', function (Blueprint $table) {
             $table->id();
-            $table->string('ukuran', 5); // S, M, L, XL
+            $table->string('ukuran', 10); // S, M, L, XL, Gadget
             $table->string('nama');      // Parfum, Vape, Jaket, dll
             $table->boolean('is_active')->default(true);
             $table->integer('urutan')->default(0);

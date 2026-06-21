@@ -120,7 +120,7 @@
                         <label class="block text-xs font-bold uppercase tracking-wider mb-2" style="color: #64748b">Metode
                             Pembayaran</label>
                         <div class="grid grid-cols-3 gap-3">
-                            @foreach (['QRIS' => '📱', 'Cash' => '💵', 'Online' => '🌐'] as $metode => $icon)
+                            @foreach (['QRIS' => '📱', 'Cash' => '💵', 'Web' => '🌐'] as $metode => $icon)
                                 <label class="metode-label cursor-pointer">
                                     <input type="radio" name="metode_bayar" value="{{ $metode }}"
                                         class="hidden metode-radio"
@@ -426,14 +426,27 @@ ${ukuranButtons}
             const items = (jenisBarangData[ukuran] || [])
                 .filter(item => item.nama.toLowerCase() !== 'lainnya');
 
-            const checkboxes = items.map(item => `
-        <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition jenis-item"
-            style="background:white;border:1.5px solid #ddd6fe">
-            <input type="checkbox" name="items[${idx}][jenis_barang][]"
-                value="${item.nama}" class="jenis-checkbox"
-                style="accent-color:#7c3aed;width:14px;height:14px;flex-shrink:0">
-            <span class="text-xs font-semibold text-gray-700">${item.nama}</span>
-        </label>`).join('');
+            const rows = items.map((item, i) => `
+        <div class="jenis-row">
+            <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition jenis-item"
+                style="background:white;border:1.5px solid #ddd6fe">
+                <input type="checkbox" name="items[${idx}][barang][${i}][selected]" value="1"
+                    class="jenis-checkbox"
+                    style="accent-color:#7c3aed;width:14px;height:14px;flex-shrink:0">
+                <span class="text-xs font-semibold text-gray-700">${item.nama}</span>
+            </label>
+            <input type="hidden" name="items[${idx}][barang][${i}][nama]" value="${item.nama}">
+            <div class="jenis-detail-wrapper hidden mt-1.5 space-y-1.5">
+                <input type="text" name="items[${idx}][barang][${i}][keterangan]"
+                    class="w-full rounded-lg px-2.5 py-2 text-xs"
+                    style="border:1px solid #e9d5ff;background:#faf5ff"
+                    placeholder="Keterangan (opsional, mis: warna/merk)">
+                <input type="text" name="items[${idx}][barang][${i}][nomor_label]"
+                    class="w-full rounded-lg px-2.5 py-2 text-xs"
+                    style="border:1px solid #e9d5ff;background:#faf5ff"
+                    placeholder="No. Label (opsional)">
+            </div>
+        </div>`).join('');
 
             const lainnyaCheckbox = `
         <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition jenis-item-lainnya col-span-2"
@@ -443,7 +456,7 @@ ${ukuranButtons}
             <span class="text-xs font-semibold text-gray-700">Lainnya (tulis manual)</span>
         </label>`;
 
-            return checkboxes + lainnyaCheckbox;
+            return rows + lainnyaCheckbox;
         }
 
         function bindItemEvents(container, idx) {
@@ -486,13 +499,18 @@ ${ukuranButtons}
         function bindCheckboxEvents(container) {
             container.querySelectorAll('.jenis-checkbox').forEach(cb => {
                 cb.addEventListener('change', function() {
+                    const row = this.closest('.jenis-row');
                     const label = this.closest('label');
+                    const detailWrapper = row.querySelector('.jenis-detail-wrapper');
                     if (this.checked) {
                         label.style.borderColor = '#7c3aed';
                         label.style.background = '#faf5ff';
+                        detailWrapper.classList.remove('hidden');
                     } else {
                         label.style.borderColor = '#ddd6fe';
                         label.style.background = 'white';
+                        detailWrapper.classList.add('hidden');
+                        detailWrapper.querySelectorAll('input').forEach(inp => inp.value = '');
                     }
                     updateSummary();
                 });
@@ -546,7 +564,10 @@ ${ukuranButtons}
                 const ukuran = ukuranChecked.value;
                 const harga = tarifData[ukuran] || 0;
 
-                let namaList = [...item.querySelectorAll('.jenis-checkbox:checked')].map(c => c.value);
+                let namaList = [...item.querySelectorAll('.jenis-checkbox:checked')].map(cb => {
+                    const row = cb.closest('.jenis-row');
+                    return row.querySelector('input[type="hidden"]').value;
+                });
 
                 const lainnyaCb = item.querySelector('.jenis-checkbox-lainnya');
                 const lainnyaInput = item.querySelector('.lainnya-input');

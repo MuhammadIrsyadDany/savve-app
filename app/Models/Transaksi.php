@@ -54,10 +54,17 @@ class Transaksi extends Model
     public static function generateNomor(Event $event): string
     {
         $kodeEvent = $event->kode_event ?? 'EVT';
+        $prefix    = "SVV-{$kodeEvent}-";
 
-        $count  = static::where('event_id', $event->id)->count() + 1;
-        $urutan = str_pad($count, 4, '0', STR_PAD_LEFT);
+        $lastNomor = static::where('event_id', $event->id)
+            ->where('nomor_transaksi', 'like', $prefix . '%')
+            ->lockForUpdate()
+            ->orderByRaw('CAST(SUBSTRING(nomor_transaksi, -4) AS UNSIGNED) DESC')
+            ->value('nomor_transaksi');
 
-        return "SVV-{$kodeEvent}-{$urutan}";
+        $lastUrutan = $lastNomor ? (int) substr($lastNomor, -4) : 0;
+        $urutan     = str_pad($lastUrutan + 1, 4, '0', STR_PAD_LEFT);
+
+        return $prefix . $urutan;
     }
 }

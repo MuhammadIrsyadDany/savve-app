@@ -39,4 +39,29 @@ class DetailTransaksi extends Model
     {
         return count($this->jenis_barang ?? []);
     }
+
+    public function jenisBarangFormatted(): array
+    {
+        return collect($this->jenis_barang ?? [])->map(function ($item) {
+            if (is_array($item)) {
+                return [
+                    'nama'        => $item['nama'] ?? '-',
+                    'keterangan'  => $item['keterangan'] ?? null,
+                    'nomor_label' => $item['nomor_label'] ?? null,
+                ];
+            }
+            // Data lama: cuma string nama barang
+            return ['nama' => $item, 'keterangan' => null, 'nomor_label' => null];
+        })->all();
+    }
+    public function getJenisBarangLabelAttribute(): string
+    {
+        return collect($this->jenisBarangFormatted())->map(function ($it) {
+            $extra = array_filter([
+                $it['keterangan'] ?: null,
+                $it['nomor_label'] ? "#{$it['nomor_label']}" : null,
+            ]);
+            return $it['nama'] . ($extra ? ' (' . implode(', ', $extra) . ')' : '');
+        })->implode(', ');
+    }
 }

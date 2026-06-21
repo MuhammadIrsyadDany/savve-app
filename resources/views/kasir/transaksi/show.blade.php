@@ -141,8 +141,19 @@
                         <tbody>
                             @foreach ($transaksi->details as $detail)
                                 <tr class="table-row" style="border-top: 1px solid #f5f3ff">
-                                    <td class="px-5 py-4 font-medium text-gray-700 whitespace-nowrap">
-                                        {{ implode(', ', $detail->jenis_barang ?? []) }}
+                                    <td class="px-5 py-4 font-medium text-gray-700">
+                                        @foreach ($detail->jenisBarangFormatted() as $jb)
+                                            <div class="mb-1 last:mb-0">
+                                                <span>{{ $jb['nama'] }}</span>
+                                                @if (!empty($jb['nomor_label']))
+                                                    <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold"
+                                                        style="background:#fef3c7;color:#92400e">#{{ $jb['nomor_label'] }}</span>
+                                                @endif
+                                                @if (!empty($jb['keterangan']))
+                                                    <div class="text-xs text-gray-400">{{ $jb['keterangan'] }}</div>
+                                                @endif
+                                            </div>
+                                        @endforeach
                                     </td>
 
                                     <td class="px-5 py-4 whitespace-nowrap">

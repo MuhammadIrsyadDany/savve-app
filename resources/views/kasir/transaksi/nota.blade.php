@@ -19,11 +19,15 @@
     <style>
         :root {
             --lebar-kertas: 58mm;
-            /* lebar fisik paper roll thermal */
+            --lebar-cetak-aman: 46mm;
+            /* ganti dari --offset-cetak jadi ini */
             --pad-x: 3.5mm;
             --pad-y: 3mm;
             --pad-x-print: 2.5mm;
             --pad-y-print: 2mm;
+
+            --tinggi-nota: 200mm;
+            --tinggi-label: 120mm;
         }
 
         * {
@@ -33,9 +37,10 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
+            font-family: 'Verdana', 'Tahoma', 'Segoe UI', sans-serif;
             font-size: 9px;
-            line-height: 1.4;
+            line-height: 1.5;
+            letter-spacing: 0.15px;
             background: #ddd;
             display: flex;
             flex-direction: column;
@@ -54,7 +59,8 @@
 
         .nota-separator {
             width: var(--lebar-kertas);
-            display: flex;
+            display: flex !important;
+            padding: 14px 0 !important;
             align-items: center;
             gap: 6px;
             padding: 10px 0;
@@ -151,6 +157,11 @@
             border-right: 1.5px solid #000;
         }
 
+        /* Lembar label tidak punya QR, jadi identity-left full-width tanpa garis pemisah */
+        .identity-block--label .identity-left {
+            border-right: none;
+        }
+
         .identity-left .lbl {
             font-size: 6px;
             letter-spacing: 1px;
@@ -163,8 +174,8 @@
             font-size: 13px;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
-            line-height: 1.1;
+            letter-spacing: 0.6px;
+            line-height: 1.2;
             word-break: break-word;
         }
 
@@ -175,9 +186,10 @@
         }
 
         .identity-left .kode {
+            font-family: 'Consolas', 'Courier New', monospace;
             font-size: 8px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
         }
 
         .identity-right {
@@ -190,10 +202,17 @@
             gap: 2px;
         }
 
+        /*
+             * PERBAIKAN KUALITAS QR (1/3):
+             * Perbesar ukuran fisik QR dari 72px -> 92px (~24mm pada cetak).
+             * QR kecil + padat = modul rapat = mudah blur di printer thermal
+             * resolusi rendah (180-203 dpi). Ukuran lebih besar = lebih toleran.
+             */
         .identity-right svg {
             display: block;
-            width: 40px !important;
-            height: 40px !important;
+            width: 92px !important;
+            height: 92px !important;
+            flex-shrink: 0;
         }
 
         .identity-right .qr-label {
@@ -207,15 +226,31 @@
 
         /* ===== Badge ukuran (lembar label) ===== */
         .ukuran-badge {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border: 2px solid #000;
-            font-size: 22px;
             font-weight: 900;
-            width: 34px;
-            height: 34px;
-            line-height: 30px;
             text-align: center;
             margin-bottom: 3px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .ukuran-badge--short {
+            width: 34px;
+            height: 34px;
+            font-size: 22px;
+        }
+
+        .ukuran-badge--long {
+            min-width: 34px;
+            height: 22px;
+            padding: 0 6px;
+            font-size: 9px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .kategori-row {
@@ -226,23 +261,56 @@
         }
 
         .kategori-row .info-jenis-label {
-            font-size: 7px;
+            font-size: 7.5px;
             color: #666;
             letter-spacing: 1px;
             text-transform: uppercase;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
         }
 
         .kategori-row .info-jenis-nilai {
-            font-size: 10px;
+            font-size: 15px;
             font-weight: 900;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         .kategori-row .info-jenis-tarif {
-            font-size: 7px;
+            font-size: 8px;
             color: #555;
-            margin-top: 3px;
+            margin-top: 4px;
+        }
+
+        .barang-detail-block {
+            margin-bottom: 4px;
+        }
+
+        .barang-detail-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .nomor-label-badge {
+            display: inline-block;
+            margin-left: 4px;
+            padding: 1px 6px;
+            border: 1.3px solid #000;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 900;
+            vertical-align: middle;
+        }
+
+        .info-jenis-keterangan {
+            font-size: 8px;
+            color: #555;
+            margin-top: 1px;
+        }
+
+        .col-detail-ket {
+            font-size: 7px;
+            color: #666;
+            font-weight: 400;
+            display: block;
+            margin-top: 1px;
         }
 
         /* ===== Garis & judul section ===== */
@@ -275,8 +343,9 @@
         .info-row {
             display: flex;
             align-items: baseline;
-            padding: 1px 0;
+            padding: 1.5px 0;
             font-size: 8px;
+            letter-spacing: 0.2px;
             gap: 2px;
         }
 
@@ -301,7 +370,8 @@
         .barang-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 8px;
+            font-size: 9.5px;
+            letter-spacing: 0.2px;
             margin-bottom: 2px;
         }
 
@@ -338,6 +408,7 @@
         .barang-table .col-nama {
             width: 48%;
             font-weight: 700;
+            font-size: 10px;
         }
 
         .barang-table .col-detail {
@@ -348,7 +419,9 @@
 
         .barang-table .col-harga {
             width: 24%;
+            font-family: 'Consolas', 'Courier New', monospace;
             font-weight: 700;
+            letter-spacing: 0.3px;
             text-align: right;
         }
 
@@ -370,8 +443,10 @@
         }
 
         .total-box .total-value {
+            font-family: 'Consolas', 'Courier New', monospace;
             font-size: 11px;
             font-weight: 900;
+            letter-spacing: 0.5px;
         }
 
         /* ===== Footer nota & label ===== */
@@ -470,6 +545,13 @@
             background: #f0f0f0;
         }
 
+        /* ===== Loading indicator saat tombol cetak ditekan ===== */
+        .btn-print.loading {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         .print-hint {
             font-size: 10.5px;
             color: #666;
@@ -477,46 +559,112 @@
             font-family: sans-serif;
         }
 
+        /* ===== PRINT STYLES ===== */
         @media print {
+
+            html,
             body {
-                background: #fff !important;
-                padding: 0;
-                align-items: center;
+                width: 58mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important;
             }
 
             .nota-wrapper {
-                box-shadow: none;
-                width: var(--lebar-kertas);
-                padding: var(--pad-y-print) var(--pad-x-print);
-                page-break-after: always;
-                break-after: page;
+                width: var(--lebar-cetak-aman) !important;
+                margin: 0 !important;
+                padding: var(--pad-y-print) var(--pad-x-print) !important;
             }
+        }
 
-            .nota-wrapper:last-of-type {
-                page-break-after: avoid;
-                break-after: avoid;
-            }
+        .nota-wrapper--akhir {
+            page-break-after: avoid;
+            break-after: avoid;
+        }
 
-            .nota-separator {
-                color: #000 !important;
-                padding: 6px 0;
-            }
+        /*
+             * TAHAP 2: Named pages untuk ukuran berbeda per tipe lembar.
+             * Didukung Chrome 85+. Fallback ukuran @page global di bawah
+             * tetap aktif untuk browser lain.
+             */
+        .nota-wrapper[data-tipe="nota"] {
+            page: halaman-nota;
+        }
 
-            .nota-separator::before,
-            .nota-separator::after {
-                border-top: 1px dashed #000 !important;
-            }
+        .nota-wrapper[data-tipe="label"] {
+            page: halaman-label;
+        }
 
-            .print-actions {
-                display: none !important;
-            }
+        @page halaman-nota {
+            margin: 0;
+            size: 58mm var(--tinggi-nota);
+        }
 
-            * {
-                background: #fff !important;
-                color: #000 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+        @page halaman-label {
+            margin: 0;
+            size: 58mm var(--tinggi-label);
+        }
+
+        /* Fallback: ukuran @page global (diisi JS, dipakai browser tanpa named page) */
+        @page {
+            margin: 0;
+            size: 58mm var(--tinggi-nota);
+        }
+
+        .print-actions {
+            display: none !important;
+        }
+
+        /*
+             * TAHAP 3: Override warna global, tapi kecualikan area QR code
+             * agar path SVG QR tidak rusak saat dicetak.
+             */
+        *:not(.identity-right):not(.identity-right *) {
+            background: #fff !important;
+            color: #000 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /*
+             * PERBAIKAN KUALITAS QR (2/3):
+             * - shape-rendering: crispEdges mencegah anti-aliasing yang
+             *   membuat tepi modul QR jadi abu-abu/blur saat dicetak.
+             * - image-rendering: pixelated sebagai cadangan untuk browser
+             *   yang merender SVG sebagai raster saat print.
+             * - vector-effect: non-scaling-stroke menjaga ketebalan garis
+             *   tetap konsisten walau SVG di-scale oleh CSS width/height.
+             */
+        .identity-right svg,
+        .identity-right svg * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            shape-rendering: crispEdges !important;
+            image-rendering: pixelated !important;
+            vector-effect: non-scaling-stroke;
+        }
+
+        /* Hanya paksa putih pada elemen background asli */
+        .identity-right svg rect[fill="#ffffff"],
+        .identity-right svg rect[fill="#FFFFFF"],
+        .identity-right svg rect[fill="white"] {
+            fill: #fff !important;
+        }
+
+        /*
+             * PERBAIKAN KUALITAS QR (3/3):
+             * Aturan lama hanya menyasar path[fill="#000000"]. Library QR
+             * (BaconQrCode) kadang merender modul sebagai <rect>, bukan
+             * <path>, sehingga aturan lama tidak kena dan modul ikut
+             * di-grayscale oleh browser saat print (jadi pudar/abu-abu).
+             * Aturan di bawah memaksa SEMUA elemen gambar (rect & path)
+             * yang bukan background menjadi hitam solid, apa pun fill
+             * aslinya.
+             */
+        .identity-right svg rect:not([fill="#ffffff"]):not([fill="#FFFFFF"]):not([fill="white"]),
+        .identity-right svg path:not([fill="none"]) {
+            fill: #000 !important;
+            stroke: none !important;
         }
     </style>
 </head>
@@ -525,12 +673,21 @@
 
     @foreach ($halaman as $h)
         @if ($h['tipe'] === 'label')
+            {{--
+                Separator hanya tampil di layar (di-hide via CSS saat print).
+                Tidak perlu lagi menjadi pemisah visual antar halaman thermal.
+            --}}
             <div class="nota-separator">
                 &#8212; potong di sini &nbsp;&middot;&nbsp; lembar {{ $loop->iteration }} ditempel pada barang &#8212;
             </div>
         @endif
 
-        <div class="nota-wrapper">
+        {{--
+            TAHAP 2: Tambahkan data-tipe untuk named page CSS.
+            TAHAP 1: nota-wrapper--akhir tetap dipakai untuk break-after: avoid.
+        --}}
+        <div class="nota-wrapper @if ($loop->last) nota-wrapper--akhir @endif"
+            data-tipe="{{ $h['tipe'] }}">
             <div class="doc-title-bar">
                 <span class="doc-title">
                     {{ $h['tipe'] === 'nota' ? 'Bukti Transaksi Penitipan' : 'Label Identifikasi Barang' }}
@@ -546,7 +703,7 @@
                 </div>
             </div>
 
-            <div class="identity-block">
+            <div class="identity-block @if ($h['tipe'] !== 'nota') identity-block--label @endif">
                 <div class="identity-left">
                     <div class="lbl">Nama Penitip</div>
                     <div class="nama">{{ $transaksi->nama_penitip }}</div>
@@ -555,24 +712,47 @@
                         <div class="kode">{{ $transaksi->nomor_transaksi }}</div>
                     </div>
                 </div>
-                <div class="identity-right">
-                    {!! QrCode::size(40)->margin(1)->errorCorrection('H')->style('square')->generate($transaksi->nomor_transaksi) !!}
-                    <div class="qr-label">Scan saat<br>pengambilan</div>
-                </div>
+                @if ($h['tipe'] === 'nota')
+                    {{--
+                        QR HANYA DI LEMBAR NOTA (lembar 1):
+                        Lembar label barang tidak lagi menampilkan QR, cukup
+                        nama penitip + kode penitipan saja. QR untuk verifikasi
+                        pengambilan tetap ada di nota utama.
+                    --}}
+                    <div class="identity-right">
+                        {!! QrCode::size(300)->margin(1)->errorCorrection('H')->style('square')->generate($transaksi->nomor_transaksi) !!}
+                        <div class="qr-label">Scan saat<br>pengambilan</div>
+                    </div>
+                @endif
             </div>
 
             @if ($h['tipe'] === 'nota')
                 <div class="info-section">
-                    <div class="info-row"><span class="lbl">Event</span><span class="sep">:</span><span
-                            class="val">{{ $transaksi->event->nama_event }}</span></div>
-                    <div class="info-row"><span class="lbl">Waktu Penitipan</span><span class="sep">:</span><span
-                            class="val">{{ $transaksi->waktu_penitipan->format('d/m/Y H:i') }}</span></div>
-                    <div class="info-row"><span class="lbl">No. WhatsApp</span><span class="sep">:</span><span
-                            class="val">{{ $transaksi->no_whatsapp }}</span></div>
-                    <div class="info-row"><span class="lbl">Metode Bayar</span><span class="sep">:</span><span
-                            class="val">{{ $transaksi->metode_bayar }}</span></div>
-                    <div class="info-row"><span class="lbl">Kasir</span><span class="sep">:</span><span
-                            class="val">{{ $transaksi->kasir->name }}</span></div>
+                    <div class="info-row">
+                        <span class="lbl">Event</span>
+                        <span class="sep">:</span>
+                        <span class="val">{{ $transaksi->event->nama_event }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="lbl">Waktu Penitipan</span>
+                        <span class="sep">:</span>
+                        <span class="val">{{ $transaksi->waktu_penitipan->format('d/m/Y H:i') }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="lbl">No. WhatsApp</span>
+                        <span class="sep">:</span>
+                        <span class="val">{{ $transaksi->no_whatsapp }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="lbl">Metode Bayar</span>
+                        <span class="sep">:</span>
+                        <span class="val">{{ $transaksi->metode_bayar }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="lbl">Kasir</span>
+                        <span class="sep">:</span>
+                        <span class="val">{{ $transaksi->kasir->name }}</span>
+                    </div>
                 </div>
 
                 <hr class="divider">
@@ -591,7 +771,18 @@
                         @foreach ($transaksi->details as $i => $detail)
                             <tr>
                                 <td class="col-no">{{ $i + 1 }}</td>
-                                <td class="col-nama">{{ implode(', ', $detail->jenis_barang ?? []) }}</td>
+                                <td class="col-nama">
+                                    @foreach ($detail->jenisBarangFormatted() as $jb)
+                                        <div>
+                                            {{ $jb['nama'] }}@if (!empty($jb['nomor_label']))
+                                                <span class="nomor-label-badge">#{{ $jb['nomor_label'] }}</span>
+                                            @endif
+                                            @if (!empty($jb['keterangan']))
+                                                <span class="col-detail-ket">{{ $jb['keterangan'] }}</span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </td>
                                 <td class="col-detail">{{ $detail->ukuran }}</td>
                                 <td class="col-harga">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                             </tr>
@@ -617,22 +808,47 @@
                 </div>
             @else
                 <div class="info-section">
-                    <div class="info-row"><span class="lbl">Event</span><span class="sep">:</span><span
-                            class="val">{{ $transaksi->event->nama_event }}</span></div>
-                    <div class="info-row"><span class="lbl">Waktu Penitipan</span><span class="sep">:</span><span
-                            class="val">{{ $transaksi->waktu_penitipan->format('d/m/Y H:i') }}</span></div>
-                    <div class="info-row"><span class="lbl">No. WhatsApp</span><span class="sep">:</span><span
-                            class="val">{{ $transaksi->no_whatsapp }}</span></div>
+                    <div class="info-row">
+                        <span class="lbl">Event</span>
+                        <span class="sep">:</span>
+                        <span class="val">{{ $transaksi->event->nama_event }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="lbl">Waktu Penitipan</span>
+                        <span class="sep">:</span>
+                        <span class="val">{{ $transaksi->waktu_penitipan->format('d/m/Y H:i') }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="lbl">No. WhatsApp</span>
+                        <span class="sep">:</span>
+                        <span class="val">{{ $transaksi->no_whatsapp }}</span>
+                    </div>
                 </div>
 
                 <hr class="divider">
 
                 <div class="section-title">— Kategori Barang Ini —</div>
+                @php
+                    $ukuranLabel = $h['detail']->ukuran;
+                    $kelasBadge = strlen($ukuranLabel) > 2 ? 'ukuran-badge--long' : 'ukuran-badge--short';
+                @endphp
                 <div class="kategori-row">
-                    <div class="ukuran-badge">{{ $h['detail']->ukuran }}</div>
-                    <div>
+                    <div class="ukuran-badge {{ $kelasBadge }}">{{ $ukuranLabel }}</div>
+                    <div style="flex: 1; min-width: 0">
                         <div class="info-jenis-label">Jenis Barang</div>
-                        <div class="info-jenis-nilai">{{ implode(', ', $h['detail']->jenis_barang ?? []) }}</div>
+                        @foreach ($h['detail']->jenisBarangFormatted() as $jb)
+                            <div class="barang-detail-block">
+                                <div class="info-jenis-nilai">
+                                    {{ $jb['nama'] }}
+                                    @if (!empty($jb['nomor_label']))
+                                        <span class="nomor-label-badge">No. {{ $jb['nomor_label'] }}</span>
+                                    @endif
+                                </div>
+                                @if (!empty($jb['keterangan']))
+                                    <div class="info-jenis-keterangan">{{ $jb['keterangan'] }}</div>
+                                @endif
+                            </div>
+                        @endforeach
                         <div class="info-jenis-tarif">Tarif: Rp
                             {{ number_format($h['detail']->subtotal, 0, ',', '.') }}</div>
                     </div>
@@ -651,53 +867,82 @@
 
     <div class="print-actions">
         <div class="print-actions-row">
-            <button id="btnCetakPdf" class="btn-print" type="button">🖶 Cetak {{ $totalLembar }} Lembar</button>
+            <button id="btnCetakPdf" class="btn-print" type="button">
+                🖶 Cetak {{ $totalLembar }} Lembar
+            </button>
             <button class="btn-close" type="button" onclick="window.close()">✕ Tutup</button>
         </div>
-        <div class="print-hint">Tips: nonaktifkan opsi “Headers and footers” pada dialog print agar ukuran hasil cetak
-            tetap pas.</div>
+        <div class="print-hint">
+            Tips: nonaktifkan opsi "Headers and footers" pada dialog print agar ukuran hasil cetak tetap pas.
+        </div>
     </div>
 
     <script>
+        /**
+         * Konversi px (96 dpi layar) ke milimeter.
+         */
         function pxToMm(px) {
-            return px / 3.7795275591; // konversi px (96dpi) ke mm
+            return px / 3.7795275591;
         }
 
-        document.getElementById('btnCetakPdf').addEventListener('click', function() {
-            const wrappers = document.querySelectorAll('.nota-wrapper');
-            if (wrappers.length === 0) return;
+        window.addEventListener('load', function() {
+            const btn = document.getElementById('btnCetakPdf');
 
-            const LEBAR_MM = 58;
-            const BUFFER_MM = 5; // dinaikkan dari 3mm jadi 5mm untuk jaga-jaga ekstra
+            btn.addEventListener('click', function() {
+                const wrappers = document.querySelectorAll('.nota-wrapper');
+                if (!wrappers.length) return;
 
-            const tinggiNota = pxToMm(wrappers[0].offsetHeight) + BUFFER_MM;
+                btn.classList.add('loading');
+                btn.textContent = '⏳ Menyiapkan...';
 
-            let tinggiLabel = tinggiNota;
-            if (wrappers.length > 1) {
-                tinggiLabel = 0;
-                for (let i = 1; i < wrappers.length; i++) {
-                    // ikut hitung tinggi nota-separator yang ada SEBELUM wrapper ini
-                    const separator = wrappers[i].previousElementSibling;
-                    const tinggiSep = (separator && separator.classList.contains('nota-separator')) ?
-                        pxToMm(separator.offsetHeight) :
-                        0;
+                const LEBAR_MM = 58;
+                const BUFFER_MM = 20;
 
-                    const totalTinggi = pxToMm(wrappers[i].offsetHeight) + tinggiSep + BUFFER_MM;
-                    tinggiLabel = Math.max(tinggiLabel, totalTinggi);
-                }
-            }
+                let tinggiNota = 0;
+                let tinggiLabel = 0;
 
-            const style = document.createElement('style');
-            style.textContent = `
+                wrappers.forEach(function(wrapper) {
+                    const tipe = wrapper.dataset.tipe;
+                    const tinggi = pxToMm(wrapper.offsetHeight) + BUFFER_MM;
+                    if (tipe === 'nota') {
+                        tinggiNota = Math.max(tinggiNota, tinggi);
+                    } else {
+                        tinggiLabel = Math.max(tinggiLabel, tinggi);
+                    }
+                });
+
+                if (tinggiLabel === 0) tinggiLabel = tinggiNota;
+
+                document.documentElement.style.setProperty('--tinggi-nota', tinggiNota.toFixed(1) + 'mm');
+                document.documentElement.style.setProperty('--tinggi-label', tinggiLabel.toFixed(1) + 'mm');
+
+                const existingStyle = document.getElementById('dynamic-page-size');
+                if (existingStyle) existingStyle.remove();
+
+                const style = document.createElement('style');
+                style.id = 'dynamic-page-size';
+                style.textContent = `
             @media print {
-                @page :first { margin: 0; size: ${LEBAR_MM}mm ${tinggiNota.toFixed(1)}mm; }
-                @page { margin: 0; size: ${LEBAR_MM}mm ${tinggiLabel.toFixed(1)}mm; }
+                @page { margin: 0; size: ${LEBAR_MM}mm ${tinggiNota.toFixed(1)}mm; }
             }
         `;
-            document.head.appendChild(style);
-            window.print();
-            document.head.removeChild(style);
+                document.head.appendChild(style);
+
+                requestAnimationFrame(function() {
+                    setTimeout(function() {
+                        window.print();
+                        const dynStyle = document.getElementById('dynamic-page-size');
+                        if (dynStyle) dynStyle.remove();
+                        btn.classList.remove('loading');
+                        btn.textContent = '🖶 Cetak {{ $totalLembar }} Lembar';
+                    }, 300);
+                });
+            });
         });
+
+        function pxToMm(px) {
+            return px / 3.7795275591;
+        }
     </script>
 </body>
 
