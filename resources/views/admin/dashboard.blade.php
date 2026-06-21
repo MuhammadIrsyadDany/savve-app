@@ -254,7 +254,7 @@
                                 @foreach ($t->details->take(1) as $d)
                                     <span class="px-2 py-0.5 rounded-md text-gray-600 font-medium whitespace-nowrap"
                                         style="background: #f1f5f9; font-size: 10px">
-                                        {{ Str::limit(implode(', ', $d->jenis_barang ?? []), 10) }}
+                                        {{ Str::limit($d->jenis_barang_label, 10) }}
                                     </span>
                                 @endforeach
                             </td>

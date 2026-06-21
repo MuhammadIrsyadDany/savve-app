@@ -268,6 +268,14 @@
                     🖨️ Cetak Nota
                 </a>
 
+                @if (in_array($transaksi->status, ['dititip', 'terlambat']) && $transaksi->kasir_id === auth()->id())
+                    <a href="{{ route('kasir.transaksi.edit', $transaksi) }}"
+                        class="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition hover:opacity-90"
+                        style="background: #fffbeb; color: #b45309; border: 1.5px solid #fde68a">
+                        ✏️ Edit Transaksi
+                    </a>
+                @endif
+
                 @if (in_array($transaksi->status, ['dititip', 'terlambat']))
                     <a href="{{ route('kasir.pengambilan.index') }}"
                         class="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition hover:opacity-90"

@@ -274,7 +274,7 @@
                             {{-- Barang --}}
                             <td class="px-5 py-4 text-gray-500 text-sm whitespace-nowrap">
                                 @foreach ($t->details->take(1) as $d)
-                                    {{ implode(', ', $d->jenis_barang ?? []) }}
+                                    {{ $d->jenis_barang_label }}
                                     <span class="text-xs text-gray-400">
                                         ({{ $d->ukuran }})
                                     </span>

@@ -203,6 +203,131 @@ class TransaksiController extends Controller
             ->with('success', 'Transaksi berhasil disimpan.');
     }
 
+    public function edit(Transaksi $transaksi)
+    {
+        $this->authorizeEdit($transaksi);
+
+        $transaksi->load('details');
+        $event = $transaksi->event;
+
+        $jenisBarangs = JenisBarang::where('is_active', true)
+            ->orderBy('ukuran')
+            ->orderBy('urutan')
+            ->get()
+            ->groupBy('ukuran');
+
+        $tarifs = Tarif::where('event_id', $transaksi->event_id)
+            ->get()
+            ->keyBy('ukuran');
+
+        return view('kasir.transaksi.edit', compact('transaksi', 'event', 'jenisBarangs', 'tarifs'));
+    }
+
+    public function update(Request $request, Transaksi $transaksi)
+    {
+        $this->authorizeEdit($transaksi);
+
+        $request->validate([
+            'nama_penitip'                 => 'required|string|max:255',
+            'no_whatsapp'                  => 'required|string|max:20',
+            'metode_bayar'                 => 'required|in:QRIS,Cash,Online',
+            'items'                        => 'required|array|min:1',
+            'items.*.ukuran'               => 'required|in:S,M,L,XL,Gadget',
+            'items.*.barang'               => 'nullable|array',
+            'items.*.barang.*.nama'        => 'required_with:items.*.barang|string|max:100',
+            'items.*.barang.*.selected'    => 'nullable|in:0,1',
+            'items.*.barang.*.keterangan'  => 'nullable|string|max:255',
+            'items.*.barang.*.nomor_label' => 'nullable|string|max:50',
+            'items.*.jenis_barang_lainnya' => 'nullable|string|max:500',
+        ]);
+
+        $items = $request->input('items');
+
+        foreach ($items as $idx => &$item) {
+            $jenis = [];
+
+            foreach (($item['barang'] ?? []) as $row) {
+                if (($row['selected'] ?? '0') === '1') {
+                    $jenis[] = [
+                        'nama'        => $row['nama'] ?? '-',
+                        'keterangan'  => !empty($row['keterangan']) ? trim($row['keterangan']) : null,
+                        'nomor_label' => !empty($row['nomor_label']) ? trim($row['nomor_label']) : null,
+                    ];
+                }
+            }
+
+            if (!empty($item['jenis_barang_lainnya'])) {
+                $extras = array_map('trim', explode(',', $item['jenis_barang_lainnya']));
+                $extras = array_filter($extras);
+                foreach ($extras as $extra) {
+                    $jenis[] = ['nama' => $extra, 'keterangan' => null, 'nomor_label' => null];
+                }
+            }
+
+            if (empty($jenis)) {
+                return back()->withInput()
+                    ->withErrors([
+                        "items.{$idx}.jenis_barang" => 'Pilih minimal satu jenis barang atau isi kolom "Lainnya".',
+                    ]);
+            }
+
+            $item['jenis_barang'] = array_values($jenis);
+            unset($item['barang'], $item['jenis_barang_lainnya']);
+        }
+        unset($item);
+
+        $tarifs = Tarif::where('event_id', $transaksi->event_id)->get()->keyBy('ukuran');
+
+        DB::transaction(function () use ($request, $transaksi, $tarifs, $items) {
+            $fotoPath = $transaksi->foto_penitipan;
+
+            if ($request->boolean('hapus_foto_penitipan')) {
+                $fotoPath = null;
+            }
+            if ($request->filled('foto_penitipan')) {
+                $fotoPath = $this->simpanFotoBase64($request->foto_penitipan, 'foto-penitipan');
+            }
+
+            $transaksi->update([
+                'nama_penitip'   => $request->nama_penitip,
+                'no_whatsapp'    => $request->no_whatsapp,
+                'metode_bayar'   => $request->metode_bayar,
+                'foto_penitipan' => $fotoPath,
+            ]);
+
+            // Hapus detail lama, ganti dengan yang baru
+            $transaksi->details()->delete();
+
+            foreach ($items as $item) {
+                $ukuran      = $item['ukuran'];
+                $jenisBarang = $item['jenis_barang'];
+                $tarif       = $tarifs[$ukuran] ?? null;
+                $harga       = $tarif ? $tarif->harga : 0;
+
+                DetailTransaksi::create([
+                    'transaksi_id' => $transaksi->id,
+                    'ukuran'       => $ukuran,
+                    'jenis_barang' => $jenisBarang,
+                    'harga_satuan' => $harga,
+                    'subtotal'     => $harga,
+                ]);
+            }
+        });
+
+        return redirect()->route('kasir.transaksi.show', $transaksi)
+            ->with('success', 'Transaksi berhasil diperbarui.');
+    }
+
+    private function authorizeEdit(Transaksi $transaksi): void
+    {
+        if ($transaksi->kasir_id !== auth()->id()) {
+            abort(403, 'Anda tidak punya akses untuk mengedit transaksi ini.');
+        }
+        if (!in_array($transaksi->status, ['dititip', 'terlambat'])) {
+            abort(403, 'Transaksi yang sudah diambil tidak bisa diedit.');
+        }
+    }
+
     public function show(Transaksi $transaksi)
     {
         $transaksi->load(['event', 'kasir', 'details']);

@@ -172,6 +172,9 @@ Route::prefix('kasir')
         Route::post('/transaksi/{transaksi}/tambah-barang', [TransaksiController::class, 'simpanBarang'])
             ->name('transaksi.simpan-barang');
 
+        Route::get('transaksi/{transaksi}/edit', [TransaksiController::class, 'edit'])->name('transaksi.edit');
+        Route::put('transaksi/{transaksi}', [TransaksiController::class, 'update'])->name('transaksi.update');
+
         /*
         |--------------------------------------------------------------------------
         | Pengambilan Barang
