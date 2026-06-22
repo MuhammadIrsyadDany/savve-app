@@ -254,7 +254,7 @@
                                             <div class="flex items-center justify-between px-3 py-2 rounded-lg"
                                                 style="background:#f8faff;border:1px solid #ede9fe">
                                                 <span class="text-sm font-semibold text-gray-700">
-                                                    {{ implode(', ', $d->jenis_barang ?? []) }}
+                                                    {{ $d->jenis_barang_string }}
                                                 </span>
                                                 <div class="flex items-center gap-2">
                                                     <span class="px-2 py-0.5 rounded-lg text-xs font-bold"

@@ -163,7 +163,7 @@
                             <span class="px-3 py-1.5 rounded-full text-xs font-bold"
                                 style="background: {{ $event->status === 'aktif' ? '#f0fdf4' : '#f8faff' }};
                                        color: {{ $event->status === 'aktif' ? '#15803d' : '#94a3b8' }}">
-                                {{ $event->status === 'aktif' ? '● Aktif' : '● Selesai' }}
+                                {{ $event->status === 'aktif' ? '● aktif' : '● selesai' }}
                             </span>
                         </td>
                         <td class="px-5 py-4 text-right whitespace-nowrap">

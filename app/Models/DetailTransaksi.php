@@ -31,7 +31,7 @@ class DetailTransaksi extends Model
     // Helper: menampilkan jenis barang sebagai string
     public function getJenisBarangStringAttribute(): string
     {
-        return implode(', ', $this->jenis_barang ?? []);
+        return collect($this->jenisBarangFormatted())->pluck('nama')->implode(', ');
     }
 
     // Helper: menghitung jumlah jenis barang

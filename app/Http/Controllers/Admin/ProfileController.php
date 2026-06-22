@@ -22,6 +22,8 @@ class ProfileController extends Controller
         $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+        ], [
+            'email.unique' => 'Email ini sudah digunakan oleh pengguna lain.',
         ]);
 
         $user->update([
@@ -37,12 +39,14 @@ class ProfileController extends Controller
         $request->validate([
             'current_password' => 'required',
             'password'         => 'required|min:6|confirmed',
+        ], [
+            'password.confirmed' => 'konfirmasi password baru tidak cocok dengan password baru.',
         ]);
 
         $user = auth()->user();
 
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.'])
+            return back()->withErrors(['current_password' => 'Password saat ini salah.'])
                 ->with('tab', 'password');
         }
 

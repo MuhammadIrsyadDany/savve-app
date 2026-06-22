@@ -142,7 +142,7 @@
                             @foreach ($transaksi->details as $detail)
                                 <tr class="table-row" style="border-top: 1px solid #f1f5f9">
                                     <td class="px-5 py-4 font-medium text-gray-700 whitespace-nowrap">
-                                        {{ implode(', ', $detail->jenis_barang ?? []) }}
+                                        {{ $detail->jenis_barang_string }}
                                     </td>
 
                                     <td class="px-5 py-4 whitespace-nowrap">

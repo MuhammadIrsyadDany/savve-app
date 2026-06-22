@@ -201,7 +201,7 @@ class EventController extends Controller
         $rekapKategori = [];
         foreach ($transaksis as $t) {
             foreach ($t->details as $d) {
-                $nama = implode(', ', $d->jenis_barang ?? []);
+                $nama = $d->jenis_barang_string;
                 if (!isset($rekapKategori[$nama])) {
                     $rekapKategori[$nama] = ['jumlah' => 0, 'pendapatan' => 0];
                 }

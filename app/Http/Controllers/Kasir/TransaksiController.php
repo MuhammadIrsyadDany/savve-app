@@ -230,7 +230,7 @@ class TransaksiController extends Controller
         $request->validate([
             'nama_penitip'                 => 'required|string|max:255',
             'no_whatsapp'                  => 'required|string|max:20',
-            'metode_bayar'                 => 'required|in:QRIS,Cash,Online',
+            'metode_bayar'                 => 'required|in:QRIS,Cash,Web',
             'items'                        => 'required|array|min:1',
             'items.*.ukuran'               => 'required|in:S,M,L,XL,Gadget',
             'items.*.barang'               => 'nullable|array',
@@ -330,6 +330,10 @@ class TransaksiController extends Controller
 
     public function show(Transaksi $transaksi)
     {
+        if ($transaksi->kasir_id !== auth()->id()) {
+            abort(403, 'Anda tidak punya akses untuk melihat transaksi ini.');
+        }
+
         $transaksi->load(['event', 'kasir', 'details']);
         return view('kasir.transaksi.show', compact('transaksi'));
     }

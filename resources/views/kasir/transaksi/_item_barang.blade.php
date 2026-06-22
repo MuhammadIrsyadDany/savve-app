@@ -46,6 +46,9 @@
         Jenis Barang
         <span class="font-normal normal-case ml-1" style="color: #94a3b8">(pilih satu atau lebih)</span>
     </label>
+    @error("items.{$index}.jenis_barang")
+        <p class="text-red-500 text-xs mt-1 error-jenis-barang">⚠ {{ $message }}</p>
+    @enderror
     <div class="jenis-container grid grid-cols-2 gap-2">
         @foreach ($jenisBarangs[$selectedUkuran] ?? [] as $jenis)
             @continue(strtolower($jenis['nama']) === 'lainnya')

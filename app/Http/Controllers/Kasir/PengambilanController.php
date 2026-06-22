@@ -114,7 +114,7 @@ class PengambilanController extends Controller
                     ? asset('storage/' . $transaksi->foto_penitipan)
                     : null,
                 'details'               => $transaksi->details->map(fn($d) => [
-                    'nama'     => implode(', ', $d->jenis_barang ?? []),
+                    'nama'     => $d->jenis_barang_string,
                     'ukuran'   => $d->ukuran,
                     'subtotal' => 'Rp ' . number_format($d->subtotal, 0, ',', '.'),
                 ]),

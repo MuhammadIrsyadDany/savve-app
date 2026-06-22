@@ -698,7 +698,7 @@
                         <td class="px-5 py-4">
                             @foreach ($t->details->take(1) as $d)
                                 <p class="font-medium text-gray-700 text-sm whitespace-nowrap">
-                                    {{ implode(', ', $d->jenis_barang ?? []) }}
+                                    {{ $d->jenis_barang_string }}
                                 </p>
                                 <span class="inline-block px-2 py-0.5 rounded-md text-xs font-bold mt-0.5"
                                     style="background: #eff6ff; color: #1d4ed8">

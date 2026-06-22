@@ -68,7 +68,7 @@
                                         {{ $loop->iteration }}
                                     </span>
                                     <span class="font-semibold text-gray-700 text-sm">
-                                        {{ implode(', ', $d->jenis_barang ?? []) }}
+                                        {{ $d->jenis_barang_string }}
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-3">

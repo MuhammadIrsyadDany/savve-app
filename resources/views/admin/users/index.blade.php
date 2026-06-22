@@ -42,7 +42,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($users as $user)
+                @foreach($users as $user)
                     <tr class="table-row" style="border-top: 1px solid #f1f5f9">
                         <td class="px-5 py-4">
                             <div class="flex items-center gap-3">
@@ -82,21 +82,7 @@
                             </div>
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="px-5 py-16 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
-                                    style="background: #f8faff">👤</div>
-                                <p class="font-semibold text-gray-400">Belum ada kasir.</p>
-                                <a href="{{ route('admin.users.create') }}" class="text-sm font-bold hover:underline"
-                                    style="color: #1a3a6b">
-                                    Tambah kasir pertama →
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>
