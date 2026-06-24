@@ -6,7 +6,16 @@
         "build": "vite build",
         "dev": "vite",
         "cypress:open": "cypress open",
-        "cypress:run": "cypress run"
+        "cypress:run": "cypress run",
+        "cypress:run:auth": "cypress run --spec \"cypress/e2e/1_autentikasi/**/*\"",
+        "cypress:run:event": "cypress run --spec \"cypress/e2e/2_pengelolaan_event_tarif/**/*\"",
+        "cypress:run:transaksi": "cypress run --spec \"cypress/e2e/3_transaksi_penitipan_pengambilan/**/*\"",
+        "cypress:run:laporan": "cypress run --spec \"cypress/e2e/4_laporan/**/*\"",
+        "cypress:run:user": "cypress run --spec \"cypress/e2e/5_manajemen_pengguna_profil/**/*\"",
+        "cypress:run:admin": "cypress run --spec \"cypress/e2e/6_manajemen_transaksi_admin/**/*\"",
+        "cypress:run:search": "cypress run --spec \"cypress/e2e/7_pencarian_global/**/*\"",
+        "db:backup": "powershell -ExecutionPolicy Bypass -File ./db-backup.ps1 backup",
+        "db:restore": "powershell -ExecutionPolicy Bypass -File ./db-backup.ps1 restore"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
